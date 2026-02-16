@@ -44,7 +44,7 @@ export default function MiniAppPage() {
       </div>
 
       <div className="miniapp__counter">
-        <LiveCounter hook="You fight to burn every gram. Fat Burn ledger makes sure your efforts don't go unnoticed." />
+        <LiveCounter hook="You fight to burn every gram. The Fat Burn Ledger records every gram permanently." />
       </div>
 
       <div className="miniapp__footer">
