@@ -7,7 +7,7 @@ export default function Home() {
     <>
       {/* Hero */}
       <section className="hero">
-        <p className="hero__label">Fat Burn Fun</p>
+        <p className="hero__label">Burn Fat Fun</p>
         <h1 className="hero__title">
           A Public Ledger<br />for Fat Burned
         </h1>
