@@ -21,7 +21,7 @@ export default function Home() {
       <section className="statement">
         <p className="statement__label">Vision</p>
         <p className="statement__text">
-          You fight to burn every gram. The Fat Burn Ledger records every gram permanently.
+          You fight to burn every gram. The Fat Burn Ledger records every effort permanently.
         </p>
       </section>
 
