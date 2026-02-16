@@ -40,5 +40,36 @@ Responsive typography uses CSS `clamp()`. Mobile breakpoints at 900px (grid coll
 - SVG icons are inline React components with an `ICONS` map for dynamic rendering
 - Activity feed rotates on a 4-second interval via `setInterval` in `useEffect`
 - Counter increments when a feed item has `kgDelta > 0`
-- Waitlist form stores input in local state only (no submission endpoint)
+- Waitlist form submits to Formspree (`https://formspree.io/f/mbdayrbn`)
 - FAQ accordion uses single open item state (`null | number`)
+
+## Farcaster Mini App — Reference Documentation
+
+This project will evolve into a Farcaster mini app. Reference these docs when building mini app features.
+
+### Farcaster / Warpcast
+
+- **Farcaster Docs (overview):** https://docs.farcaster.xyz/
+- **Mini Apps Docs (SDK, spec, guides):** https://miniapps.farcaster.xyz/
+- **Mini Apps Specification:** https://miniapps.farcaster.xyz/docs/specification
+- **Mini Apps Getting Started:** https://miniapps.farcaster.xyz/docs/getting-started
+- **Publishing a Mini App:** https://miniapps.farcaster.xyz/docs/guides/publishing
+- **Mini Apps GitHub repo (tooling + examples):** https://github.com/farcasterxyz/miniapps
+- **Neynar starter (create mini app in 60s):** https://docs.neynar.com/docs/create-farcaster-miniapp-in-60s
+
+### Base
+
+- **Base Mini App Quickstart:** https://docs.base.org/mini-apps/quickstart/create-new-miniapp
+- **Base Mini App Context (user profiles, launch source):** https://docs.base.org/mini-apps/core-concepts/context
+- **Base MiniKit Quickstart:** https://docs.base.org/builderkits/minikit/quickstart
+- **Base Mini Apps Guide (community curated):** https://www.dtso.org/web3/mini-apps-guide
+
+### Waitlist mode pattern
+
+There is no official "waitlist mode" in the Farcaster mini app spec. It is an app-level pattern:
+
+1. **Publish the mini app** so it appears in Warpcast discovery and users can add it to their collection (via `useAddFrame` hook)
+2. **Gate full functionality** inside the app — show only a waitlist/signup screen (like the current BurnFat.fun landing page)
+3. **When ready to launch**, remove the gate and expose full features
+
+This lets the mini app build an audience and collect interest before the full product is live, while being visible and opt-in-able within Warpcast.

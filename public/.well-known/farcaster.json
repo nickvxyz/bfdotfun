@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "REPLACE_ME",
+    "payload": "REPLACE_ME",
+    "signature": "REPLACE_ME"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "BurnFat.fun",
+    "homeUrl": "https://burnfat.fun/app",
+    "iconUrl": "https://burnfat.fun/icon.png",
+    "splashBackgroundColor": "#000000",
+    "subtitle": "Public Ledger for Fat Burned",
+    "description": "Every kilogram burned by humans, recorded permanently.",
+    "primaryCategory": "health-fitness",
+    "tags": ["fitness", "health", "base", "accountability"]
+  }
+}

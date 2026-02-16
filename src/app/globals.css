@@ -632,6 +632,76 @@
     opacity: 0.7;
   }
 
+  /* Mini App */
+  .miniapp {
+    min-height: 100dvh;
+    background: var(--c-white);
+    color: var(--c-black);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  .miniapp__header {
+    margin-bottom: 48px;
+  }
+
+  .miniapp__title {
+    font-family: var(--font-mono);
+    font-size: clamp(28px, 7vw, 48px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .miniapp__subtitle {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.6;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .miniapp__counter {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 48px;
+  }
+
+
+  .miniapp__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .miniapp__footer .cta {
+    margin-top: 0;
+  }
+
+  .miniapp__added {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-green);
+  }
+
+  .miniapp__launching {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    opacity: 0.4;
+    color: var(--c-black);
+  }
+
   /* Animations */
   .bump {
     animation: counter-bump 0.3s ease;

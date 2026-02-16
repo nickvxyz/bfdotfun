@@ -21,7 +21,7 @@ export default function Home() {
       <section className="statement">
         <p className="statement__label">Vision</p>
         <p className="statement__text">
-          Every kilogram burned on purpose is a remarkable milestone. Fat burn fun makes it permanent.
+          You fight to burn every gram. Fat Burn ledger makes sure your efforts don't go unnoticed.
         </p>
       </section>
 
