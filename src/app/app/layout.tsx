@@ -3,6 +3,11 @@ import type { Metadata, Viewport } from "next";
 export const metadata: Metadata = {
   title: "BurnFat.fun",
   description: "A public ledger for fat burned by humans.",
+  openGraph: {
+    title: "BurnFat.fun",
+    description: "A public ledger for fat burned by humans.",
+    images: [{ url: "https://burnfat.fun/og.png", width: 1536, height: 1024 }],
+  },
   other: (() => {
     const embed = JSON.stringify({
       version: "1",
