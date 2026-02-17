@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from "next";
 export const metadata: Metadata = {
   title: "BurnFat.fun",
   description: "A public ledger for fat burned by humans.",
-  other: {
-    "fc:miniapp": JSON.stringify({
+  other: (() => {
+    const embed = JSON.stringify({
       version: "1",
       imageUrl: "https://burnfat.fun/og.png",
       button: {
@@ -14,8 +14,9 @@ export const metadata: Metadata = {
           url: "https://burnfat.fun/app",
         },
       },
-    }),
-  },
+    });
+    return { "fc:miniapp": embed, "fc:frame": embed };
+  })(),
 };
 
 export const viewport: Viewport = {
