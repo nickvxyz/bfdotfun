@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   other: {
     "fc:miniapp": JSON.stringify({
       version: "1",
-      imageUrl: "https://burnfat.fun/icon.png",
+      imageUrl: "https://burnfat.fun/og.png",
       button: {
         title: "Open BurnFat.fun",
         action: {
