@@ -746,6 +746,12 @@
     padding: 48px 24px;
   }
 
+  .waitlist-section__button {
+    flex: 0 0 33.333%;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
   .faq-section {
     padding: 48px 24px;
   }
