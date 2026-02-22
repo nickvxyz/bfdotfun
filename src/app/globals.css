@@ -747,7 +747,7 @@
   }
 
   .waitlist-section__button {
-    flex: 0 0 33.333%;
+    flex: 0 0 25%;
     padding-left: 8px;
     padding-right: 8px;
   }
