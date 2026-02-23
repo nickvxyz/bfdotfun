@@ -1,6 +1,7 @@
 import LiveCounter from "@/components/LiveCounter";
 import WaitlistForm from "@/components/WaitlistForm";
 import FaqAccordion from "@/components/FaqAccordion";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
@@ -73,6 +74,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="footer">
         <p className="footer__copy">&copy; 2026 BurnFat.fun</p>
+        <ThemeToggle />
       </footer>
     </>
   );

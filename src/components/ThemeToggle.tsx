@@ -23,19 +23,27 @@ export default function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, getTheme, getServerTheme);
   const dark = theme === "dark";
 
-  const toggle = useCallback(() => {
-    const next = !dark;
+  const set = useCallback((next: boolean) => {
     document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
     localStorage.setItem("theme", next ? "dark" : "light");
-  }, [dark]);
+  }, []);
 
   return (
-    <button
-      className="theme-toggle"
-      onClick={toggle}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-    >
-      {dark ? "◑" : "◐"}
-    </button>
+    <div className="theme-switcher" role="group" aria-label="Color theme">
+      <button
+        className={`theme-switcher__option${!dark ? " theme-switcher__option--active" : ""}`}
+        onClick={() => set(false)}
+        aria-pressed={!dark}
+      >
+        Light
+      </button>
+      <button
+        className={`theme-switcher__option${dark ? " theme-switcher__option--active" : ""}`}
+        onClick={() => set(true)}
+        aria-pressed={dark}
+      >
+        Dark
+      </button>
+    </div>
   );
 }
