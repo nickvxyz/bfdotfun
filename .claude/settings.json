@@ -5,8 +5,12 @@
       "Bash(npm run *)",
       "Bash(npx tsc *)",
       "Bash(npx eslint *)",
+      "Bash(npx next *)",
       "Bash(git *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(date *)",
+      "Bash(cat *)",
+      "Bash(tail *)"
     ]
   },
   "hooks": {
@@ -30,6 +34,18 @@
             "command": ".claude/hooks/post-edit.sh",
             "timeout": 30,
             "statusMessage": "Checking TypeScript and ESLint..."
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-compact.sh",
+            "timeout": 10,
+            "async": true
           }
         ]
       }

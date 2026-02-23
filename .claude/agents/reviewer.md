@@ -6,6 +6,7 @@ disallowedTools: Write, Edit, MultiEdit
 model: sonnet
 maxTurns: 30
 isolation: worktree
+memory: project
 ---
 
 You are a senior code reviewer for burnfat.fun.
