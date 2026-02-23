@@ -707,6 +707,184 @@
   .bump {
     animation: counter-bump 0.3s ease;
   }
+
+  /* Theme Toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: var(--c-black);
+    color: var(--c-white);
+    border: 2px solid var(--c-black);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .theme-toggle:hover {
+    background: transparent;
+    color: var(--c-black);
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .theme-toggle {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: transparent;
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] body {
+    background: var(--c-black);
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .hero {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-bottom-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .statement {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-bottom-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .statement__label,
+  [data-theme="dark"] .statement__text {
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .counter-section {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-bottom-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .cta {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .cta:hover {
+    background: transparent;
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .cta--inverted {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .cta--inverted:hover {
+    background: transparent;
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .banner {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .banner__icon {
+    background: var(--c-white);
+  }
+
+  [data-theme="dark"] .banner__icon svg {
+    stroke: var(--c-black);
+  }
+
+  [data-theme="dark"] .waitlist-section {
+    background: var(--c-white);
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .waitlist-section__label,
+  [data-theme="dark"] .waitlist-section__title,
+  [data-theme="dark"] .waitlist-section__subtitle {
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .waitlist-section__input {
+    color: var(--c-black);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  [data-theme="dark"] .waitlist-section__input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  [data-theme="dark"] .waitlist-section__input:focus {
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  [data-theme="dark"] .waitlist-section__button {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .waitlist-section__button:hover:not(:disabled) {
+    background: var(--c-black);
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .waitlist-section__consent {
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .faq-section {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-bottom-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .faq__item {
+    border-top-color: rgba(255, 255, 255, 0.15);
+  }
+
+  [data-theme="dark"] .faq__item:last-child {
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+  }
+
+  [data-theme="dark"] .faq__question {
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .footer {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-top-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .privacy-hero {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-bottom-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .privacy {
+    background: var(--c-white);
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .privacy__heading,
+  [data-theme="dark"] .privacy__text {
+    color: var(--c-black);
+  }
 }
 
 @keyframes counter-bump {

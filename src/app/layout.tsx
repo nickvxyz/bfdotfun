@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -33,7 +34,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>{children}</body>
+      <head>
+        {/* Anti-flash: apply saved theme before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}})();`,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} antialiased`}>
+        <ThemeToggle />
+        {children}
+      </body>
     </html>
   );
 }
