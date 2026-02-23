@@ -65,7 +65,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="faq-section">
+      <section className="faq-section" style={{ display: "none" }}>
         <p className="faq-section__label">How It Works</p>
         <FaqAccordion />
       </section>
