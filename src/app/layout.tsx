@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_URL || "https://burnfat.fun",
     siteName: "BurnFat.fun",
     type: "website",
+    images: [{ url: "https://burnfat.fun/og.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",

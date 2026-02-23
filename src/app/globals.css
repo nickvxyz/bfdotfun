@@ -29,7 +29,7 @@
   }
 
   body {
-    font-family: var(--font-sans);
+    font-family: var(--font-inter), var(--font-mono), monospace;
     background: #ffffff;
     color: #000000;
     line-height: 1.6;
@@ -244,9 +244,9 @@
     animation: shake 0.3s linear;
   }
 
-  .banner--green { background: #2beb58; }
-  .banner--orange { background: #ed4908; }
-  .banner--yellow { background: #f7e709; }
+  .banner--green { background: var(--c-green); }
+  .banner--orange { background: var(--c-orange); }
+  .banner--yellow { background: var(--c-yellow); }
 
   .banner__icon {
     width: 40px;
@@ -392,12 +392,13 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     padding: 18px 24px;
-    background: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
+    background: var(--c-black);
+    color: var(--c-white);
+    border: 2px solid var(--c-white);
     margin-left: -2px;
     cursor: pointer;
     flex-shrink: 0;
+    white-space: nowrap;
     transition: all 0.2s;
   }
 
@@ -453,7 +454,7 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #2beb58;
+    color: var(--c-green);
     margin-top: 32px;
   }
 
@@ -750,6 +751,8 @@
     flex: 0 0 33.333%;
     padding-left: 8px;
     padding-right: 8px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
   }
 
   .faq-section {

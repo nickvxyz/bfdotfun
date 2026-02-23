@@ -33,7 +33,7 @@ function formatNumber(num: number) {
   return num.toLocaleString("en-US");
 }
 
-export default function LiveCounter({ hook }: { hook?: string }) {
+export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
   const [counterValue, setCounterValue] = useState(1247);
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isBumping, setIsBumping] = useState(false);
@@ -66,7 +66,7 @@ export default function LiveCounter({ hook }: { hook?: string }) {
 
   return (
     <>
-      <p className="counter-section__label">Community Progress</p>
+      {label !== "" && <p className="counter-section__label">{label ?? "Community Progress"}</p>}
       <p className="counter-section__hook">{hook ?? "A shared total, growing over time"}</p>
 
       <div className="counter">
