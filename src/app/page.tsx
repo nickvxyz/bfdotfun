@@ -131,7 +131,7 @@ export default function Home() {
               <span className="roadmap__phase">Launching Soon</span>
             </div>
             <p className="roadmap__desc">
-              Manual report. $1/kg entry fee. Global counter. Live feed. Lifetime profiles. Honor system — cheating is economically pointless when there are no prizes. Telegram community.
+              Manual report. $1/kg entry fee. Global counter. Live feed. Lifetime profiles. Honor system — cheating is economically pointless when there are no prizes. Referral program — bring people who burn, earn a share of their entry fees. Telegram community.
             </p>
           </div>
           <div className="roadmap__item">
