@@ -197,17 +197,6 @@ export default function Home() {
           Leave your email. We&apos;ll notify you when the ledger opens.
         </p>
         <p className="waitlist-section__launching">Launching shortly.</p>
-        <a
-          href="https://t.me/basefatburning/428"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="cta"
-        >
-          Get Notified
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path d="M7 17L17 7M17 7H7M17 7V17" />
-          </svg>
-        </a>
         <WaitlistForm />
       </section>
 
