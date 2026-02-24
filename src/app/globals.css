@@ -458,6 +458,14 @@
     margin-top: 32px;
   }
 
+  .waitlist-section__launching {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.6;
+    opacity: 0.7;
+    margin-top: 24px;
+  }
+
   /* FAQ Section */
   .faq-section {
     padding: 80px 48px;
@@ -556,6 +564,261 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     opacity: 0.5;
+  }
+
+  /* BIP Disclaimer */
+  .bip {
+    padding: 24px 48px;
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .bip__text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    opacity: 0.4;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* Story Section */
+  .story {
+    padding: 80px 48px;
+    background: #ffffff;
+    color: #000000;
+    border-bottom: 2px solid #000000;
+  }
+
+  .story__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 32px;
+  }
+
+  .story__content {
+    max-width: 640px;
+  }
+
+  .story__text {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    opacity: 0.7;
+    margin-bottom: 24px;
+  }
+
+  .story__link {
+    text-decoration: underline;
+    opacity: 1;
+  }
+
+  .story__link:hover {
+    opacity: 0.7;
+  }
+
+  .story__punchline {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    opacity: 0.7;
+    margin-top: 16px;
+  }
+
+  /* Building Section */
+  .building {
+    padding: 80px 48px;
+    background: #000000;
+    color: #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+
+  .building__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 32px;
+  }
+
+  .building__content {
+    max-width: 640px;
+  }
+
+  .building__subheader {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 48px;
+    margin-bottom: 16px;
+  }
+
+  .building__subheader:first-child {
+    margin-top: 0;
+  }
+
+  .building__text {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    opacity: 0.7;
+    margin-bottom: 16px;
+  }
+
+  .building__accent {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    font-style: italic;
+    opacity: 0.9;
+    margin: 24px 0;
+  }
+
+  /* Roadmap Section */
+  .roadmap {
+    padding: 80px 48px;
+    background: #ffffff;
+    color: #000000;
+    border-bottom: 2px solid #000000;
+  }
+
+  .roadmap__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 32px;
+  }
+
+  .roadmap__timeline {
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-left: 24px;
+    border-left: 2px solid rgba(0, 0, 0, 0.15);
+  }
+
+  .roadmap__item {
+    position: relative;
+  }
+
+  .roadmap__item::before {
+    content: '';
+    position: absolute;
+    left: -29px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    background: var(--c-green);
+  }
+
+  .roadmap__marker {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .roadmap__version {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--c-green);
+  }
+
+  .roadmap__phase {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  .roadmap__desc {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    opacity: 0.7;
+  }
+
+  /* Opportunity Section */
+  .opportunity {
+    padding: 80px 48px;
+    background: #000000;
+    color: #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+
+  .opportunity__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 32px;
+  }
+
+  .opportunity__content {
+    max-width: 640px;
+  }
+
+  .opportunity__text {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    opacity: 0.7;
+    margin-bottom: 16px;
+  }
+
+  .opportunity__key-line {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    font-weight: 700;
+    opacity: 1;
+    margin: 24px 0;
+  }
+
+  .opportunity__signature {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.8;
+    opacity: 0.4;
+    margin-top: 32px;
+  }
+
+  /* Tagline */
+  .tagline {
+    padding: 48px;
+    background: #000000;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .tagline__text {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.6;
+    font-style: italic;
+    opacity: 0.5;
+    color: #ffffff;
+    max-width: 640px;
+    margin: 0 auto;
   }
 
   /* Privacy Page */
@@ -888,6 +1151,69 @@
     border-top-color: var(--c-black);
   }
 
+  [data-theme="dark"] .bip {
+    background: var(--c-black);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme="dark"] .story {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-bottom-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .building {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-bottom-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .building__subheader,
+  [data-theme="dark"] .building__text,
+  [data-theme="dark"] .building__accent {
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .roadmap {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-bottom-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .roadmap__timeline {
+    border-left-color: rgba(255, 255, 255, 0.15);
+  }
+
+  [data-theme="dark"] .opportunity {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-bottom-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .opportunity__label,
+  [data-theme="dark"] .opportunity__text,
+  [data-theme="dark"] .opportunity__key-line,
+  [data-theme="dark"] .opportunity__signature {
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .tagline {
+    background: var(--c-white);
+    border-top-color: rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme="dark"] .tagline__text {
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .waitlist-section .cta {
+    border-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .waitlist-section .cta:hover {
+    color: var(--c-black);
+  }
+
   [data-theme="dark"] .privacy-hero {
     background: var(--c-black);
     color: var(--c-white);
@@ -965,5 +1291,29 @@
 
   .footer {
     padding: 24px;
+  }
+
+  .bip {
+    padding: 20px 24px;
+  }
+
+  .story {
+    padding: 48px 24px;
+  }
+
+  .building {
+    padding: 48px 24px;
+  }
+
+  .roadmap {
+    padding: 48px 24px;
+  }
+
+  .opportunity {
+    padding: 48px 24px;
+  }
+
+  .tagline {
+    padding: 32px 24px;
   }
 }
