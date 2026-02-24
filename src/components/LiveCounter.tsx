@@ -1,12 +1,80 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const ACTIVITY_FEED = [
-  { name: "anon.base.eth", action: "joined the crew", color: "banner--green", icon: "user-plus", kgDelta: 0 },
-  { name: "nickv.base.eth", action: "burned 5 kg fat", color: "banner--orange", icon: "check", kgDelta: 5 },
-  { name: "chad.base.eth", action: "committed to burn 7 kg", color: "banner--yellow", icon: "bolt", kgDelta: 0 },
-] as const;
+// --- Data Layer (swap this for real data later) ---
+
+const PSEUDONYMS = [
+  "anon.base.eth", "nickv.base.eth", "chad.base.eth", "fitness.base.eth",
+  "burner420.base.eth", "maria.base.eth", "coach_k.base.eth", "noexcuses.base.eth",
+  "letsgo.base.eth", "whale.base.eth", "grind.base.eth", "healthnut.base.eth",
+];
+
+type ActionType = "burned" | "joined" | "committed";
+
+const ACTION_WEIGHTS: [ActionType, number][] = [
+  ["burned", 0.5],
+  ["joined", 0.3],
+  ["committed", 0.2],
+];
+
+interface FeedItem {
+  id: number;
+  name: string;
+  action: string;
+  color: string;
+  icon: string;
+  kgDelta: number;
+}
+
+function pickWeighted(): ActionType {
+  const r = Math.random();
+  let sum = 0;
+  for (const [type, weight] of ACTION_WEIGHTS) {
+    sum += weight;
+    if (r < sum) return type;
+  }
+  return "burned";
+}
+
+function generateFeedItem(lastPseudonym: string, id: number): FeedItem {
+  let name: string;
+  do {
+    name = PSEUDONYMS[Math.floor(Math.random() * PSEUDONYMS.length)];
+  } while (name === lastPseudonym);
+
+  const actionType = pickWeighted();
+
+  switch (actionType) {
+    case "burned": {
+      const kg = Math.round((Math.random() * 7.5 + 0.5) * 10) / 10;
+      return { id, name, action: `burned ${kg} kg fat`, color: "banner--orange", icon: "check", kgDelta: kg };
+    }
+    case "joined":
+      return { id, name, action: "joined the crew", color: "banner--green", icon: "user-plus", kgDelta: 0 };
+    case "committed": {
+      const kg = Math.floor(Math.random() * 14) + 2;
+      return { id, name, action: `committed to burn ${kg} kg`, color: "banner--yellow", icon: "bolt", kgDelta: 0 };
+    }
+  }
+}
+
+// --- Constants ---
+
+const VISIBLE_COUNT = 3;
+const ITEM_HEIGHT = 80; // 72px item + 8px gap
+const MIN_INTERVAL = 4000;
+const MAX_INTERVAL = 7000;
+const ANIM_DURATION = 500;
+
+// Deterministic initial items (avoids SSR hydration mismatch)
+const INITIAL_ITEMS: FeedItem[] = [
+  { id: 0, name: "anon.base.eth", action: "joined the crew", color: "banner--green", icon: "user-plus", kgDelta: 0 },
+  { id: 1, name: "nickv.base.eth", action: "burned 5 kg fat", color: "banner--orange", icon: "check", kgDelta: 0 },
+  { id: 2, name: "chad.base.eth", action: "committed to burn 7 kg", color: "banner--yellow", icon: "bolt", kgDelta: 0 },
+];
+
+// --- Icons ---
 
 const ICONS: Record<string, React.ReactNode> = {
   "user-plus": (
@@ -33,36 +101,54 @@ function formatNumber(num: number) {
   return num.toLocaleString("en-US");
 }
 
+// --- Component ---
+
 export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
   const [counterValue, setCounterValue] = useState(1247);
-  const [currentBanner, setCurrentBanner] = useState(0);
   const [isBumping, setIsBumping] = useState(false);
-  const [isShaking, setIsShaking] = useState(false);
-  const bannerIndex = useRef(0);
+  const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
+  const [enterId, setEnterId] = useState<number | null>(null);
 
-  const rotateBanner = useCallback(() => {
-    const next = (bannerIndex.current + 1) % ACTIVITY_FEED.length;
-    bannerIndex.current = next;
-    const item = ACTIVITY_FEED[next];
-
-    setCurrentBanner(next);
-    setIsShaking(true);
-
-    if (item.kgDelta > 0) {
-      setCounterValue((v) => v + item.kgDelta);
-      setIsBumping(true);
-    }
-
-    setTimeout(() => {
-      setIsShaking(false);
-      setIsBumping(false);
-    }, 300);
-  }, []);
+  const nextId = useRef(INITIAL_ITEMS.length);
+  const lastPseudonym = useRef(INITIAL_ITEMS[0].name);
+  const tickTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const cleanupTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
-    const interval = setInterval(rotateBanner, 4000);
-    return () => clearInterval(interval);
-  }, [rotateBanner]);
+    function tick() {
+      const id = nextId.current++;
+      const newItem = generateFeedItem(lastPseudonym.current, id);
+      lastPseudonym.current = newItem.name;
+
+      setEnterId(id);
+      setItems(prev => [newItem, ...prev.slice(0, VISIBLE_COUNT)]);
+
+      if (newItem.kgDelta > 0) {
+        setCounterValue(v => v + newItem.kgDelta);
+        setIsBumping(true);
+        setTimeout(() => setIsBumping(false), 300);
+      }
+
+      cleanupTimeout.current = setTimeout(() => {
+        setEnterId(null);
+        setItems(prev => prev.slice(0, VISIBLE_COUNT));
+      }, ANIM_DURATION);
+    }
+
+    function scheduleNext() {
+      const delay = MIN_INTERVAL + Math.random() * (MAX_INTERVAL - MIN_INTERVAL);
+      tickTimeout.current = setTimeout(() => {
+        tick();
+        scheduleNext();
+      }, delay);
+    }
+
+    scheduleNext();
+    return () => {
+      if (tickTimeout.current) clearTimeout(tickTimeout.current);
+      if (cleanupTimeout.current) clearTimeout(cleanupTimeout.current);
+    };
+  }, []);
 
   return (
     <>
@@ -72,23 +158,24 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
       <div className="counter">
         <div className="counter__row">
           <span className={`counter__number${isBumping ? " bump" : ""}`}>
-            {formatNumber(counterValue)}
+            {formatNumber(Math.round(counterValue))}
           </span>
           <span className="counter__unit">KG</span>
         </div>
         <span className="counter__label">fat burned together</span>
       </div>
 
-      <div className="banners" aria-live="polite">
-        <p className="banners__label">Live Activity</p>
-        <div className="banners__container">
-          {ACTIVITY_FEED.map((item, index) => (
+      <div className="ticker" aria-live="polite">
+        <p className="ticker__label">Live Activity</p>
+        <div className="ticker__container">
+          {items.map((item, index) => (
             <div
-              key={index}
+              key={item.id}
               className={`banner ${item.color}${
-                index === currentBanner ? " active" : ""
-              }${index === currentBanner && isShaking ? " shake" : ""}`}
-              aria-hidden={index !== currentBanner}
+                item.id === enterId ? " banner--enter" : ""
+              }${index >= VISIBLE_COUNT ? " banner--exit" : ""}`}
+              style={{ transform: `translateY(${index * ITEM_HEIGHT}px)` }}
+              aria-hidden={index >= VISIBLE_COUNT}
             >
               <div className="banner__icon">
                 {ICONS[item.icon]}
@@ -99,6 +186,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
               </div>
             </div>
           ))}
+          <div className="ticker__fade" />
         </div>
       </div>
     </>
