@@ -99,13 +99,10 @@ export default function Home() {
             That&apos;s the part that will make some people uncomfortable. Good.
           </p>
           <p className="building__text">
-            Write your weight in your phone notes for free — nobody will ever see it, and you&apos;ll forget it in a month. Or pay a dollar per kilo and inscribe it in a global record alongside thousands of others fighting the same fight.
+            You don&apos;t pay for the right to run a marathon. You pay a participation fee for your name to stand in the protocol. $1 per kilogram. You burned 2 kg? That&apos;s $2 to inscribe your contribution in the global fight against obesity. You can choose not to pay. I will — and I&apos;ll show everyone else I was in this fight.
           </p>
           <p className="building__accent">
             The difference between a diary and a memorial.
-          </p>
-          <p className="building__text">
-            You don&apos;t pay for the right to run a marathon. You pay for your name to stand in the protocol. $1 per kilogram. You burned 2 kg? $2 to inscribe your contribution in the global fight against obesity. You can choose not to pay. I will — and I&apos;ll show everyone else I was in this fight.
           </p>
 
           <h3 className="building__subheader">What You Get</h3>
