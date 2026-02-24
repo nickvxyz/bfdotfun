@@ -1242,6 +1242,14 @@
   [data-theme="dark"] .privacy__text {
     color: var(--c-black);
   }
+
+  [data-theme="dark"] .privacy .cta {
+    border-color: var(--c-black);
+  }
+
+  [data-theme="dark"] .privacy .cta:hover {
+    color: var(--c-black);
+  }
 }
 
 @keyframes counter-bump {
