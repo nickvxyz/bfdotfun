@@ -98,13 +98,16 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 function formatNumber(num: number) {
-  return num.toLocaleString("en-US");
+  return (Math.round(num * 10) / 10).toLocaleString("en-US", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 }
 
 // --- Component ---
 
 export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
-  const [counterValue, setCounterValue] = useState(1247);
+  const [counterValue, setCounterValue] = useState(1247.3);
   const [isBumping, setIsBumping] = useState(false);
   const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
   const [enterId, setEnterId] = useState<number | null>(null);
@@ -158,7 +161,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
       <div className="counter">
         <div className="counter__row">
           <span className={`counter__number${isBumping ? " bump" : ""}`}>
-            {formatNumber(Math.round(counterValue))}
+            {formatNumber(counterValue)}
           </span>
           <span className="counter__unit">KG</span>
         </div>
