@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     title: "BurnFat.fun — A Public Ledger for Fat Burned",
     description: "Every kilogram burned is recorded permanently.",
   },
+  other: {
+    "base:app_id": "69a4379b955255bb0fb04e69",
+  },
 };
 
 export default function RootLayout({
