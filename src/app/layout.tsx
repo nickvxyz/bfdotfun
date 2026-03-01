@@ -9,6 +9,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-touch-icon.png",
+  },
   title: "BurnFat.fun — A Public Ledger for Fat Burned",
   description:
     "Every kilogram burned is recorded permanently. Individual journeys stay private. The global total remains.",
