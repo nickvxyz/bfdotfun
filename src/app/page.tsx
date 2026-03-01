@@ -1,12 +1,10 @@
 import LiveCounter from "@/components/LiveCounter";
 import WaitlistForm from "@/components/WaitlistForm";
 import ThemeToggle from "@/components/ThemeToggle";
-import MiniAppHost from "@/components/MiniAppHost";
 
 export default function Home() {
   return (
     <>
-      <MiniAppHost />
       {/* Hero */}
       <section className="hero">
         <p className="hero__label">Burn Fat Fun</p>
