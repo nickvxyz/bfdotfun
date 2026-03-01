@@ -16,6 +16,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://burnfat.fun"),
   title: "BurnFat.fun",
   description: "A public ledger for fat burned by humans.",
   icons: {
@@ -25,6 +26,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BurnFat.fun",
     description: "A public ledger for fat burned by humans.",
+    url: "https://burnfat.fun/app",
+    siteName: "BurnFat.fun",
+    type: "website",
     images: [{ url: "https://burnfat.fun/og.png", width: 1536, height: 1024 }],
   },
   other: (() => {
