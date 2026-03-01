@@ -4,17 +4,25 @@ import { useState, useEffect, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import LiveCounter from "@/components/LiveCounter";
 
+type Platform = "warpcast" | "base" | "browser";
+const WARPCAST_FID = 9152;
+const BASE_APP_FID = 309857;
+
 export default function MiniAppPage() {
   const [added, setAdded] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [platform, setPlatform] = useState<Platform>("browser");
 
   useEffect(() => {
     async function init() {
       try {
         const context = await sdk.context;
         setAdded(context.client.added);
+        const clientFid = context.client.clientFid;
+        if (clientFid === BASE_APP_FID) setPlatform("base");
+        else if (clientFid === WARPCAST_FID) setPlatform("warpcast");
       } catch {
-        // Outside Warpcast — show page anyway
+        // Outside mini app host — show page anyway
       }
       sdk.actions.ready();
       setLoading(false);
@@ -48,9 +56,7 @@ export default function MiniAppPage() {
       </div>
 
       <div className="miniapp__footer">
-        {added ? (
-          <p className="miniapp__added">Added to your collection</p>
-        ) : (
+        {platform !== "browser" && !added && (
           <button className="cta cta--inverted" onClick={handleAdd}>
             Add to Collection
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -58,6 +64,9 @@ export default function MiniAppPage() {
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
+        )}
+        {added && (
+          <p className="miniapp__added">Added to your collection</p>
         )}
         <p className="miniapp__launching">Launching shortly.</p>
       </div>
