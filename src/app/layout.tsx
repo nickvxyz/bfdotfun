@@ -25,9 +25,24 @@ export const metadata: Metadata = {
     title: "BurnFat.fun — A Public Ledger for Fat Burned",
     description: "Every kilogram burned is recorded permanently.",
   },
-  other: {
-    "base:app_id": "69a4379b955255bb0fb04e69",
-  },
+  other: (() => {
+    const embed = JSON.stringify({
+      version: "1",
+      imageUrl: "https://burnfat.fun/og.png",
+      button: {
+        title: "Open BurnFat.fun",
+        action: {
+          type: "launch_miniapp",
+          url: "https://burnfat.fun/app",
+        },
+      },
+    });
+    return {
+      "base:app_id": "69a4379b955255bb0fb04e69",
+      "fc:miniapp": embed,
+      "fc:frame": embed,
+    };
+  })(),
 };
 
 export default function RootLayout({
