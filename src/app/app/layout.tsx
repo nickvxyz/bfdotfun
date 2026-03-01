@@ -1,4 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import { Chakra_Petch, IBM_Plex_Mono } from "next/font/google";
+
+const chakraPetch = Chakra_Petch({
+  weight: "700",
+  subsets: ["latin"],
+  variable: "--font-title",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "BurnFat.fun",
@@ -40,5 +55,9 @@ export default function MiniAppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <div className={`${chakraPetch.variable} ${ibmPlexMono.variable}`}>
+      {children}
+    </div>
+  );
 }

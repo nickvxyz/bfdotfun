@@ -20,3 +20,19 @@ src/app/globals.css
 src/app/app/page.tsx
 
 ---
+
+## 2026-03-01
+**Recent commits:**
+1c3b328 revert: remove overlay/redirect hacks, restore clean mini app
+734589b fix: serve mini app from root URL, not /app
+783aa7b fix: add apple-touch-icon and mini app redirect from root
+
+**Files changed:**
+public/.well-known/farcaster.json
+src/app/app/layout.tsx
+src/app/globals.css
+src/app/layout.tsx
+src/app/page.tsx
+src/components/MiniAppHost.tsx
+
+---

@@ -1,11 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Chakra_Petch, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const chakraPetch = Chakra_Petch({
+  weight: "700",
+  subsets: ["latin"],
+  variable: "--font-title",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -64,7 +78,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} ${chakraPetch.variable} ${ibmPlexMono.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import LiveCounter from "@/components/LiveCounter";
+import WaitlistForm from "@/components/WaitlistForm";
 
 type Platform = "warpcast" | "base" | "browser";
 const WARPCAST_FID = 9152;
@@ -10,22 +11,23 @@ const BASE_APP_FID = 309857;
 
 export default function MiniAppPage() {
   const [added, setAdded] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [platform, setPlatform] = useState<Platform>("browser");
 
   useEffect(() => {
     async function init() {
       try {
-        const context = await sdk.context;
+        const context = await Promise.race([
+          sdk.context,
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 1500)),
+        ]);
         setAdded(context.client.added);
         const clientFid = context.client.clientFid;
         if (clientFid === BASE_APP_FID) setPlatform("base");
         else if (clientFid === WARPCAST_FID) setPlatform("warpcast");
       } catch {
-        // Outside mini app host — show page anyway
+        // Outside mini app host or timeout
       }
       sdk.actions.ready();
-      setLoading(false);
     }
     init();
   }, []);
@@ -39,20 +41,42 @@ export default function MiniAppPage() {
     }
   }, []);
 
-  if (loading) return null;
-
   return (
     <div className="miniapp">
       <div className="miniapp__header">
         <h1 className="miniapp__title">BurnFat.fun</h1>
-        <p className="miniapp__subtitle">
-          A public ledger for fat burned by humans.
-          Every kilogram burned is recorded permanently.
-        </p>
+        <p className="miniapp__subtitle">A Public Ledger for Fat Burned</p>
       </div>
 
       <div className="miniapp__counter">
-        <LiveCounter label="" hook="Every kg burned is recorded permanently." />
+        <LiveCounter label="" hook="You fight to burn every gram, kilogram, pound of fat. The Fat Burn Ledger records it permanently." />
+      </div>
+
+      <div className="miniapp__cards">
+        <p className="miniapp__cards-label">Who It&apos;s For</p>
+        <div className="miniapp__cards-grid">
+          <div className="miniapp__card">
+            <h3 className="miniapp__card-title">Individuals</h3>
+            <p className="miniapp__card-desc">Join the global counter. Submit your fat loss, see it added to humanity&apos;s total. Just a number that grows.</p>
+          </div>
+          <div className="miniapp__card">
+            <h3 className="miniapp__card-title">Coaches</h3>
+            <p className="miniapp__card-desc">Create your counter. Add clients. They submit body data, you get verifiable proof of results. No spreadsheets. No trust issues.</p>
+          </div>
+          <div className="miniapp__card">
+            <h3 className="miniapp__card-title">Gyms</h3>
+            <p className="miniapp__card-desc">Create a gym-wide counter. Members&apos; progress aggregates into one number. Social proof that sells memberships — backed by permanent data.</p>
+          </div>
+          <div className="miniapp__card">
+            <h3 className="miniapp__card-title">Companies</h3>
+            <p className="miniapp__card-desc">Create a company counter. Employees submit weigh-ins, run wellness challenges with prize pools. All results recorded permanently.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="miniapp__waitlist">
+        <p className="miniapp__waitlist-label">Get Early Access</p>
+        <WaitlistForm />
       </div>
 
       <div className="miniapp__footer">

@@ -29,7 +29,7 @@
   }
 
   body {
-    font-family: var(--font-inter), var(--font-mono), monospace;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     background: #ffffff;
     color: #000000;
     line-height: 1.6;
@@ -39,6 +39,7 @@
     color: inherit;
     text-decoration: none;
   }
+
 }
 
 @layer components {
@@ -51,7 +52,7 @@
   }
 
   .hero__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -61,17 +62,17 @@
   }
 
   .hero__title {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: clamp(36px, 8vw, 72px);
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-bottom: 24px;
   }
 
   .hero__subtitle {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -87,7 +88,7 @@
   }
 
   .statement__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -97,7 +98,7 @@
   }
 
   .statement__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -129,7 +130,7 @@
   }
 
   .counter-section__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -139,7 +140,7 @@
   }
 
   .counter-section__hook {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -153,7 +154,7 @@
   }
 
   .counter-section__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -163,6 +164,7 @@
   .counter {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 8px;
     margin-bottom: 48px;
   }
@@ -170,11 +172,12 @@
   .counter__row {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: 12px;
   }
 
   .counter__number {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: clamp(48px, 10vw, 100px);
     font-weight: 900;
     line-height: 1;
@@ -182,14 +185,14 @@
   }
 
   .counter__unit {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: clamp(24px, 5vw, 48px);
     font-weight: 700;
     opacity: 0.5;
   }
 
   .counter__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
@@ -203,7 +206,7 @@
   }
 
   .ticker__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.15em;
@@ -220,14 +223,7 @@
   }
 
   .ticker__fade {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 32px;
-    background: linear-gradient(to bottom, transparent, #000000);
-    pointer-events: none;
-    z-index: 1;
+    display: none;
   }
 
   .banner {
@@ -243,6 +239,10 @@
     opacity: 1;
     transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out;
     will-change: transform;
+  }
+
+  .miniapp .banner {
+    border-color: #000000;
   }
 
   .banner--enter {
@@ -280,13 +280,13 @@
   }
 
   .banner__name {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
   }
 
   .banner__action {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
     opacity: 0.7;
   }
@@ -297,7 +297,7 @@
     align-items: center;
     gap: 12px;
     width: fit-content;
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -341,7 +341,7 @@
   }
 
   .waitlist-section__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -351,7 +351,7 @@
   }
 
   .waitlist-section__title {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: clamp(36px, 8vw, 72px);
     font-weight: 900;
     line-height: 1;
@@ -361,7 +361,7 @@
   }
 
   .waitlist-section__subtitle {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -375,7 +375,7 @@
   }
 
   .waitlist-section__input {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 14px;
     background: transparent;
     border: 2px solid rgba(0, 0, 0, 0.2);
@@ -396,7 +396,7 @@
   }
 
   .waitlist-section__button {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -427,7 +427,7 @@
     align-items: flex-start;
     gap: 10px;
     margin-top: 16px;
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 12px;
     line-height: 1.6;
     opacity: 0.6;
@@ -452,14 +452,14 @@
   }
 
   .waitlist-section__error {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
     color: var(--c-orange);
     margin-top: 12px;
   }
 
   .waitlist-section__success {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -469,7 +469,7 @@
   }
 
   .waitlist-section__launching {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -485,7 +485,7 @@
   }
 
   .faq-section__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -513,7 +513,7 @@
     gap: 16px;
     width: 100%;
     padding: 20px 0;
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     font-weight: 700;
     text-align: left;
@@ -529,7 +529,7 @@
   }
 
   .faq__toggle {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 20px;
     font-weight: 400;
     flex-shrink: 0;
@@ -547,7 +547,7 @@
   }
 
   .faq__answer {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.7;
@@ -568,7 +568,7 @@
   }
 
   .footer__copy {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -587,7 +587,7 @@
   }
 
   .bip__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
     line-height: 1.6;
     opacity: 0.4;
@@ -604,7 +604,7 @@
   }
 
   .story__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -618,7 +618,7 @@
   }
 
   .story__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.7;
@@ -635,7 +635,7 @@
   }
 
   .story__punchline {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.7;
@@ -651,7 +651,7 @@
   }
 
   .building__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -665,7 +665,7 @@
   }
 
   .building__subheader {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -679,7 +679,7 @@
   }
 
   .building__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.7;
@@ -687,7 +687,7 @@
   }
 
   .building__accent {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 18px;
     line-height: 1.8;
     font-style: italic;
@@ -704,7 +704,7 @@
   }
 
   .roadmap__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -744,7 +744,7 @@
   }
 
   .roadmap__version {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 0.05em;
@@ -753,14 +753,14 @@
   }
 
   .roadmap__phase {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     opacity: 0.7;
   }
 
   .roadmap__desc {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.7;
@@ -775,7 +775,7 @@
   }
 
   .opportunity__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -789,7 +789,7 @@
   }
 
   .opportunity__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.7;
@@ -797,7 +797,7 @@
   }
 
   .opportunity__key-line {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 18px;
     line-height: 1.8;
     font-weight: 700;
@@ -806,7 +806,7 @@
   }
 
   .opportunity__signature {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.4;
@@ -822,7 +822,7 @@
   }
 
   .tagline__text {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 18px;
     line-height: 1.6;
     font-style: italic;
@@ -841,7 +841,7 @@
   }
 
   .privacy-hero__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -851,7 +851,7 @@
   }
 
   .privacy-hero__title {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: clamp(36px, 8vw, 72px);
     font-weight: 900;
     line-height: 1;
@@ -861,7 +861,7 @@
   }
 
   .privacy-hero__subtitle {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.7;
@@ -878,7 +878,7 @@
   }
 
   .privacy__heading {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -892,7 +892,7 @@
   }
 
   .privacy__text {
-    font-family: var(--font-mono);
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 15px;
     line-height: 1.8;
     opacity: 0.7;
@@ -914,46 +914,47 @@
     color: var(--c-black);
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 48px 24px;
+    padding: 40px 20px 32px;
     text-align: center;
   }
+
   .miniapp__header {
-    margin-bottom: 48px;
+    margin-bottom: 32px;
   }
 
   .miniapp__title {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: clamp(28px, 7vw, 48px);
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .miniapp__subtitle {
-    font-family: var(--font-mono);
-    font-size: 14px;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    font-weight: 400;
     line-height: 1.6;
-    opacity: 0.6;
-    max-width: 320px;
-    margin: 0 auto;
+    opacity: 0.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .miniapp__counter {
     width: 100%;
-    max-width: 400px;
-    margin-bottom: 48px;
+    max-width: 480px;
+    margin-bottom: 40px;
   }
-
 
   .miniapp__footer {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
+    margin-top: 8px;
   }
 
   .miniapp__footer .cta {
@@ -961,7 +962,7 @@
   }
 
   .miniapp__added {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -970,10 +971,153 @@
   }
 
   .miniapp__launching {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    opacity: 0.4;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 11px;
+    opacity: 0.3;
     color: var(--c-black);
+    letter-spacing: 0.05em;
+  }
+
+  /* Who It's For cards */
+  .miniapp__cards {
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+
+  .miniapp__cards-label {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: center;
+    opacity: 0.4;
+  }
+
+  .miniapp__cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .miniapp__card {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 16px 14px;
+    text-align: left;
+  }
+
+  .miniapp__card-title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--c-black);
+  }
+
+  .miniapp__card-desc {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    opacity: 0.5;
+    color: var(--c-black);
+  }
+
+  .miniapp__waitlist {
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+
+  .miniapp__waitlist-label {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: center;
+    opacity: 0.4;
+  }
+
+  .miniapp__waitlist .waitlist-section__form {
+    display: flex;
+    gap: 0;
+  }
+
+  .miniapp__waitlist .waitlist-section__input {
+    flex: 1;
+    background: var(--c-white);
+    color: var(--c-black);
+    border: 2px solid var(--c-black);
+    padding: 12px 14px;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+  }
+
+  .miniapp__waitlist .waitlist-section__input::placeholder {
+    color: var(--c-black);
+    opacity: 0.3;
+  }
+
+  .miniapp__waitlist .waitlist-section__button {
+    background: var(--c-black);
+    color: var(--c-white);
+    border: 2px solid var(--c-black);
+    padding: 12px 20px;
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .miniapp__waitlist .waitlist-section__button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .miniapp__waitlist .waitlist-section__consent {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 10px;
+    opacity: 0.4;
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+  }
+
+  .miniapp__waitlist .waitlist-section__success {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-green);
+    text-align: center;
+  }
+
+  .miniapp__waitlist .waitlist-section__error {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 11px;
+    color: var(--c-orange);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 400px) {
+    .miniapp__cards-grid {
+      grid-template-columns: 1fr;
+    }
+    .miniapp__waitlist .waitlist-section__form {
+      flex-direction: column;
+    }
   }
 
   /* Animations */
@@ -988,7 +1132,7 @@
   }
 
   .theme-switcher__option {
-    font-family: var(--font-mono);
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -1086,8 +1230,8 @@
     color: var(--c-white);
   }
 
-  [data-theme="dark"] .ticker__fade {
-    background: linear-gradient(to bottom, transparent, var(--c-white));
+  [data-theme="dark"] .banner {
+    border-color: #000000;
   }
 
   [data-theme="dark"] .banner {

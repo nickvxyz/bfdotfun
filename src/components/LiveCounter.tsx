@@ -63,8 +63,8 @@ function generateFeedItem(lastPseudonym: string, id: number): FeedItem {
 
 const VISIBLE_COUNT = 3;
 const ITEM_HEIGHT = 80; // 72px item + 8px gap
-const MIN_INTERVAL = 4000;
-const MAX_INTERVAL = 7000;
+const MIN_INTERVAL = 1200;
+const MAX_INTERVAL = 2500;
 const ANIM_DURATION = 500;
 
 // Deterministic initial items (avoids SSR hydration mismatch)
@@ -98,10 +98,11 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 function formatNumber(num: number) {
-  return (Math.round(num * 10) / 10).toLocaleString("en-US", {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
+  const rounded = (Math.round(num * 10) / 10).toFixed(1);
+  const [intPart, decPart] = rounded.split(".");
+  const padded = intPart.padStart(9, "0");
+  const withCommas = padded.replace(/(\d{3})(?=\d)/g, "$1,");
+  return `${withCommas}.${decPart}`;
 }
 
 // --- Component ---
@@ -165,11 +166,11 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
           </span>
           <span className="counter__unit">KG</span>
         </div>
-        <span className="counter__label">fat burned together</span>
+        <span className="counter__label">total fat burned by humans</span>
       </div>
 
       <div className="ticker" aria-live="polite">
-        <p className="ticker__label">Live Activity</p>
+        <p className="ticker__label">Burn Feed</p>
         <div className="ticker__container">
           {items.map((item, index) => (
             <div
