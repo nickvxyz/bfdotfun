@@ -7,7 +7,13 @@ export default function GateModal() {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("gate_dismissed")) {
+    try {
+      if (!localStorage.getItem("gate_dismissed")) {
+        setVisible(true);
+        document.body.style.overflow = "hidden";
+      }
+    } catch {
+      // localStorage unavailable (e.g. Base App webview) — show modal anyway
       setVisible(true);
       document.body.style.overflow = "hidden";
     }
@@ -16,7 +22,7 @@ export default function GateModal() {
   const handleDismiss = useCallback(() => {
     setExiting(true);
     setTimeout(() => {
-      localStorage.setItem("gate_dismissed", "true");
+      try { localStorage.setItem("gate_dismissed", "true"); } catch { /* no-op */ }
       document.body.style.overflow = "";
       setVisible(false);
     }, 300);
