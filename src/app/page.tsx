@@ -1,10 +1,12 @@
 import LiveCounter from "@/components/LiveCounter";
 import WaitlistForm from "@/components/WaitlistForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import GateModal from "@/components/GateModal";
 
 export default function Home() {
   return (
     <>
+      <GateModal />
       <div className="miniapp">
         <div className="miniapp__header">
           <h1 className="miniapp__title">BurnFat.fun</h1>
