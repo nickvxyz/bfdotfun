@@ -4,16 +4,18 @@
     "payload": "eyJkb21haW4iOiJidXJuZmF0LmZ1biJ9",
     "signature": "8TewE4zYJu/JuQ6hcmkRWbx9JuToGAqChSGIv+0LS+dyi69tkf/mnWNqq1qNS7/qve6CezCxeRZioP+7p4uVlBs="
   },
-  "frame": {
+  "miniapp": {
     "version": "1",
     "name": "BurnFat.fun",
     "homeUrl": "https://burnfat.fun/app",
     "iconUrl": "https://burnfat.fun/icon.png",
     "imageUrl": "https://burnfat.fun/og.png",
+    "buttonTitle": "Open BurnFat.fun",
     "splashImageUrl": "https://burnfat.fun/splash.png",
     "splashBackgroundColor": "#000000",
     "subtitle": "Public Ledger for Fat Burned",
     "description": "Every kilogram burned by humans, recorded permanently.",
-    "primaryCategory": "health-fitness"
+    "primaryCategory": "health-fitness",
+    "tags": ["fitness", "health", "accountability"]
   }
 }
