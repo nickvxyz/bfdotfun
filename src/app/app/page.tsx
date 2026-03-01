@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import LiveCounter from "@/components/LiveCounter";
 import WaitlistForm from "@/components/WaitlistForm";
-import GateModal from "@/components/GateModal";
+
 
 type Platform = "warpcast" | "base" | "browser";
 const WARPCAST_FID = 9152;
@@ -43,8 +43,6 @@ export default function MiniAppPage() {
   }, []);
 
   return (
-    <>
-    <GateModal />
     <div className="miniapp">
       <div className="miniapp__header">
         <h1 className="miniapp__title">BurnFat.fun</h1>
@@ -98,6 +96,5 @@ export default function MiniAppPage() {
         <p className="miniapp__launching">Launching shortly.</p>
       </div>
     </div>
-    </>
   );
 }
