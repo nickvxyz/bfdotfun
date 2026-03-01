@@ -18,6 +18,10 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "BurnFat.fun",
   description: "A public ledger for fat burned by humans.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "BurnFat.fun",
     description: "A public ledger for fat burned by humans.",
