@@ -20,7 +20,11 @@ export const metadata: Metadata = {
         },
       },
     });
-    return { "fc:miniapp": embed, "fc:frame": embed };
+    return {
+      "fc:miniapp": embed,
+      "fc:frame": embed,
+      "base:app_id": "69a4379b955255bb0fb04e69",
+    };
   })(),
 };
 
