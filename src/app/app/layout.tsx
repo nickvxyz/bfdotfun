@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BurnFat.fun",
     description: "A public ledger for fat burned by humans.",
-    url: "https://burnfat.fun/app",
+    url: "https://burnfat.fun",
     siteName: "BurnFat.fun",
     type: "website",
     images: [{ url: "https://burnfat.fun/og.png", width: 1536, height: 1024 }],
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         title: "Open BurnFat.fun",
         action: {
           type: "launch_miniapp",
-          url: "https://burnfat.fun/app",
+          url: "https://burnfat.fun",
         },
       },
     });

@@ -75,3 +75,36 @@ c25a200 feat: redesign main page to match mini app UI, add cards and faster feed
 src/app/layout.tsx
 
 ---
+
+## 2026-03-01
+**Recent commits:**
+0a99d49 chore: update auto-memory notes
+f4c56c7 fix: suppress hydration warning for theme anti-flash script
+f333154 fix: add dark mode support for miniapp layout on main page
+
+**Files changed:**
+.claude/memory.md
+
+---
+
+## 2026-03-01
+**Recent commits:**
+8b7cc08 fix: add icons metadata to /app layout for Base App pin icon
+0a99d49 chore: update auto-memory notes
+f4c56c7 fix: suppress hydration warning for theme anti-flash script
+
+**Files changed:**
+src/app/app/layout.tsx
+
+---
+
+## 2026-03-01
+**Recent commits:**
+b264c9b fix: add og:url and metadataBase to /app layout for Base App pin
+8b7cc08 fix: add icons metadata to /app layout for Base App pin icon
+0a99d49 chore: update auto-memory notes
+
+**Files changed:**
+src/app/app/layout.tsx
+
+---
