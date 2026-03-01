@@ -36,3 +36,42 @@ src/app/page.tsx
 src/components/MiniAppHost.tsx
 
 ---
+
+## 2026-03-01
+**Recent commits:**
+c25a200 feat: redesign main page to match mini app UI, add cards and faster feed
+1c3b328 revert: remove overlay/redirect hacks, restore clean mini app
+734589b fix: serve mini app from root URL, not /app
+
+**Files changed:**
+.claude/memory.md
+src/app/app/layout.tsx
+src/app/app/page.tsx
+src/app/globals.css
+src/app/layout.tsx
+src/app/page.tsx
+src/components/LiveCounter.tsx
+
+---
+
+## 2026-03-01
+**Recent commits:**
+f333154 fix: add dark mode support for miniapp layout on main page
+c25a200 feat: redesign main page to match mini app UI, add cards and faster feed
+1c3b328 revert: remove overlay/redirect hacks, restore clean mini app
+
+**Files changed:**
+src/app/globals.css
+
+---
+
+## 2026-03-01
+**Recent commits:**
+f4c56c7 fix: suppress hydration warning for theme anti-flash script
+f333154 fix: add dark mode support for miniapp layout on main page
+c25a200 feat: redesign main page to match mini app UI, add cards and faster feed
+
+**Files changed:**
+src/app/layout.tsx
+
+---
