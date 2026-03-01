@@ -7,7 +7,7 @@
   "frame": {
     "version": "1",
     "name": "BurnFat.fun",
-    "homeUrl": "https://burnfat.fun/app",
+    "homeUrl": "https://burnfat.fun",
     "iconUrl": "https://burnfat.fun/icon.png",
     "imageUrl": "https://burnfat.fun/og.png",
     "buttonTitle": "Open BurnFat.fun",
@@ -21,7 +21,7 @@
   "miniapp": {
     "version": "1",
     "name": "BurnFat.fun",
-    "homeUrl": "https://burnfat.fun/app",
+    "homeUrl": "https://burnfat.fun",
     "iconUrl": "https://burnfat.fun/icon.png",
     "imageUrl": "https://burnfat.fun/og.png",
     "buttonTitle": "Open BurnFat.fun",

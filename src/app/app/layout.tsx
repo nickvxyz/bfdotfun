@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         title: "Open BurnFat.fun",
         action: {
           type: "launch_miniapp",
-          url: "https://burnfat.fun/app",
+          url: "https://burnfat.fun",
         },
       },
     });

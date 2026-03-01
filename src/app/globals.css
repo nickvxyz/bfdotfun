@@ -920,6 +920,12 @@
     text-align: center;
   }
 
+  .miniapp--overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+  }
+
   .miniapp__header {
     margin-bottom: 48px;
   }
