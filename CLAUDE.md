@@ -9,12 +9,14 @@ npx tsc --noEmit # TypeScript check without building
 ```
 
 ## Architecture
-Static waitlist landing page → evolving into Farcaster mini app. No backend, no API routes, no database.
+Multi-layer web app: live counter + activity feed, user accounts, coach accounts, Farcaster mini app, smart contracts on Base. Currently a static landing page — evolving layer by layer.
 
 - **Next.js 15 App Router** — server components by default
 - **Tailwind CSS v4** — via `@import "tailwindcss"` in globals.css
 - **TypeScript strict mode**
 - **Path alias:** `@/*` → `./src/*`
+- **Current state:** static site (no backend, no API routes, no database yet)
+- **Planned layers:** user auth, coach dashboards, on-chain counters (Base/Solidity), Farcaster distribution
 
 ## Component structure
 - `src/app/page.tsx` — server component, static HTML sections
@@ -49,9 +51,6 @@ npm run build   # zero errors required
 npm run lint    # zero errors required
 git log --oneline -1  # confirm commit exists
 ```
-
-## Memory
-Session notes: `.claude/memory.md` — read at start, append after tasks.
 
 ## Farcaster Mini App (upcoming)
 - Farcaster Docs: https://docs.farcaster.xyz/

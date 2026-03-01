@@ -13,7 +13,7 @@ if [[ "$FILE" != *.tsx ]] && [[ "$FILE" != *.ts ]] && [[ "$FILE" != *.jsx ]] && 
   exit 0
 fi
 
-PROJECT_DIR="/home/openclaw/projects/burnfatdotfun"
+PROJECT_DIR="/home/claude/projects/burnfatdotfun"
 
 cd "$PROJECT_DIR"
 

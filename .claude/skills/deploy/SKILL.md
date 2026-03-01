@@ -1,7 +1,7 @@
 ---
 name: deploy
 description: Deploy changes to production. Run after a task is complete and verified. Commits, pushes to main, triggers Vercel deploy.
-user-invocable: false
+user-invocable: true
 ---
 
 # Deploy Workflow

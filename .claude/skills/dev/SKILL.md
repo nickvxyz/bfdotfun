@@ -8,9 +8,9 @@ allowed-tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, Task
 # Dev Workflow
 
 ## Live context
-- Git status: !`cd /home/openclaw/projects/burnfatdotfun && git status --short 2>/dev/null || echo "clean"`
-- Last commit: !`cd /home/openclaw/projects/burnfatdotfun && git log --oneline -1 2>/dev/null`
-- Lint state: !`cd /home/openclaw/projects/burnfatdotfun && npx eslint src/ --format compact 2>&1 | tail -3 || echo "unknown"`
+- Git status: !`cd /home/claude/projects/burnfatdotfun && git status --short 2>/dev/null || echo "clean"`
+- Last commit: !`cd /home/claude/projects/burnfatdotfun && git log --oneline -1 2>/dev/null`
+- Lint state: !`cd /home/claude/projects/burnfatdotfun && npx eslint src/ --format compact 2>&1 | tail -3 || echo "unknown"`
 
 ## Before writing any code
 

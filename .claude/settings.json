@@ -1,12 +1,19 @@
 {
-  // BurnFat.fun — project-level Claude Code settings
   "permissions": {
     "allow": [
       "Bash(npm run *)",
       "Bash(npx tsc *)",
       "Bash(npx eslint *)",
       "Bash(npx next *)",
-      "Bash(git *)",
+      "Bash(git status)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git push)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git stash *)",
       "Bash(curl *)",
       "Bash(date *)",
       "Bash(cat *)",

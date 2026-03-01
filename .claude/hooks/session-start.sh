@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-PROJECT_DIR="/home/openclaw/projects/burnfatdotfun"
+PROJECT_DIR="/home/claude/projects/burnfatdotfun"
 MEMORY_FILE="$PROJECT_DIR/.claude/memory.md"
 
 cd "$PROJECT_DIR"
