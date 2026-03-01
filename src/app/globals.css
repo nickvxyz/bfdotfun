@@ -1185,6 +1185,66 @@
     color: var(--c-white);
   }
 
+  [data-theme="dark"] .miniapp {
+    background: var(--c-black);
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp__card {
+    background: var(--c-black);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .miniapp__card-title,
+  [data-theme="dark"] .miniapp__card-desc {
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp__launching {
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp .banner {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp .banner__icon {
+    background: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp .banner__icon svg {
+    stroke: var(--c-black);
+  }
+
+  [data-theme="dark"] .miniapp__waitlist .waitlist-section__input {
+    background: var(--c-black);
+    color: var(--c-white);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp__waitlist .waitlist-section__input::placeholder {
+    color: var(--c-white);
+    opacity: 0.3;
+  }
+
+  [data-theme="dark"] .miniapp__waitlist .waitlist-section__button {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp__waitlist .waitlist-section__button:disabled {
+    opacity: 0.3;
+  }
+
+  [data-theme="dark"] .miniapp__waitlist .waitlist-section__consent {
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .miniapp__waitlist .waitlist-section__success {
+    color: var(--c-green);
+  }
+
   [data-theme="dark"] .hero {
     background: var(--c-black);
     color: var(--c-white);
@@ -1231,19 +1291,15 @@
   }
 
   [data-theme="dark"] .banner {
-    border-color: #000000;
-  }
-
-  [data-theme="dark"] .banner {
-    border-color: var(--c-black);
+    border-color: var(--c-white);
   }
 
   [data-theme="dark"] .banner__icon {
-    background: var(--c-black);
+    background: var(--c-white);
   }
 
   [data-theme="dark"] .banner__icon svg {
-    stroke: var(--c-white);
+    stroke: var(--c-black);
   }
 
   [data-theme="dark"] .waitlist-section {
