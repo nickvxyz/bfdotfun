@@ -28,7 +28,7 @@ const FAQ_ITEMS = [
 export default function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggle = (index: number) => {
+  const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -36,7 +36,8 @@ export default function FaqAccordion() {
     <div className="faq" role="list">
       {FAQ_ITEMS.map((item, index) => {
         const isOpen = openIndex === index;
-        const id = `faq-answer-${index}`;
+        const questionId = `faq-q-${index}`;
+        const answerId = `faq-answer-${index}`;
 
         return (
           <div
@@ -45,10 +46,11 @@ export default function FaqAccordion() {
             role="listitem"
           >
             <button
+              id={questionId}
               className="faq__question"
-              onClick={() => toggle(index)}
+              onClick={() => handleToggle(index)}
               aria-expanded={isOpen}
-              aria-controls={id}
+              aria-controls={answerId}
             >
               <span>{item.q}</span>
               <span className="faq__toggle" aria-hidden="true">
@@ -56,10 +58,10 @@ export default function FaqAccordion() {
               </span>
             </button>
             <div
-              id={id}
+              id={answerId}
               className="faq__answer-wrapper"
               role="region"
-              aria-labelledby={`faq-q-${index}`}
+              aria-labelledby={questionId}
             >
               <p className="faq__answer">{item.a}</p>
             </div>

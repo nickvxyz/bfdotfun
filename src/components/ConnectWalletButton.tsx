@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useAccount, useConnect } from "wagmi";
 import { useAuth } from "@/lib/auth";
 
@@ -8,11 +9,15 @@ export default function ConnectWalletButton() {
   const { connectors, connect } = useConnect();
   const { user, loading, signIn, signOut } = useAuth();
 
+  const handleConnect = useCallback(() => {
+    const connector = connectors[0];
+    if (connector) connect({ connector });
+  }, [connectors, connect]);
+
   if (loading) {
     return <button className="connect-wallet connect-wallet--loading" disabled>...</button>;
   }
 
-  // Connected + authenticated
   if (isConnected && user) {
     const short = `${address?.slice(0, 6)}...${address?.slice(-4)}`;
     return (
@@ -25,7 +30,6 @@ export default function ConnectWalletButton() {
     );
   }
 
-  // Wallet connected but not authenticated
   if (isConnected && !user) {
     return (
       <button className="connect-wallet connect-wallet--sign" onClick={signIn}>
@@ -34,15 +38,8 @@ export default function ConnectWalletButton() {
     );
   }
 
-  // Not connected
   return (
-    <button
-      className="connect-wallet"
-      onClick={() => {
-        const connector = connectors[0];
-        if (connector) connect({ connector });
-      }}
-    >
+    <button className="connect-wallet" onClick={handleConnect}>
       Connect Wallet
     </button>
   );

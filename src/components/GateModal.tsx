@@ -76,7 +76,7 @@ export default function GateModal() {
           </a>
           {" | "}
           <a href="/privacy" target="_blank" rel="noopener noreferrer">
-            Terms &amp; conditions
+            Terms of use
           </a>
         </p>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/Header";
 
 interface Coach {
@@ -75,7 +74,7 @@ function formatKg(kg: number): string {
 }
 
 export default function CoachesPage() {
-  const [coaches] = useState<Coach[]>(MOCK_COACHES);
+  const coaches = MOCK_COACHES;
 
   return (
     <>

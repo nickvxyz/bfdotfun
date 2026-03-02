@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/Header";
 
 interface Campaign {
@@ -89,7 +88,7 @@ function formatKg(kg: number): string {
 }
 
 export default function CompaniesPage() {
-  const [campaigns] = useState<Campaign[]>(MOCK_CAMPAIGNS);
+  const campaigns = MOCK_CAMPAIGNS;
 
   return (
     <>

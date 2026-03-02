@@ -1531,6 +1531,7 @@
   }
 
   .coaches__subtitle {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
     color: var(--c-muted);
     margin-top: 4px;
@@ -1538,6 +1539,7 @@
   }
 
   .coaches__preview-note {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -1586,12 +1588,14 @@
   }
 
   .coaches__card-name {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.02em;
   }
 
   .coaches__card-handle {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 11px;
     color: var(--c-muted-light);
     letter-spacing: 0.02em;
@@ -1609,6 +1613,7 @@
   }
 
   .coaches__card-approach {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
     color: var(--c-muted);
     line-height: 1.4;
@@ -1628,12 +1633,14 @@
   }
 
   .coaches__card-stat-value {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 16px;
     font-weight: 700;
     letter-spacing: 0.02em;
   }
 
   .coaches__card-stat-label {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 10px;
     color: var(--c-muted-light);
     letter-spacing: 0.1em;
@@ -1661,6 +1668,7 @@
   }
 
   .companies__subtitle {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
     color: var(--c-muted);
     margin-top: 4px;
@@ -1668,6 +1676,7 @@
   }
 
   .companies__preview-note {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -1720,12 +1729,14 @@
   }
 
   .companies__card-company {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.02em;
   }
 
   .companies__card-handle {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 11px;
     color: var(--c-muted-light);
     letter-spacing: 0.02em;
@@ -1751,9 +1762,11 @@
   }
 
   .companies__card-campaign {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .companies__card-stats {
@@ -1771,12 +1784,14 @@
   }
 
   .companies__card-stat-value {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
     font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.02em;
   }
 
   .companies__card-stat-label {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 10px;
     color: var(--c-muted-light);
     letter-spacing: 0.1em;
@@ -1788,6 +1803,7 @@
   }
 
   .companies__card-timer {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 11px;
     color: var(--c-muted-light);
     letter-spacing: 0.05em;
@@ -2403,21 +2419,22 @@
     bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
-    background: #333;
-    color: #fff;
+    background: var(--c-black);
+    color: var(--c-white);
     padding: 12px 14px;
     z-index: 100;
     display: flex;
     flex-direction: column;
     gap: 4px;
     white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .dash-home__bmi-grade {
     font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 11px;
     letter-spacing: 0.05em;
-    color: #fff;
+    color: var(--c-white);
     opacity: 0.5;
     transition: opacity 0.15s;
   }
@@ -2431,7 +2448,7 @@
   .dash-home__bmi-tooltip .profile__bmi-label--normal,
   .dash-home__bmi-tooltip .profile__bmi-label--overweight,
   .dash-home__bmi-tooltip .profile__bmi-label--obese {
-    color: #fff;
+    color: var(--c-white);
   }
 
   .dash-home__counter {
