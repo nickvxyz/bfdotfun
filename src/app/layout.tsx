@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Chakra_Petch, IBM_Plex_Mono } from "next/font/google";
+import Providers from "@/providers/Providers";
 import "./globals.css";
 
 
@@ -79,7 +80,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${chakraPetch.variable} ${ibmPlexMono.variable} antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

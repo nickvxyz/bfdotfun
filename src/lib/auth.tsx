@@ -1,0 +1,128 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { useAccount, useSignMessage, useDisconnect } from "wagmi";
+import { IS_DEV_MODE, DEV_USER } from "@/lib/dev";
+
+export interface User {
+  id: string;
+  wallet_address: string;
+  display_name: string | null;
+  role: "individual" | "coach" | "gym" | "company";
+  starting_weight: number | null;
+  goal_weight: number | null;
+  height_cm: number | null;
+  unit_pref: "kg" | "lbs";
+  group_id: string | null;
+}
+
+interface AuthContextValue {
+  user: User | null;
+  loading: boolean;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  devMode: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue>({
+  user: null,
+  loading: true,
+  signIn: async () => {},
+  signOut: async () => {},
+  devMode: false,
+});
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const { address, isConnected } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+  const { disconnect } = useDisconnect();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(!IS_DEV_MODE);
+
+  // Check existing session on mount / wallet change
+  useEffect(() => {
+    if (IS_DEV_MODE) return;
+
+    async function checkSession() {
+      if (!isConnected || !address) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      }
+      setLoading(false);
+    }
+    checkSession();
+  }, [isConnected, address]);
+
+  const signIn = useCallback(async () => {
+    if (IS_DEV_MODE) {
+      setUser(DEV_USER);
+      return;
+    }
+    if (!address) return;
+    setLoading(true);
+    try {
+      const nonceRes = await fetch("/api/auth/nonce", { method: "POST" });
+      const { nonce } = await nonceRes.json();
+
+      const message = `Sign in to BurnFat.fun\n\nNonce: ${nonce}`;
+      const signature = await signMessageAsync({ message });
+
+      const res = await fetch("/api/auth/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address, signature, message }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      }
+    } catch {
+      // User rejected signature or server error
+    }
+    setLoading(false);
+  }, [address, signMessageAsync]);
+
+  const signOut = useCallback(async () => {
+    if (IS_DEV_MODE) {
+      setUser(null);
+      return;
+    }
+    try {
+      await fetch("/api/auth/disconnect", { method: "POST" });
+    } catch {
+      // ignore
+    }
+    setUser(null);
+    disconnect();
+  }, [disconnect]);
+
+  return (
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, devMode: IS_DEV_MODE }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
