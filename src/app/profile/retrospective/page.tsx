@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useBurnSubmit } from "@/hooks/useBurnSubmit";
@@ -35,9 +35,14 @@ export default function RetrospectivePage() {
     },
   });
 
-  // Already used retrospective — redirect
+  // Already used retrospective — redirect (must be in effect, not render)
+  useEffect(() => {
+    if (user?.has_used_retrospective) {
+      router.push("/profile");
+    }
+  }, [user?.has_used_retrospective, router]);
+
   if (user?.has_used_retrospective) {
-    router.push("/profile");
     return null;
   }
 

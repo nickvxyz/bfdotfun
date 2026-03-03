@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 
-const IS_DEV = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here" ||
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { IS_DEV_MODE } from "@/lib/dev";
 
 export async function GET() {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     const { devBurnUnits } = await import("@/app/api/weight-entries/route");
     const { devSubmissions } = await import("@/app/api/submissions/route");
 
@@ -22,8 +21,8 @@ export async function GET() {
     });
   }
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("global_counter")

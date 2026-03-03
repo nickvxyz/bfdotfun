@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const IS_DEV =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here" ||
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { IS_DEV_MODE } from "@/lib/dev";
 
 // In-memory store for dev mode — starts empty, persists within server session
 export const devSubmissions: Array<{
@@ -29,7 +27,7 @@ async function getSession() {
 }
 
 export async function GET() {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     return NextResponse.json({ submissions: devSubmissions });
   }
 
@@ -38,8 +36,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("submissions")
@@ -55,7 +53,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     const body = await request.json();
     const submission = {
       id: `s-${Date.now()}`,
@@ -103,15 +101,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid submission_type" }, { status: 400 });
   }
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
 
   // Idempotent: check for existing submission with same tx_hash
   const { data: existing } = await supabase
     .from("submissions")
     .select("*")
     .eq("tx_hash", tx_hash)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     return NextResponse.json({ submission: existing });
@@ -190,7 +188,8 @@ export async function POST(request: NextRequest) {
         .from("submissions")
         .select("*")
         .eq("tx_hash", tx_hash)
-        .single();
+        .maybeSingle();
+      if (!dup) return NextResponse.json({ error: "Submission not found" }, { status: 500 });
       return NextResponse.json({ submission: dup });
     }
     return NextResponse.json({ error: insertError.message }, { status: 500 });

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const IS_DEV = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here" ||
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { IS_DEV_MODE } from "@/lib/dev";
 
 export async function GET(request: NextRequest) {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     // Import the shared in-memory store from weight-entries
     const { devBurnUnits } = await import("@/app/api/weight-entries/route");
     const status = request.nextUrl.searchParams.get("status");
@@ -20,8 +19,8 @@ export async function GET(request: NextRequest) {
   if (!sessionRaw) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const session = JSON.parse(sessionRaw);
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
 
   const status = request.nextUrl.searchParams.get("status");
 

@@ -3289,6 +3289,30 @@
     text-align: center;
   }
 
+  .submit__error {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    color: var(--c-orange);
+    margin-bottom: 12px;
+  }
+
+  .submit__retry {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    color: var(--c-orange);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    display: block;
+    margin: 8px auto 0;
+  }
+
+  .submit__retry:hover {
+    opacity: 0.7;
+  }
+
   .submit__auto {
     padding: 32px;
     border: 2px solid var(--c-green);

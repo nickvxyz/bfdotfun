@@ -103,13 +103,17 @@ export default function ProfilePage() {
   }, []);
 
   const unit = user?.unit_pref === "lbs" ? "lbs" : "kg";
+
+  // Use live user values (not stale stats) so progress updates after profile save
+  const startWeightForProgress = user?.starting_weight ?? null;
+  const goalWeightForProgress = user?.goal_weight ?? null;
   const progress =
-    stats.startWeight && stats.goalWeight
+    startWeightForProgress && goalWeightForProgress
       ? Math.min(
           100,
           Math.round(
-            ((stats.startWeight - (stats.lastWeight || stats.startWeight)) /
-              (stats.startWeight - stats.goalWeight)) *
+            ((startWeightForProgress - (stats.lastWeight || startWeightForProgress)) /
+              (startWeightForProgress - goalWeightForProgress)) *
               100,
           ),
         )

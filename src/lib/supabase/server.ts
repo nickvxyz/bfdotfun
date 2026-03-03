@@ -1,3 +1,5 @@
+// Anon key client — for middleware/SSR session syncing only.
+// API routes must use createAdminClient() from ./admin.ts to bypass RLS.
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 

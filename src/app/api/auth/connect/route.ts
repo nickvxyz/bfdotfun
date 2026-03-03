@@ -11,10 +11,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // Verify nonce from cookie
+    // Verify nonce from cookie — exact message format match
     const cookieStore = await cookies();
     const storedNonce = cookieStore.get("auth_nonce")?.value;
-    if (!storedNonce || !message.includes(storedNonce)) {
+    const expectedMessage = `Sign in to BurnFat.fun\n\nNonce: ${storedNonce}`;
+    if (!storedNonce || message !== expectedMessage) {
       return NextResponse.json({ error: "Invalid nonce" }, { status: 401 });
     }
 
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
       .from("users")
       .select("*")
       .eq("wallet_address", walletLower)
-      .single();
+      .maybeSingle();
 
     let user;
     if (existing) {

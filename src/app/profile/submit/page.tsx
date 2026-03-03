@@ -149,7 +149,7 @@ export default function SubmitPage() {
           </div>
 
           {error && (
-            <p className="submit__note" style={{ color: "var(--c-orange)", opacity: 1, marginBottom: 12 }}>
+            <p className="submit__error">
               {error}
             </p>
           )}
@@ -167,9 +167,8 @@ export default function SubmitPage() {
 
           {state === "error" && (
             <button
-              className="submit__note"
+              className="submit__retry"
               onClick={reset}
-              style={{ cursor: "pointer", textDecoration: "underline" }}
               aria-label="Try again"
             >
               Try Again

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-const IS_DEV = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here" ||
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { IS_DEV_MODE } from "@/lib/dev";
 
 export async function PATCH(request: NextRequest) {
   const body = await request.json();
 
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     const { DEV_USER } = await import("@/lib/dev");
     // Merge submitted fields into DEV_USER so the response reflects what was saved
     const updatedUser = {
@@ -37,15 +35,16 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
   const { data: user, error } = await supabase
     .from("users")
     .update(updates)
     .eq("id", session.userId)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
   return NextResponse.json({ user });
 }

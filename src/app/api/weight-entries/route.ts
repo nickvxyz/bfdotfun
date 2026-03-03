@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const IS_DEV = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here" ||
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { IS_DEV_MODE } from "@/lib/dev";
 
 // In-memory store for dev mode — starts empty, persists within server session
 const devEntries: Array<{
@@ -68,15 +67,15 @@ async function getSession() {
 }
 
 export async function GET() {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     return NextResponse.json({ entries: [...devEntries].sort((a, b) => b.recorded_at.localeCompare(a.recorded_at)) });
   }
 
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("weight_entries")
     .select("*")
@@ -88,7 +87,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     const body = await request.json();
     const weightKg = Number(body.weight_kg);
     const recordedAt = body.recorded_at;
@@ -123,8 +122,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing weight_kg or recorded_at" }, { status: 400 });
   }
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const supabase = createAdminClient();
 
   const { data: prev } = await supabase
     .from("weight_entries")
@@ -133,7 +132,7 @@ export async function POST(request: NextRequest) {
     .lt("recorded_at", recorded_at)
     .order("recorded_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const delta_kg = prev ? Number(prev.weight_kg) - Number(weight_kg) : 0;
 
@@ -161,12 +160,13 @@ export async function POST(request: NextRequest) {
   }
 
   if (delta_kg > 0) {
-    await supabase.from("burn_units").insert({
+    const { error: burnError } = await supabase.from("burn_units").insert({
       user_id: session.userId,
       weight_entry_id: entry.id,
       kg_amount: delta_kg,
       status: "unsubmitted",
     });
+    if (burnError) console.error("Failed to create burn unit:", burnError);
   }
 
   return NextResponse.json({ entry });

@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-const IS_DEV = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here" ||
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { IS_DEV_MODE } from "@/lib/dev";
 
 export async function GET() {
-  if (IS_DEV) {
+  if (IS_DEV_MODE) {
     const { DEV_USER } = await import("@/lib/dev");
     return NextResponse.json({ user: DEV_USER });
   }
@@ -19,14 +17,14 @@ export async function GET() {
     }
 
     const session = JSON.parse(sessionRaw);
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
 
     const { data: user, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", session.userId)
-      .single();
+      .maybeSingle();
 
     if (error || !user) {
       return NextResponse.json({ error: "User not found" }, { status: 401 });

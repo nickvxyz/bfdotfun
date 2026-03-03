@@ -38,7 +38,7 @@ export default function Header() {
   const router = useRouter();
   const { isConnected } = useAccount();
   const { connectors, connectAsync } = useConnect();
-  const { user, beginSignIn, cancelSignIn, signIn, signOut, devMode } = useAuth();
+  const { user, loading, beginSignIn, cancelSignIn, signIn, signOut, devMode } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -59,6 +59,8 @@ export default function Header() {
   }, [dropdownOpen]);
 
   const handleSignIn = useCallback(async () => {
+    if (loading) return; // Prevent double-click during auth
+
     setDropdownOpen(false);
     setMenuOpen(false);
 
@@ -86,7 +88,7 @@ export default function Header() {
     // Sign message — pass address from connectAsync to avoid stale hook value
     const ok = await signIn(connectedAddress);
     if (ok) router.push("/profile");
-  }, [devMode, beginSignIn, cancelSignIn, signIn, connectors, connectAsync, router, isConnected]);
+  }, [devMode, loading, beginSignIn, cancelSignIn, signIn, connectors, connectAsync, router, isConnected]);
 
   const handleSignOut = useCallback(() => {
     setDropdownOpen(false);
@@ -129,20 +131,26 @@ export default function Header() {
             </div>
           ) : (
             <div className="header__signin" ref={dropdownRef}>
-              <button
-                className="header__signin-btn"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                aria-expanded={dropdownOpen}
-              >
-                Sign In
-              </button>
-              {dropdownOpen && (
-                <div className="header__dropdown">
-                  <button className="header__dropdown-item header__dropdown-item--base" onClick={handleSignIn}>
-                    <BaseLogo />
-                    Sign in with Base
+              {loading ? (
+                <span className="header__loading" aria-live="polite" aria-busy="true">Signing in...</span>
+              ) : (
+                <>
+                  <button
+                    className="header__signin-btn"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    aria-expanded={dropdownOpen}
+                  >
+                    Sign In
                   </button>
-                </div>
+                  {dropdownOpen && (
+                    <div className="header__dropdown">
+                      <button className="header__dropdown-item header__dropdown-item--base" onClick={handleSignIn}>
+                        <BaseLogo />
+                        Sign in with Base
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -168,6 +176,8 @@ export default function Header() {
               <Link href="/profile" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Profile</Link>
               <button className="header__mobile-link header__mobile-link--danger" onClick={handleSignOut}>Sign Out</button>
             </>
+          ) : loading ? (
+            <span className="header__loading" aria-live="polite" aria-busy="true">Signing in...</span>
           ) : (
             <button className="header__mobile-signin" onClick={handleSignIn}>
               <BaseLogo />
