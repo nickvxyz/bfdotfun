@@ -27,7 +27,7 @@ export interface User {
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
-  signIn: () => Promise<void>;
+  signIn: (addressOverride?: `0x${string}`) => Promise<boolean>;
   signOut: () => Promise<void>;
   updateUser: (partial: Partial<User>) => void;
   devMode: boolean;
@@ -36,7 +36,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
-  signIn: async () => {},
+  signIn: async () => false as boolean,
   signOut: async () => {},
   updateUser: () => {},
   devMode: false,
@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (IS_DEV_MODE) return;
 
+    setLoading(true);
     async function checkSession() {
       if (!isConnected || !address) {
         setUser(null);
@@ -79,12 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkSession();
   }, [isConnected, address]);
 
-  const signIn = useCallback(async () => {
+  const signIn = useCallback(async (addressOverride?: `0x${string}`): Promise<boolean> => {
+    const addr = addressOverride ?? address;
     if (IS_DEV_MODE) {
       setUser(DEV_USER);
-      return;
+      return true;
     }
-    if (!address) return;
+    if (!addr) return false;
     setLoading(true);
     try {
       const nonceRes = await fetch("/api/auth/nonce", { method: "POST" });
@@ -96,17 +98,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/auth/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address, signature, message }),
+        body: JSON.stringify({ address: addr, signature, message }),
       });
 
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
+        setLoading(false);
+        return true;
       }
     } catch {
       // User rejected signature or server error
     }
     setLoading(false);
+    return false;
   }, [address, signMessageAsync]);
 
   const signOut = useCallback(async () => {

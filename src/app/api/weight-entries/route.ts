@@ -11,6 +11,7 @@ const devEntries: Array<{
   weight_kg: number;
   recorded_at: string;
   delta_kg: number;
+  fat_mass_kg: number | null;
 }> = [];
 
 // Shared with burn-units and submissions routes via module import
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const weightKg = Number(body.weight_kg);
     const recordedAt = body.recorded_at;
+    const fatMassKg = body.fat_mass_kg != null ? Number(body.fat_mass_kg) : null;
 
     // Check for duplicate date
     if (devEntries.some((e) => e.recorded_at === recordedAt)) {
@@ -103,6 +105,7 @@ export async function POST(request: NextRequest) {
       weight_kg: weightKg,
       recorded_at: recordedAt,
       delta_kg: 0,
+      fat_mass_kg: fatMassKg,
     };
     devEntries.push(entry);
 
@@ -115,7 +118,7 @@ export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { weight_kg, recorded_at } = await request.json();
+  const { weight_kg, recorded_at, fat_mass_kg } = await request.json();
   if (!weight_kg || !recorded_at) {
     return NextResponse.json({ error: "Missing weight_kg or recorded_at" }, { status: 400 });
   }
@@ -134,9 +137,19 @@ export async function POST(request: NextRequest) {
 
   const delta_kg = prev ? Number(prev.weight_kg) - Number(weight_kg) : 0;
 
+  const insertData: Record<string, unknown> = {
+    user_id: session.userId,
+    weight_kg,
+    recorded_at,
+    delta_kg,
+  };
+  if (fat_mass_kg != null) {
+    insertData.fat_mass_kg = fat_mass_kg;
+  }
+
   const { data: entry, error } = await supabase
     .from("weight_entries")
-    .insert({ user_id: session.userId, weight_kg, recorded_at, delta_kg })
+    .insert(insertData)
     .select()
     .single();
 

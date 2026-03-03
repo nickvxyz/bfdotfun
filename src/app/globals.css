@@ -2683,6 +2683,307 @@
     color: var(--c-orange);
   }
 
+  .entries__optional {
+    font-weight: 400;
+    opacity: 0.4;
+    font-size: 9px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Weight Chart */
+  .weight-chart {
+    margin-bottom: 40px;
+  }
+
+  .weight-chart__tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+  }
+
+  .weight-chart__tab {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    background: transparent;
+    border: 2px solid var(--c-black);
+    color: var(--c-black);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .weight-chart__tab + .weight-chart__tab {
+    border-left: none;
+  }
+
+  .weight-chart__tab--active {
+    background: var(--c-black);
+    color: var(--c-white);
+  }
+
+  .weight-chart__tab:hover:not(.weight-chart__tab--active) {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .weight-chart__svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .weight-chart__empty-text {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    fill: var(--c-muted);
+  }
+
+  .weight-chart__axis-label {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 10px;
+    fill: var(--c-muted);
+  }
+
+  .weight-chart__bmi-label {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 9px;
+    fill: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .weight-chart__grid-line {
+    stroke: rgba(0, 0, 0, 0.08);
+    stroke-width: 1;
+  }
+
+  .weight-chart__goal-line {
+    stroke: var(--c-green);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 4;
+  }
+
+  .weight-chart__goal-label {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 9px;
+    fill: var(--c-green);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .weight-chart__line {
+    fill: none;
+    stroke: var(--c-black);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .weight-chart__dot {
+    fill: var(--c-black);
+    stroke: var(--c-white);
+    stroke-width: 1.5;
+  }
+
+  /* Quick Weigh-In */
+  .quick-weighin {
+    margin-bottom: 40px;
+  }
+
+  .quick-weighin__toggle {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    background: var(--c-black);
+    color: var(--c-white);
+    border: 2px solid var(--c-black);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+  }
+
+  .quick-weighin__toggle:hover {
+    background: transparent;
+    color: var(--c-black);
+  }
+
+  .quick-weighin__form {
+    padding: 24px;
+    border: 2px solid var(--c-black);
+    border-top: none;
+  }
+
+  .quick-weighin__row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+  }
+
+  .quick-weighin__field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .quick-weighin__label {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .quick-weighin__optional {
+    font-weight: 400;
+    opacity: 0.4;
+    font-size: 9px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .quick-weighin__input {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    padding: 12px 14px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    background: transparent;
+    color: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .quick-weighin__input:focus {
+    border-color: var(--c-black);
+  }
+
+  .quick-weighin__submit {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    background: var(--c-black);
+    color: var(--c-white);
+    border: 2px solid var(--c-black);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .quick-weighin__submit:hover:not(:disabled) {
+    background: transparent;
+    color: var(--c-black);
+  }
+
+  .quick-weighin__submit:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .quick-weighin__error {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    color: var(--c-orange);
+    margin-top: 12px;
+  }
+
+  .quick-weighin__history-link {
+    display: inline-block;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 12px;
+    opacity: 0.5;
+    margin-top: 12px;
+    transition: opacity 0.15s;
+  }
+
+  .quick-weighin__history-link:hover {
+    opacity: 1;
+  }
+
+  /* Body Fat Meter */
+  .bf-meter {
+    margin-bottom: 32px;
+  }
+
+  .bf-meter__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .bf-meter__label {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.45;
+  }
+
+  .bf-meter__value {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .bf-meter__zone {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .bf-meter__bar {
+    position: relative;
+    display: flex;
+    height: 12px;
+    overflow: visible;
+  }
+
+  .bf-meter__zone-block {
+    height: 100%;
+    opacity: 0.3;
+  }
+
+  .bf-meter__marker {
+    position: absolute;
+    top: -3px;
+    width: 4px;
+    height: 18px;
+    background: var(--c-black);
+    transform: translateX(-50%);
+  }
+
+  .bf-meter__legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+
+  .bf-meter__legend-item {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+  }
+
+  .bf-meter__note {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 10px;
+    opacity: 0.35;
+    margin-top: 8px;
+  }
+
   /* Profile Page */
   .profile__title {
     font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
@@ -3291,6 +3592,87 @@
     color: var(--c-white);
   }
 
+  /* Weight Chart — Dark Mode */
+  [data-theme="dark"] .weight-chart__tab {
+    border-color: var(--c-white);
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .weight-chart__tab--active {
+    background: var(--c-white);
+    color: var(--c-black);
+  }
+
+  [data-theme="dark"] .weight-chart__tab:hover:not(.weight-chart__tab--active) {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .weight-chart__empty-text {
+    fill: rgba(255, 255, 255, 0.4);
+  }
+
+  [data-theme="dark"] .weight-chart__axis-label {
+    fill: rgba(255, 255, 255, 0.4);
+  }
+
+  [data-theme="dark"] .weight-chart__bmi-label {
+    fill: rgba(255, 255, 255, 0.4);
+  }
+
+  [data-theme="dark"] .weight-chart__grid-line {
+    stroke: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .weight-chart__line {
+    stroke: var(--c-white);
+  }
+
+  [data-theme="dark"] .weight-chart__dot {
+    fill: var(--c-white);
+    stroke: var(--c-black);
+  }
+
+  /* Quick Weigh-In — Dark Mode */
+  [data-theme="dark"] .quick-weighin__toggle {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .quick-weighin__toggle:hover {
+    background: transparent;
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .quick-weighin__form {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .quick-weighin__input {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--c-white);
+  }
+
+  [data-theme="dark"] .quick-weighin__input:focus {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .quick-weighin__submit {
+    background: var(--c-white);
+    color: var(--c-black);
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .quick-weighin__submit:hover:not(:disabled) {
+    background: transparent;
+    color: var(--c-white);
+  }
+
+  /* Body Fat Meter — Dark Mode */
+  [data-theme="dark"] .bf-meter__marker {
+    background: var(--c-white);
+  }
+
   [data-theme="dark"] .submit__unit {
     border-color: rgba(255, 255, 255, 0.12);
   }
@@ -3671,6 +4053,10 @@
   }
 
   .entries__form-row {
+    flex-direction: column;
+  }
+
+  .quick-weighin__row {
     flex-direction: column;
   }
 

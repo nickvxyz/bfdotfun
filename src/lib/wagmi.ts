@@ -7,7 +7,7 @@ export const wagmiConfig = createConfig({
   connectors: [
     coinbaseWallet({
       appName: "BurnFat.fun",
-      preference: "smartWalletOnly",
+      preference: { options: "smartWalletOnly" },
     }),
   ],
   transports: {

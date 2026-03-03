@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@coinbase/onchainkit": "^1.1.2",
+    "@coinbase/wallet-sdk": "^4.3.7",
     "@farcaster/miniapp-sdk": "^0.2.3",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.98.0",

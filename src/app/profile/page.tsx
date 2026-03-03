@@ -7,6 +7,16 @@ import { base } from "wagmi/chains";
 import { useName } from "@coinbase/onchainkit/identity";
 import { useAuth } from "@/lib/auth";
 import { IS_DEV_MODE } from "@/lib/dev";
+import WeightChart from "@/components/WeightChart";
+import BodyFatMeter from "@/components/BodyFatMeter";
+
+interface WeightEntry {
+  id: string;
+  weight_kg: number;
+  recorded_at: string;
+  delta_kg: number;
+  fat_mass_kg: number | null;
+}
 
 interface Stats {
   totalBurned: number;
@@ -29,6 +39,9 @@ export default function ProfilePage() {
   );
   const resolvedBaseName = IS_DEV_MODE ? "devuser.base.eth" : (baseName ?? null);
 
+  // Weight entries for chart
+  const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
+
   // Dashboard stats
   const [stats, setStats] = useState<Stats>({
     totalBurned: 0,
@@ -41,52 +54,51 @@ export default function ProfilePage() {
   });
   const [statsLoading, setStatsLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchStats() {
-      try {
-        const [entriesRes, burnRes, submissionsRes] = await Promise.all([
-          fetch("/api/weight-entries"),
-          fetch("/api/burn-units"),
-          fetch("/api/submissions"),
-        ]);
+  const fetchData = useCallback(async () => {
+    try {
+      const [entriesRes, burnRes, submissionsRes] = await Promise.all([
+        fetch("/api/weight-entries"),
+        fetch("/api/burn-units"),
+        fetch("/api/submissions"),
+      ]);
 
-        const { entries } = await entriesRes.json();
-        const { burn_units } = await burnRes.json();
-        const { submissions } = await submissionsRes.json();
+      const { entries } = await entriesRes.json();
+      const { burn_units } = await burnRes.json();
+      const { submissions } = await submissionsRes.json();
 
-        const totalBurned = (burn_units || []).reduce(
-          (sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount),
-          0,
-        );
-        const unsubmitted = (burn_units || [])
-          .filter((b: { status: string }) => b.status === "unsubmitted")
-          .reduce((sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount), 0);
+      setWeightEntries(entries || []);
 
-        const submittedFromBurns = totalBurned - unsubmitted;
-        const retroKg = (submissions || [])
-          .filter((s: { submission_type: string }) => s.submission_type === "retrospective")
-          .reduce((sum: number, s: { kg_total: number }) => sum + Number(s.kg_total), 0);
-        const submitted = submittedFromBurns + retroKg;
+      const totalBurned = (burn_units || []).reduce(
+        (sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount),
+        0,
+      );
+      const unsubmitted = (burn_units || [])
+        .filter((b: { status: string }) => b.status === "unsubmitted")
+        .reduce((sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount), 0);
 
-        if (!cancelled) {
-          setStats({
-            totalBurned: totalBurned + retroKg,
-            unsubmitted,
-            submitted,
-            entryCount: entries?.length || 0,
-            lastWeight: entries?.[0]?.weight_kg || null,
-            startWeight: user?.starting_weight || null,
-            goalWeight: user?.goal_weight || null,
-          });
-          setStatsLoading(false);
-        }
-      } catch {
-        if (!cancelled) setStatsLoading(false);
-      }
+      const submittedFromBurns = totalBurned - unsubmitted;
+      const retroKg = (submissions || [])
+        .filter((s: { submission_type: string }) => s.submission_type === "retrospective")
+        .reduce((sum: number, s: { kg_total: number }) => sum + Number(s.kg_total), 0);
+      const submitted = submittedFromBurns + retroKg;
+
+      setStats({
+        totalBurned: totalBurned + retroKg,
+        unsubmitted,
+        submitted,
+        entryCount: entries?.length || 0,
+        lastWeight: entries?.[0]?.weight_kg || null,
+        startWeight: user?.starting_weight || null,
+        goalWeight: user?.goal_weight || null,
+      });
+      setStatsLoading(false);
+    } catch {
+      setStatsLoading(false);
     }
-    fetchStats();
-    return () => { cancelled = true; };
+  }, [user?.starting_weight, user?.goal_weight]);
+
+  useEffect(() => {
+    fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -102,6 +114,68 @@ export default function ProfilePage() {
           ),
         )
       : null;
+
+  // Quick weigh-in state
+  const [weighInOpen, setWeighInOpen] = useState(false);
+  const [weighInWeight, setWeighInWeight] = useState("");
+  const [weighInFatMass, setWeighInFatMass] = useState("");
+  const [weighInDate, setWeighInDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [weighInSubmitting, setWeighInSubmitting] = useState(false);
+  const [weighInError, setWeighInError] = useState("");
+
+  const handleQuickWeighIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWeighInError("");
+    setWeighInSubmitting(true);
+
+    const weightNum = parseFloat(weighInWeight);
+    if (!weightNum || weightNum <= 0) {
+      setWeighInError("Enter a valid weight");
+      setWeighInSubmitting(false);
+      return;
+    }
+
+    const weightKg = unit === "lbs" ? weightNum * 0.453592 : weightNum;
+    const fatMassNum = parseFloat(weighInFatMass);
+    const fatMassKg = fatMassNum > 0
+      ? (unit === "lbs" ? fatMassNum * 0.453592 : fatMassNum)
+      : null;
+
+    try {
+      const body: Record<string, unknown> = { weight_kg: weightKg, recorded_at: weighInDate };
+      if (fatMassKg !== null) body.fat_mass_kg = fatMassKg;
+
+      const res = await fetch("/api/weight-entries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        setWeighInWeight("");
+        setWeighInFatMass("");
+        setWeighInDate(new Date().toISOString().split("T")[0]);
+        setWeighInOpen(false);
+        await fetchData();
+      } else {
+        const data = await res.json();
+        setWeighInError(data.error || "Failed to save");
+      }
+    } catch {
+      setWeighInError("Network error");
+    }
+    setWeighInSubmitting(false);
+  };
+
+  // Body fat % from latest entry
+  const bodyFatPercent = useMemo(() => {
+    if (weightEntries.length === 0) return null;
+    // Find most recent entry with fat mass data
+    const sorted = [...weightEntries].sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
+    const withFat = sorted.find((e) => e.fat_mass_kg != null && e.fat_mass_kg > 0);
+    if (!withFat || !withFat.fat_mass_kg) return null;
+    return (withFat.fat_mass_kg / withFat.weight_kg) * 100;
+  }, [weightEntries]);
 
   // Form state
   const defaults = useMemo(() => ({
@@ -310,6 +384,21 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Body Fat Meter — only shown when fat mass data exists */}
+      {bodyFatPercent !== null && (
+        <BodyFatMeter bodyFatPercent={bodyFatPercent} />
+      )}
+
+      {/* Weight Progress Chart */}
+      {weightEntries.length > 0 && (
+        <WeightChart
+          entries={weightEntries}
+          goalWeight={user?.goal_weight ?? null}
+          heightCm={user?.height_cm ?? null}
+          unitPref={unitPref}
+        />
+      )}
+
       {/* Counter + stats merged in one frame */}
       <div className="dash-home__counter">
         <span className="dash-home__counter-value">
@@ -350,11 +439,80 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Quick Weigh-In */}
+      <div className="quick-weighin">
+        <button
+          type="button"
+          className="quick-weighin__toggle"
+          onClick={() => setWeighInOpen(!weighInOpen)}
+          aria-expanded={weighInOpen}
+          aria-label="Toggle quick weigh-in form"
+        >
+          {weighInOpen ? "Close" : "New Weigh-In +"}
+        </button>
+
+        {weighInOpen && (
+          <form className="quick-weighin__form" onSubmit={handleQuickWeighIn}>
+            <div className="quick-weighin__row">
+              <div className="quick-weighin__field">
+                <label className="quick-weighin__label" htmlFor="qw-date">Date</label>
+                <input
+                  id="qw-date"
+                  type="date"
+                  className="quick-weighin__input"
+                  value={weighInDate}
+                  onChange={(e) => setWeighInDate(e.target.value)}
+                />
+              </div>
+              <div className="quick-weighin__field">
+                <label className="quick-weighin__label" htmlFor="qw-weight">
+                  Weight ({unit})
+                </label>
+                <input
+                  id="qw-weight"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  className="quick-weighin__input"
+                  placeholder={unit === "kg" ? "82.5" : "181.5"}
+                  value={weighInWeight}
+                  onChange={(e) => setWeighInWeight(e.target.value)}
+                />
+              </div>
+              <div className="quick-weighin__field">
+                <label className="quick-weighin__label" htmlFor="qw-fatmass">
+                  Fat Mass ({unit}) <span className="quick-weighin__optional">optional</span>
+                </label>
+                <input
+                  id="qw-fatmass"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  className="quick-weighin__input"
+                  placeholder={unit === "kg" ? "18.0" : "39.7"}
+                  value={weighInFatMass}
+                  onChange={(e) => setWeighInFatMass(e.target.value)}
+                />
+              </div>
+              <button
+                type="submit"
+                className="quick-weighin__submit"
+                disabled={weighInSubmitting}
+              >
+                {weighInSubmitting ? "Saving..." : "Log"}
+              </button>
+            </div>
+            {weighInError && <p className="quick-weighin__error">{weighInError}</p>}
+          </form>
+        )}
+
+        <Link href="/profile/entries" className="quick-weighin__history-link">
+          View full history →
+        </Link>
+      </div>
+
       {/* Action buttons */}
       <div className="dash-home__actions">
-        <Link href="/profile/entries" className="cta cta--inverted">
-          New Weigh-In +
-        </Link>
         {stats.unsubmitted > 0 && (
           <Link href="/profile/submit" className="cta">
             Submit {stats.unsubmitted.toFixed(1)} {unit} to Global →

@@ -8,6 +8,7 @@ interface WeightEntry {
   weight_kg: number;
   recorded_at: string;
   delta_kg: number;
+  fat_mass_kg: number | null;
 }
 
 async function loadEntries(): Promise<WeightEntry[]> {
@@ -28,6 +29,7 @@ export default function EntriesPage() {
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [weight, setWeight] = useState("");
+  const [fatMass, setFatMass] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -60,16 +62,24 @@ export default function EntriesPage() {
 
     // Convert lbs to kg if needed
     const weightKg = unit === "lbs" ? weightNum * 0.453592 : weightNum;
+    const fatMassNum = parseFloat(fatMass);
+    const fatMassKg = fatMassNum > 0
+      ? (unit === "lbs" ? fatMassNum * 0.453592 : fatMassNum)
+      : null;
 
     try {
+      const body: Record<string, unknown> = { weight_kg: weightKg, recorded_at: date };
+      if (fatMassKg !== null) body.fat_mass_kg = fatMassKg;
+
       const res = await fetch("/api/weight-entries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ weight_kg: weightKg, recorded_at: date }),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
         setWeight("");
+        setFatMass("");
         const refreshed = await loadEntries();
         setEntries(refreshed);
       } else {
@@ -86,6 +96,8 @@ export default function EntriesPage() {
     if (unit === "lbs") return (kg * 2.20462).toFixed(1);
     return Number(kg).toFixed(1);
   };
+
+  const hasFatMassData = entries.some((e) => e.fat_mass_kg != null);
 
   return (
     <div className="entries">
@@ -118,6 +130,21 @@ export default function EntriesPage() {
               onChange={(e) => setWeight(e.target.value)}
             />
           </div>
+          <div className="entries__field">
+            <label className="entries__label" htmlFor="entry-fatmass">
+              Fat Mass ({unit}) <span className="entries__optional">optional</span>
+            </label>
+            <input
+              id="entry-fatmass"
+              type="number"
+              step="0.1"
+              min="0"
+              className="entries__input"
+              placeholder={`e.g. ${unit === "kg" ? "18.0" : "39.7"}`}
+              value={fatMass}
+              onChange={(e) => setFatMass(e.target.value)}
+            />
+          </div>
           <button
             type="submit"
             className="entries__submit"
@@ -140,6 +167,7 @@ export default function EntriesPage() {
               <tr>
                 <th className="entries__th">Date</th>
                 <th className="entries__th">Weight</th>
+                {hasFatMassData && <th className="entries__th">Fat Mass</th>}
                 <th className="entries__th">Change</th>
               </tr>
             </thead>
@@ -150,6 +178,13 @@ export default function EntriesPage() {
                   <td className="entries__td">
                     {displayWeight(entry.weight_kg)} {unit}
                   </td>
+                  {hasFatMassData && (
+                    <td className="entries__td">
+                      {entry.fat_mass_kg != null
+                        ? `${displayWeight(entry.fat_mass_kg)} ${unit}`
+                        : "—"}
+                    </td>
+                  )}
                   <td
                     className={`entries__td ${
                       entry.delta_kg > 0
