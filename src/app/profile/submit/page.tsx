@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
+import { useBurnSubmit } from "@/hooks/useBurnSubmit";
+import { calculateCostDisplay } from "@/lib/pricing";
 
 interface BurnUnit {
   id: string;
@@ -49,11 +51,41 @@ export default function SubmitPage() {
     .filter((u) => selected.has(u.id))
     .reduce((sum, u) => sum + Number(u.kg_amount), 0);
 
-  const usdcAmount = selectedKg; // $1 per kg
+  const selectedKgRounded = Math.round(selectedKg * 10) / 10;
+
+  const costDisplay = useMemo(
+    () => calculateCostDisplay(selectedKgRounded, false),
+    [selectedKgRounded],
+  );
+
+  const selectedIds = useMemo(
+    () => burnUnits.filter((u) => selected.has(u.id)).map((u) => u.id),
+    [burnUnits, selected],
+  );
+
+  const { submit, state, error, reset } = useBurnSubmit({
+    kgAmount: selectedKgRounded,
+    isRetrospective: false,
+    burnUnitIds: selectedIds,
+    onSuccess: () => {
+      setBurnUnits((prev) => prev.filter((u) => !selected.has(u.id)));
+      setSelected(new Set());
+    },
+  });
 
   const displayWeight = (kg: number) => {
     if (unit === "lbs") return (kg * 2.20462).toFixed(1);
     return kg.toFixed(1);
+  };
+
+  const isIdle = state === "idle" || state === "error";
+  const isPending = state === "pending" || state === "confirming" || state === "verifying";
+
+  const stateLabel: Record<string, string> = {
+    pending: "Preparing...",
+    confirming: "Confirm in wallet...",
+    verifying: "Verifying on-chain...",
+    success: "Submitted!",
   };
 
   if (user?.group_id) {
@@ -82,7 +114,9 @@ export default function SubmitPage() {
         <p className="submit__loading">Loading burn units...</p>
       ) : burnUnits.length === 0 ? (
         <p className="submit__empty">
-          No unsubmitted burns yet. Log weight entries to generate burn units.
+          {state === "success"
+            ? "All burns submitted! Check the global ledger."
+            : "No unsubmitted burns yet. Log weight entries to generate burn units."}
         </p>
       ) : (
         <>
@@ -94,6 +128,7 @@ export default function SubmitPage() {
                   className="submit__unit-check"
                   checked={selected.has(u.id)}
                   onChange={() => toggleUnit(u.id)}
+                  disabled={!isIdle}
                 />
                 <span className="submit__unit-amount">
                   {displayWeight(Number(u.kg_amount))} {unit}
@@ -109,18 +144,40 @@ export default function SubmitPage() {
             </div>
             <div className="submit__summary-row submit__summary-row--total">
               <span>Cost</span>
-              <span>${usdcAmount.toFixed(2)} USDC</span>
+              <span>${costDisplay} USDC</span>
             </div>
           </div>
 
+          {error && (
+            <p className="submit__note" style={{ color: "var(--c-orange)", opacity: 1, marginBottom: 12 }}>
+              {error}
+            </p>
+          )}
+
           <button
             className="submit__cta"
-            disabled={selected.size === 0}
+            disabled={selected.size === 0 || isPending}
+            onClick={submit}
+            aria-label={`Submit ${selectedKgRounded} kg for ${costDisplay} USDC`}
           >
-            Approve & Submit ${usdcAmount.toFixed(2)} USDC
+            {isPending
+              ? stateLabel[state] || "Processing..."
+              : `Approve & Submit $${costDisplay} USDC`}
           </button>
+
+          {state === "error" && (
+            <button
+              className="submit__note"
+              onClick={reset}
+              style={{ cursor: "pointer", textDecoration: "underline" }}
+              aria-label="Try again"
+            >
+              Try Again
+            </button>
+          )}
+
           <p className="submit__note">
-            Requires USDC on Base. Approve spend first, then submit.
+            Requires USDC on Base Sepolia. One wallet popup for approve + submit.
           </p>
         </>
       )}

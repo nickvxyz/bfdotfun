@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { useAccount } from "wagmi";
 import { base } from "wagmi/chains";
 import { useName } from "@coinbase/onchainkit/identity";
@@ -18,7 +19,7 @@ interface Stats {
 }
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { address } = useAccount();
 
   // Base name resolution
@@ -44,13 +45,15 @@ export default function ProfilePage() {
     let cancelled = false;
     async function fetchStats() {
       try {
-        const [entriesRes, burnRes] = await Promise.all([
+        const [entriesRes, burnRes, submissionsRes] = await Promise.all([
           fetch("/api/weight-entries"),
           fetch("/api/burn-units"),
+          fetch("/api/submissions"),
         ]);
 
         const { entries } = await entriesRes.json();
         const { burn_units } = await burnRes.json();
+        const { submissions } = await submissionsRes.json();
 
         const totalBurned = (burn_units || []).reduce(
           (sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount),
@@ -59,18 +62,23 @@ export default function ProfilePage() {
         const unsubmitted = (burn_units || [])
           .filter((b: { status: string }) => b.status === "unsubmitted")
           .reduce((sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount), 0);
-        const submitted = totalBurned - unsubmitted;
+
+        const submittedFromBurns = totalBurned - unsubmitted;
+        const retroKg = (submissions || [])
+          .filter((s: { submission_type: string }) => s.submission_type === "retrospective")
+          .reduce((sum: number, s: { kg_total: number }) => sum + Number(s.kg_total), 0);
+        const submitted = submittedFromBurns + retroKg;
 
         if (!cancelled) {
-          setTimeout(() => setStats({
-            totalBurned,
+          setStats({
+            totalBurned: totalBurned + retroKg,
             unsubmitted,
             submitted,
             entryCount: entries?.length || 0,
             lastWeight: entries?.[0]?.weight_kg || null,
             startWeight: user?.starting_weight || null,
             goalWeight: user?.goal_weight || null,
-          }), 0);
+          });
           setStatsLoading(false);
         }
       } catch {
@@ -79,7 +87,8 @@ export default function ProfilePage() {
     }
     fetchStats();
     return () => { cancelled = true; };
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const unit = user?.unit_pref === "lbs" ? "lbs" : "kg";
   const progress =
@@ -176,13 +185,13 @@ export default function ProfilePage() {
     setUnitPref(newUnit);
   }, [unitPref, startingWeight, goalWeight, heightCm]);
 
-  // Current weight display (read-only, from latest entry)
+  // Current weight: latest weigh-in, or starting weight if no entries yet
   const currentWeightDisplay = useMemo(() => {
-    if (stats.lastWeight === null) return "—";
-    const kg = stats.lastWeight;
+    const kg = stats.lastWeight ?? user?.starting_weight ?? null;
+    if (kg === null) return "—";
     if (unitPref === "lbs") return (kg * 2.20462).toFixed(1);
-    return kg.toFixed(1);
-  }, [stats.lastWeight, unitPref]);
+    return Number(kg).toFixed(1);
+  }, [stats.lastWeight, user?.starting_weight, unitPref]);
 
   // BMI — uses current weight (latest entry), falls back to starting weight
   const currentWeightKg = useMemo(() => {
@@ -237,6 +246,8 @@ export default function ProfilePage() {
       });
 
       if (res.ok) {
+        const data = await res.json();
+        updateUser(data.user);
         setMessage("Profile saved");
       } else {
         const data = await res.json();
@@ -341,13 +352,18 @@ export default function ProfilePage() {
 
       {/* Action buttons */}
       <div className="dash-home__actions">
-        <a href="/profile/entries" className="cta cta--inverted">
+        <Link href="/profile/entries" className="cta cta--inverted">
           New Weigh-In +
-        </a>
+        </Link>
         {stats.unsubmitted > 0 && (
-          <a href="/profile/submit" className="cta">
+          <Link href="/profile/submit" className="cta">
             Submit {stats.unsubmitted.toFixed(1)} {unit} to Global →
-          </a>
+          </Link>
+        )}
+        {user && !user.has_used_retrospective && (
+          <Link href="/profile/retrospective" className="cta cta--inverted">
+            Claim Past Fat Loss (50% off) →
+          </Link>
         )}
       </div>
 

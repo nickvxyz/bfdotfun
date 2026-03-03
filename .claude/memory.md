@@ -214,3 +214,39 @@ cf712f0 revert: remove gate modal from /app route
 src/app/app/page.tsx
 
 ---
+
+## 2026-03-02
+**Recent commits:**
+8cd53cc feat: profile redesign, dashboard→profile rename, UI/UX audit fixes
+392c844 feat: add gate modal to /app route, skip for Base App webview
+cf712f0 revert: remove gate modal from /app route
+
+**Files changed:**
+.claude/TEAM.md
+.claude/agents/ux.md
+.claude/memory.md
+package-lock.json
+package.json
+src/app/api/auth/connect/route.ts
+src/app/api/auth/disconnect/route.ts
+src/app/api/auth/me/route.ts
+src/app/api/auth/nonce/route.ts
+src/app/api/auth/profile/route.ts
+
+---
+
+## 2026-03-02
+**Recent commits:**
+6561237 fix: code review cleanup — naming, dead code, accessibility
+8cd53cc feat: profile redesign, dashboard→profile rename, UI/UX audit fixes
+392c844 feat: add gate modal to /app route, skip for Base App webview
+
+**Files changed:**
+src/app/coaches/page.tsx
+src/app/companies/page.tsx
+src/app/globals.css
+src/components/ConnectWalletButton.tsx
+src/components/FaqAccordion.tsx
+src/components/GateModal.tsx
+
+---

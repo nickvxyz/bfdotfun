@@ -6,18 +6,8 @@ const IS_DEV = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key-here
 
 export async function GET() {
   if (IS_DEV) {
-    return NextResponse.json({
-      user: {
-        id: "dev-user-001",
-        wallet_address: "0xd3v0000000000000000000000000000000000001",
-        display_name: "Dev User",
-        role: "individual",
-        starting_weight: 92,
-        goal_weight: 78,
-        unit_pref: "kg",
-        group_id: null,
-      },
-    });
+    const { DEV_USER } = await import("@/lib/dev");
+    return NextResponse.json({ user: DEV_USER });
   }
 
   try {

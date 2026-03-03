@@ -108,7 +108,23 @@ function formatNumber(num: number) {
 // --- Component ---
 
 export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
-  const [counterValue, setCounterValue] = useState(1247.3);
+  const [counterValue, setCounterValue] = useState(0);
+
+  // Fetch real counter value on mount
+  useEffect(() => {
+    async function fetchCounter() {
+      try {
+        const res = await fetch("/api/counter");
+        if (res.ok) {
+          const data = await res.json();
+          setCounterValue(data.total_kg || 0);
+        }
+      } catch {
+        // Fall back to 0
+      }
+    }
+    fetchCounter();
+  }, []);
   const [isBumping, setIsBumping] = useState(false);
   const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
   const [enterId, setEnterId] = useState<number | null>(null);

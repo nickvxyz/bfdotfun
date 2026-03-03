@@ -3010,6 +3010,162 @@
     color: var(--c-green);
   }
 
+  /* Retrospective Page */
+  .retro {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 32px 0;
+  }
+
+  .retro__title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .retro__subtitle {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    opacity: 0.5;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .retro__card {
+    border: 2px solid var(--c-black);
+    padding: 28px;
+  }
+
+  .retro__label {
+    display: block;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.5;
+    margin-bottom: 8px;
+  }
+
+  .retro__input {
+    width: 100%;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: transparent;
+    color: inherit;
+    margin-bottom: 8px;
+  }
+
+  .retro__input:focus {
+    border-color: var(--c-black);
+    outline: none;
+  }
+
+  .retro__conversion {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 12px;
+    opacity: 0.45;
+    margin-bottom: 8px;
+  }
+
+  .retro__summary {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    padding-top: 16px;
+    margin-bottom: 24px;
+  }
+
+  .retro__summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .retro__summary-row--total {
+    font-weight: 700;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 8px;
+    padding-top: 14px;
+  }
+
+  .retro__error {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    color: var(--c-orange);
+    margin-bottom: 12px;
+  }
+
+  .retro__success {
+    padding: 24px;
+    border: 2px solid var(--c-green);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .retro__success-text {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-green);
+  }
+
+  .retro__cta {
+    display: block;
+    width: 100%;
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 18px 24px;
+    background: var(--c-green);
+    color: var(--c-black);
+    border: 2px solid var(--c-black);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+  }
+
+  .retro__cta:hover:not(:disabled) {
+    background: var(--c-black);
+    color: var(--c-green);
+  }
+
+  .retro__cta:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .retro__retry {
+    display: block;
+    width: 100%;
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    padding: 12px;
+    background: transparent;
+    color: inherit;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  .retro__retry:hover {
+    border-color: var(--c-black);
+  }
+
+  .retro__note {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 11px;
+    opacity: 0.4;
+    text-align: center;
+  }
+
   /* Gate Modal — Dark Mode */
   [data-theme="dark"] .gate {
     background: rgba(0, 0, 0, 0.9);
@@ -3161,6 +3317,39 @@
 
   [data-theme="dark"] .submit__auto {
     border-color: var(--c-green);
+  }
+
+  /* Retrospective — Dark Mode */
+  [data-theme="dark"] .retro__card {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .retro__input {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  [data-theme="dark"] .retro__input:focus {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .retro__summary {
+    border-top-color: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .retro__summary-row--total {
+    border-top-color: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .retro__cta {
+    border-color: var(--c-white);
+  }
+
+  [data-theme="dark"] .retro__retry {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  [data-theme="dark"] .retro__retry:hover {
+    border-color: var(--c-white);
   }
 
   [data-theme="dark"] .connect-wallet {

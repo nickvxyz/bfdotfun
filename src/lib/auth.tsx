@@ -21,6 +21,7 @@ export interface User {
   height_cm: number | null;
   unit_pref: "kg" | "lbs";
   group_id: string | null;
+  has_used_retrospective: boolean;
 }
 
 interface AuthContextValue {
@@ -28,6 +29,7 @@ interface AuthContextValue {
   loading: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (partial: Partial<User>) => void;
   devMode: boolean;
 }
 
@@ -36,6 +38,7 @@ const AuthContext = createContext<AuthContextValue>({
   loading: true,
   signIn: async () => {},
   signOut: async () => {},
+  updateUser: () => {},
   devMode: false,
 });
 
@@ -120,8 +123,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     disconnect();
   }, [disconnect]);
 
+  const updateUser = useCallback((partial: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...partial } : prev));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, devMode: IS_DEV_MODE }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, updateUser, devMode: IS_DEV_MODE }}>
       {children}
     </AuthContext.Provider>
   );

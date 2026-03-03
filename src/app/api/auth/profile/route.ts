@@ -8,19 +8,17 @@ export async function PATCH(request: NextRequest) {
   const body = await request.json();
 
   if (IS_DEV) {
-    return NextResponse.json({
-      user: {
-        id: "dev-user-001",
-        wallet_address: "0xd3v0000000000000000000000000000000000001",
-        display_name: body.display_name ?? "Dev User",
-        role: "individual",
-        starting_weight: body.starting_weight ?? 92,
-        goal_weight: body.goal_weight ?? 78,
-        height_cm: body.height_cm ?? 178,
-        unit_pref: body.unit_pref ?? "kg",
-        group_id: null,
-      },
-    });
+    const { DEV_USER } = await import("@/lib/dev");
+    // Merge submitted fields into DEV_USER so the response reflects what was saved
+    const updatedUser = {
+      ...DEV_USER,
+      display_name: body.display_name !== undefined ? body.display_name : DEV_USER.display_name,
+      starting_weight: body.starting_weight !== undefined ? body.starting_weight : DEV_USER.starting_weight,
+      goal_weight: body.goal_weight !== undefined ? body.goal_weight : DEV_USER.goal_weight,
+      height_cm: body.height_cm !== undefined ? body.height_cm : DEV_USER.height_cm,
+      unit_pref: body.unit_pref !== undefined ? body.unit_pref : DEV_USER.unit_pref,
+    };
+    return NextResponse.json({ user: updatedUser });
   }
 
   const cookieStore = await cookies();
