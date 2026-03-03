@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import { useAccount, useSignMessage, useDisconnect } from "wagmi";
@@ -27,6 +28,8 @@ export interface User {
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  beginSignIn: () => void;
+  cancelSignIn: () => void;
   signIn: (addressOverride?: `0x${string}`) => Promise<boolean>;
   signOut: () => Promise<void>;
   updateUser: (partial: Partial<User>) => void;
@@ -36,6 +39,8 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
+  beginSignIn: () => {},
+  cancelSignIn: () => {},
   signIn: async () => false as boolean,
   signOut: async () => {},
   updateUser: () => {},
@@ -47,25 +52,34 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(!IS_DEV_MODE);
+  const signingIn = useRef(false);
+
+  const beginSignIn = useCallback(() => {
+    signingIn.current = true;
+    setLoading(true);
+  }, []);
+
+  const cancelSignIn = useCallback(() => {
+    signingIn.current = false;
+    setLoading(false);
+  }, []);
 
   // Check existing session on mount / wallet change
   useEffect(() => {
     if (IS_DEV_MODE) return;
+    if (signingIn.current) return;
 
-    setLoading(true);
     async function checkSession() {
-      if (!isConnected || !address) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+      if (signingIn.current) return;
+      setLoading(true);
       try {
         const res = await fetch("/api/auth/me");
+        if (signingIn.current) return;
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
@@ -73,20 +87,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null);
         }
       } catch {
-        setUser(null);
+        if (!signingIn.current) setUser(null);
       }
-      setLoading(false);
+      if (!signingIn.current) setLoading(false);
     }
     checkSession();
-  }, [isConnected, address]);
+  }, [address]);
 
   const signIn = useCallback(async (addressOverride?: `0x${string}`): Promise<boolean> => {
     const addr = addressOverride ?? address;
     if (IS_DEV_MODE) {
       setUser(DEV_USER);
+      signingIn.current = false;
       return true;
     }
-    if (!addr) return false;
+    if (!addr) {
+      signingIn.current = false;
+      setLoading(false);
+      return false;
+    }
+    signingIn.current = true;
     setLoading(true);
     try {
       const nonceRes = await fetch("/api/auth/nonce", { method: "POST" });
@@ -109,6 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       // User rejected signature or server error
+    } finally {
+      signingIn.current = false;
     }
     setLoading(false);
     return false;
@@ -133,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, updateUser, devMode: IS_DEV_MODE }}>
+    <AuthContext.Provider value={{ user, loading, beginSignIn, cancelSignIn, signIn, signOut, updateUser, devMode: IS_DEV_MODE }}>
       {children}
     </AuthContext.Provider>
   );

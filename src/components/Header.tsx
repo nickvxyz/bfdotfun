@@ -38,12 +38,12 @@ export default function Header() {
   const router = useRouter();
   const { isConnected } = useAccount();
   const { connectors, connectAsync } = useConnect();
-  const { user, loading, signIn, signOut, devMode } = useAuth();
+  const { user, beginSignIn, cancelSignIn, signIn, signOut, devMode } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const isAuthed = (devMode && !!user) || (isConnected && !!user);
+  const isAuthed = !!user;
   const short = user?.wallet_address
     ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
     : "";
@@ -62,16 +62,23 @@ export default function Header() {
     setDropdownOpen(false);
     setMenuOpen(false);
 
+    // Set guard BEFORE connectAsync to prevent useEffect race
+    beginSignIn();
+
     let connectedAddress: `0x${string}` | undefined;
 
     // Connect wallet if not already connected
     if (!devMode && !isConnected) {
       const connector = connectors[0];
-      if (!connector) return;
+      if (!connector) {
+        cancelSignIn();
+        return;
+      }
       try {
         const result = await connectAsync({ connector });
         connectedAddress = result.accounts[0];
       } catch {
+        cancelSignIn();
         return; // User rejected connection
       }
     }
@@ -79,7 +86,7 @@ export default function Header() {
     // Sign message — pass address from connectAsync to avoid stale hook value
     const ok = await signIn(connectedAddress);
     if (ok) router.push("/profile");
-  }, [devMode, signIn, connectors, connectAsync, router, isConnected]);
+  }, [devMode, beginSignIn, cancelSignIn, signIn, connectors, connectAsync, router, isConnected]);
 
   const handleSignOut = useCallback(() => {
     setDropdownOpen(false);

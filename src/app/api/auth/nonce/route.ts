@@ -8,7 +8,7 @@ export async function POST() {
   cookieStore.set("auth_nonce", nonce, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 300, // 5 minutes
     path: "/",
   });

@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
 import { useAuth } from "@/lib/auth";
 import Header from "@/components/Header";
 
@@ -12,10 +11,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isConnected } = useAccount();
-  const { user, loading, devMode } = useAuth();
+  const { user, loading } = useAuth();
 
-  const isAuthed = (devMode && !!user) || (isConnected && !!user);
+  const isAuthed = !!user;
 
   useEffect(() => {
     if (!loading && !isAuthed) {

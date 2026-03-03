@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { verifyMessage } from "viem";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { baseClient } from "@/lib/viem";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify signature
-    const valid = await verifyMessage({
+    const valid = await baseClient.verifyMessage({
       address: address as `0x${string}`,
       message,
       signature: signature as `0x${string}`,
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     cookieStore.delete("auth_nonce");
 
     // Upsert user in Supabase
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const walletLower = address.toLowerCase();
 
     const { data: existing } = await supabase

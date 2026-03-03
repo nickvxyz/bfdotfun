@@ -32,7 +32,7 @@ export default function ConnectWalletButton() {
 
   if (isConnected && !user) {
     return (
-      <button className="connect-wallet connect-wallet--sign" onClick={() => signIn()}>
+      <button className="connect-wallet connect-wallet--sign" onClick={() => signIn(address)}>
         Sign In
       </button>
     );
