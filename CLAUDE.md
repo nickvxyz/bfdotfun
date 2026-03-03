@@ -16,7 +16,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **TypeScript strict mode**
 - **Path alias:** `@/*` → `./src/*`
 - **Database:** Supabase PostgreSQL — `users`, `weight_entries`, `burn_units`, `submissions`, `global_counter`, `pro_groups`
-- **Auth:** Wallet-based (Coinbase Smart Wallet via wagmi), EIP-191 signatures, httpOnly session cookies
+- **Auth:** Wallet-based (Coinbase Smart Wallet via wagmi), ERC-1271 signature verification, httpOnly session cookies
 - **On-chain:** wagmi + viem on Base (mainnet + Sepolia), BurnFatTreasury contract for USDC payments
 - **Farcaster:** Mini app at `/app` with platform detection (Warpcast / Base App / browser)
 
@@ -40,36 +40,39 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `POST /api/auth/disconnect` — clear session
 - `GET /api/auth/me` — current user from session
 - `PATCH /api/auth/profile` — update profile fields
-- `GET|POST /api/weight-entries` — weight entry CRUD (auto-calculates delta, creates burn_units)
+- `GET|POST /api/weight-entries` — weight entry CRUD (auto-calculates delta, creates burn_units, optional fat_mass_kg)
 - `GET /api/burn-units` — query burn units (optional `?status=unsubmitted`)
 - `GET /api/counter` — global counter singleton (total_kg, total_submissions)
 - `GET|POST /api/submissions` — submission CRUD with on-chain tx verification
 
 ## Components
-- `Header.tsx` — nav links, ThemeToggle, auth UI (sign in / user dropdown), mobile burger
+- `Header.tsx` — nav links, ThemeToggle, auth UI (sign in / signing in... / user dropdown), mobile burger, double-click guard
 - `LiveCounter.tsx` — global counter display + animated burn feed
 - `ConnectWalletButton.tsx` — wallet connection states (connect / sign in / connected)
 - `ThemeToggle.tsx` — dark/light mode toggle, persists to localStorage
 - `GateModal.tsx` — "How it works" overlay, localStorage dismiss, try/catch for webview
 - `WaitlistForm.tsx` — email + consent → Formspree
 - `FaqAccordion.tsx` — FAQ items with ARIA (currently hidden)
+- `WeightChart.tsx` — custom SVG weight chart with W/M/3M/Y time range tabs, goal line, BMI trend
+- `BodyFatMeter.tsx` — horizontal body fat % bar with colored zones (lean/healthy/elevated/high)
 
 ## Key libraries
-- `src/lib/auth.tsx` — AuthProvider, User interface, useAuth hook, dev mode support
+- `src/lib/auth.tsx` — AuthProvider, User interface, useAuth hook (beginSignIn/cancelSignIn/signIn/signOut), dev mode support
 - `src/lib/dev.ts` — IS_DEV_MODE flag, mock data (DEV_USER, DEV_ENTRIES, DEV_BURN_UNITS)
-- `src/lib/wagmi.ts` — wagmi config: Base + Base Sepolia, coinbaseWallet smartWalletOnly
+- `src/lib/wagmi.ts` — wagmi config: Base + Base Sepolia, coinbaseWallet smartWalletOnly (preference object format for SDK v4)
 - `src/lib/supabase/client.ts` — browser Supabase client
-- `src/lib/supabase/server.ts` — server Supabase client with cookie handling
+- `src/lib/supabase/server.ts` — anon key Supabase client (middleware/SSR only, NOT for API routes)
+- `src/lib/supabase/admin.ts` — service role key Supabase client (all API routes use this to bypass RLS)
 - `src/lib/supabase/middleware.ts` — session cookie sync middleware
 - `src/lib/contracts/BurnFatTreasury.ts` — contract ABI + address
 - `src/lib/contracts/erc20.ts` — minimal ERC20 ABI (approve, allowance, balanceOf)
 - `src/lib/pricing.ts` — USDC pricing constants and helpers
-- `src/lib/viem.ts` — server-side Base Sepolia public client for tx verification
-- `src/providers/Providers.tsx` — WagmiProvider + QueryClientProvider + AuthProvider
+- `src/lib/viem.ts` — server-side public clients: `baseClient` (mainnet, auth verification) + `baseSepoliaClient` (testnet, tx verification)
+- `src/providers/Providers.tsx` — WagmiProvider + QueryClientProvider + AuthProvider + crypto.randomUUID polyfill
 
 ## Database schema
 - **users** — wallet_address (unique), display_name, role, starting_weight, goal_weight, height_cm, unit_pref, has_used_retrospective, group_id
-- **weight_entries** — user_id, weight_kg, recorded_at, delta_kg (unique per user+date)
+- **weight_entries** — user_id, weight_kg, recorded_at, delta_kg, fat_mass_kg (unique per user+date)
 - **burn_units** — user_id, weight_entry_id, kg_amount, status (unsubmitted/submitted_individual/submitted_via_pro), submission_id
 - **submissions** — submitter_id, kg_total, usdc_amount, tx_hash (unique), submission_type (individual/pro_group/retrospective), group_id
 - **global_counter** — singleton (id=1), total_kg, total_submissions (auto-incremented via trigger)
@@ -94,8 +97,11 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **Descriptive names** — avoid abbreviations (`weightEntries` not `we`, `isAuthenticated` not `isAuth`)
 
 ## Key patterns
-- **Auth flow:** nonce → sign message → verify signature → upsert user → session cookie
-- **Dev mode:** triggered when `NEXT_PUBLIC_SUPABASE_ANON_KEY` is unset or placeholder — returns mock data, skips wallet
+- **Auth flow:** beginSignIn() → connectAsync → pass address to signIn → nonce → sign message → verify (ERC-1271 on Base mainnet) → session cookie → navigate to /profile
+- **Auth guard:** `signingIn` ref prevents useEffect session check from racing with active sign-in; `beginSignIn()`/`cancelSignIn()` exposed via context for Header to set guard before connectAsync
+- **Signature verification:** Smart Wallet uses ERC-1271 — must use `publicClient.verifyMessage()` (not the viem utility). Auth verifies on Base mainnet; tx verification uses Base Sepolia
+- **Supabase clients:** API routes MUST use `createAdminClient()` (service role key) — anon key is blocked by RLS. Use `.maybeSingle()` instead of `.single()` when 0 rows is valid
+- **Dev mode:** triggered when `NEXT_PUBLIC_SUPABASE_ANON_KEY` is unset or placeholder — returns mock data, skips wallet. Use shared `IS_DEV_MODE` from `@/lib/dev`, never redefine inline
 - **Weight tracking:** all stored in kg, displayed per user preference (kg ↔ lbs with 2.20462 factor)
 - **Height:** always stored as cm, displayed as cm (kg mode) or ft/in (lbs mode)
 - **Burn units:** auto-created when weight entry has positive delta, linked to submissions when paid
