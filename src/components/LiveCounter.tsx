@@ -125,7 +125,6 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
     }
     fetchCounter();
   }, []);
-  const [isBumping, setIsBumping] = useState(false);
   const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
   const [enterId, setEnterId] = useState<number | null>(null);
 
@@ -143,11 +142,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
       setEnterId(id);
       setItems(prev => [newItem, ...prev.slice(0, VISIBLE_COUNT)]);
 
-      if (newItem.kgDelta > 0) {
-        setCounterValue(v => v + newItem.kgDelta);
-        setIsBumping(true);
-        setTimeout(() => setIsBumping(false), 300);
-      }
+      // Feed is cosmetic only — counter shows real DB value, not fake increments
 
       cleanupTimeout.current = setTimeout(() => {
         setEnterId(null);
@@ -177,7 +172,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
 
       <div className="counter">
         <div className="counter__row">
-          <span className={`counter__number${isBumping ? " bump" : ""}`}>
+          <span className="counter__number">
             {formatNumber(counterValue)}
           </span>
           <span className="counter__unit">KG</span>

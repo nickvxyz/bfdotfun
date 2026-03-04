@@ -15,7 +15,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **Tailwind CSS v4** — via `@import "tailwindcss"` in globals.css
 - **TypeScript strict mode**
 - **Path alias:** `@/*` → `./src/*`
-- **Database:** Supabase PostgreSQL — `users`, `weight_entries`, `burn_units`, `submissions`, `global_counter`, `pro_groups`
+- **Database:** Supabase PostgreSQL — `users`, `weight_entries`, `burn_units`, `submissions`, `global_counter`, `pro_groups`, `challenges`, `challenge_participants`, `challenge_invite_codes`, `challenge_weight_entries`, `email_verifications`
 - **Auth:** Wallet-based (Coinbase Smart Wallet via wagmi), ERC-1271 signature verification, httpOnly session cookies
 - **On-chain:** wagmi + viem on Base (mainnet + Sepolia), BurnFatTreasury contract for USDC payments
 - **Farcaster:** Mini app at `/app` with platform detection (Warpcast / Base App / browser)
@@ -27,8 +27,11 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `/app` — Farcaster mini app (client): platform detection, GateModal (skipped for Base App)
 - `/feed` — pseudo-live activity feed with generated entries
 - `/coaches` — coach directory (mock data)
-- `/companies` — company wellness campaigns (mock data)
-- `/profile` — user dashboard: stats, weight, BMI, profile form (auth required)
+- `/challenges` — challenges directory (list, filter by status)
+- `/challenges/[slug]` — challenge detail + join flow
+- `/challenges/[slug]/admin` — challenge admin (stats, participants, finalize)
+- `/challenges/create` — multi-step challenge creation
+- `/profile` — user dashboard: one-time profile setup, stats, weight, BMI, chart, quick weigh-in (auth required)
 - `/profile/entries` — weight log: add entries, view history with deltas
 - `/profile/submit` — submit burn units to global ledger ($1/kg USDC)
 - `/profile/retrospective` — one-time historical fat loss claim ($0.50/kg USDC)
@@ -44,6 +47,17 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `GET /api/burn-units` — query burn units (optional `?status=unsubmitted`)
 - `GET /api/counter` — global counter singleton (total_kg, total_submissions)
 - `GET|POST /api/submissions` — submission CRUD with on-chain tx verification
+- `GET|POST /api/challenges` — challenge CRUD (list, create)
+- `GET|PATCH /api/challenges/[slug]` — challenge detail + update
+- `POST /api/challenges/[slug]/join` — join a challenge
+- `GET /api/challenges/[slug]/feed` — challenge-scoped feed
+- `POST /api/challenges/[slug]/finalize` — finalize challenge, build Merkle tree
+- `GET|POST /api/challenges/[slug]/invites` — invite code management
+- `GET /api/challenges/[slug]/rewards` — user reward + Merkle proof
+- `POST /api/challenges/[slug]/rewards/claim` — verify on-chain claim
+- `GET /api/challenges/my` — user's challenge participations
+- `POST /api/email-verify/send` — send 6-digit verification code
+- `POST /api/email-verify/confirm` — verify code, update user email
 
 ## Components
 - `Header.tsx` — nav links, ThemeToggle, auth UI (sign in / signing in... / user dropdown), mobile burger, double-click guard
@@ -55,10 +69,17 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `FaqAccordion.tsx` — FAQ items with ARIA (currently hidden)
 - `WeightChart.tsx` — custom SVG weight chart with W/M/3M/Y time range tabs, goal line, BMI trend
 - `BodyFatMeter.tsx` — horizontal body fat % bar with colored zones (lean/healthy/elevated/high)
+- `ChallengesTab.tsx` — challenges tab for profile page
+- `ChallengeFeed.tsx` — challenge-scoped activity feed
 
 ## Key libraries
 - `src/lib/auth.tsx` — AuthProvider, User interface, useAuth hook (beginSignIn/cancelSignIn/signIn/signOut), dev mode support
-- `src/lib/dev.ts` — IS_DEV_MODE flag, mock data (DEV_USER, DEV_ENTRIES, DEV_BURN_UNITS)
+- `src/lib/dev.ts` — IS_DEV_MODE flag, mock data (DEV_USER, DEV_ENTRIES, DEV_BURN_UNITS, DEV_CHALLENGES)
+- `src/hooks/useBaseName.ts` — custom Base Name forward-resolution + verification hook
+- `src/hooks/useChallengeCreate.ts` — challenge creation with on-chain deposit
+- `src/hooks/useClaimReward.ts` — Merkle proof reward claim
+- `src/lib/merkle.ts` — Merkle tree builder for challenge rewards
+- `src/lib/contracts/ChallengePool.ts` — ChallengePool contract ABI + address
 - `src/lib/wagmi.ts` — wagmi config: Base + Base Sepolia, coinbaseWallet smartWalletOnly (preference object format for SDK v4)
 - `src/lib/supabase/client.ts` — browser Supabase client
 - `src/lib/supabase/server.ts` — anon key Supabase client (middleware/SSR only, NOT for API routes)
@@ -71,12 +92,17 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `src/providers/Providers.tsx` — WagmiProvider + QueryClientProvider + AuthProvider + crypto.randomUUID polyfill
 
 ## Database schema
-- **users** — wallet_address (unique), display_name, role, starting_weight, goal_weight, height_cm, unit_pref, has_used_retrospective, group_id
+- **users** — wallet_address (unique), display_name, role, starting_weight, goal_weight, height_cm, body_fat_pct, unit_pref, has_used_retrospective, verified_email, verified_email_domain, group_id
 - **weight_entries** — user_id, weight_kg, recorded_at, delta_kg, fat_mass_kg (unique per user+date)
-- **burn_units** — user_id, weight_entry_id, kg_amount, status (unsubmitted/submitted_individual/submitted_via_pro), submission_id
-- **submissions** — submitter_id, kg_total, usdc_amount, tx_hash (unique), submission_type (individual/pro_group/retrospective), group_id
+- **burn_units** — user_id, weight_entry_id, kg_amount, status (unsubmitted/submitted_individual/submitted_via_pro/attributed_to_challenge/auto_submitted_challenge), submission_id, challenge_id
+- **submissions** — submitter_id, kg_total, usdc_amount, tx_hash (unique), submission_type (individual/pro_group/retrospective/challenge_auto), group_id
 - **global_counter** — singleton (id=1), total_kg, total_submissions (auto-incremented via trigger)
 - **pro_groups** — owner_id, name, type, subscription_status
+- **challenges** — slug (unique), title, creator_id, visibility, starts_at, ends_at, prize_pool_usdc, status, merkle_root, participant_count, total_kg_burned
+- **challenge_participants** — challenge_id, user_id (unique per challenge), kg_burned, reward_usdc, reward_claimed
+- **challenge_invite_codes** — challenge_id, code (unique), max_uses, use_count
+- **challenge_weight_entries** — challenge_id, weight_entry_id, participant_id, delta_kg
+- **email_verifications** — user_id, email, domain, code, verified, expires_at
 
 ## Design system rules
 - **BEM only:** `.block__element--modifier`
@@ -105,11 +131,14 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **Weight tracking:** all stored in kg, displayed per user preference (kg ↔ lbs with 2.20462 factor)
 - **Height:** always stored as cm, displayed as cm (kg mode) or ft/in (lbs mode)
 - **Burn units:** auto-created when weight entry has positive delta, linked to submissions when paid
-- **USDC payments:** batched approve + submitBurn via `useSendCalls` (one wallet popup)
+- **First weigh-in delta:** compared against `starting_weight` from profile (not previous entry, since there is none)
+- **USDC payments:** batched approve + submitBurn via `useSendCalls` (one wallet popup), poll `getCallsStatus` for real tx hash
 - **On-chain verification:** backend parses BurnSubmitted event from tx receipt, confirms payment before recording
+- **Profile setup:** one-time onboarding form (display_name, height, starting/goal weight mandatory), disappears after first save, "Edit Profile" link shown after
+- **Base Name:** custom `useBaseName` hook with manual forward-resolution verify (reverse resolution requires primary name to be set)
 - **Global counter:** singleton row in Supabase, auto-incremented by trigger on submission insert
 - **SVG icons:** inline React components, `ICONS` map for dynamic render
-- **Activity feed:** generates entries with weighted random types, rotates in ticker
+- **Activity feed:** cosmetic only — generates entries with weighted random types, does NOT increment counter (counter shows real DB value only)
 - **Waitlist:** Formspree `https://formspree.io/f/mbdayrbn`
 
 ## Smart contract — BurnFatTreasury

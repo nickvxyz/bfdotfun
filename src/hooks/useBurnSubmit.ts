@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSendCalls } from "wagmi";
+import { useSendCalls, useConfig } from "wagmi";
+import { getCallsStatus } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
 import { baseSepolia } from "viem/chains";
 import { IS_DEV_MODE } from "@/lib/dev";
@@ -36,6 +37,7 @@ export function useBurnSubmit({
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const config = useConfig();
   const { sendCallsAsync } = useSendCalls();
 
   const reset = useCallback(() => {
@@ -114,17 +116,43 @@ export function useBurnSubmit({
         chainId: baseSepolia.id,
       });
 
-      // sendCallsAsync returns { id, capabilities? } — extract the batch ID
+      // sendCallsAsync returns { id } — a batch ID, NOT a tx hash.
+      // Poll getCallsStatus to get the actual transaction hash from receipts.
       const batchId = callsId.id;
-      setTxHash(batchId);
       setState("verifying");
 
-      // Record submission on backend
+      const MAX_POLLS = 60;
+      const POLL_INTERVAL = 2000;
+      let realTxHash: string | null = null;
+
+      for (let i = 0; i < MAX_POLLS; i++) {
+        const result = await getCallsStatus(config, { id: batchId });
+
+        if (result.status === "success" && result.receipts?.length) {
+          realTxHash = result.receipts[result.receipts.length - 1].transactionHash;
+          break;
+        }
+
+        if (result.status === "failure") {
+          throw new Error("Transaction failed on-chain");
+        }
+
+        // Still pending — wait and retry
+        await new Promise(r => setTimeout(r, POLL_INTERVAL));
+      }
+
+      if (!realTxHash) {
+        throw new Error("Timed out waiting for transaction confirmation");
+      }
+
+      setTxHash(realTxHash);
+
+      // Record submission on backend with the real tx hash
       const res = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tx_hash: batchId,
+          tx_hash: realTxHash,
           kg_total: kgAmount,
           submission_type: isRetrospective ? "retrospective" : "individual",
           burn_unit_ids: burnUnitIds,
@@ -148,7 +176,7 @@ export function useBurnSubmit({
       setError(message);
       setState("error");
     }
-  }, [kgAmount, isRetrospective, burnUnitIds, onSuccess, sendCallsAsync]);
+  }, [kgAmount, isRetrospective, burnUnitIds, onSuccess, sendCallsAsync, config]);
 
   return { submit, state, txHash, error, reset };
 }

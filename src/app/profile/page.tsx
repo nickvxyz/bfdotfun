@@ -3,12 +3,12 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { base } from "wagmi/chains";
-import { useName } from "@coinbase/onchainkit/identity";
 import { useAuth } from "@/lib/auth";
+import { useBaseName } from "@/hooks/useBaseName";
 import { IS_DEV_MODE } from "@/lib/dev";
 import WeightChart from "@/components/WeightChart";
 import BodyFatMeter from "@/components/BodyFatMeter";
+import { ChallengesTab } from "@/components/ChallengesTab";
 
 interface WeightEntry {
   id: string;
@@ -32,12 +32,16 @@ export default function ProfilePage() {
   const { user, updateUser } = useAuth();
   const { address } = useAccount();
 
-  // Base name resolution
-  const { data: baseName } = useName(
-    { address: IS_DEV_MODE ? undefined : address, chain: base },
-    { enabled: !IS_DEV_MODE && !!address },
+  // Base name resolution — use connected wallet or session wallet as fallback
+  const nameAddress = IS_DEV_MODE
+    ? undefined
+    : (address ?? (user?.wallet_address as `0x${string}` | undefined));
+  const { name: baseName, loading: nameLoading, verify: verifyName } = useBaseName(
+    IS_DEV_MODE ? undefined : nameAddress,
   );
   const resolvedBaseName = IS_DEV_MODE ? "devuser.base.eth" : (baseName ?? null);
+  const [baseNameInput, setBaseNameInput] = useState("");
+  const [baseNameError, setBaseNameError] = useState("");
 
   // Weight entries for chart
   const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
@@ -122,7 +126,7 @@ export default function ProfilePage() {
   // Quick weigh-in state
   const [weighInOpen, setWeighInOpen] = useState(false);
   const [weighInWeight, setWeighInWeight] = useState("");
-  const [weighInFatMass, setWeighInFatMass] = useState("");
+  const [weighInBodyFatPct, setWeighInBodyFatPct] = useState("");
   const [weighInDate, setWeighInDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [weighInSubmitting, setWeighInSubmitting] = useState(false);
   const [weighInError, setWeighInError] = useState("");
@@ -140,9 +144,9 @@ export default function ProfilePage() {
     }
 
     const weightKg = unit === "lbs" ? weightNum * 0.453592 : weightNum;
-    const fatMassNum = parseFloat(weighInFatMass);
-    const fatMassKg = fatMassNum > 0
-      ? (unit === "lbs" ? fatMassNum * 0.453592 : fatMassNum)
+    const bfPctNum = parseFloat(weighInBodyFatPct);
+    const fatMassKg = bfPctNum > 0 && bfPctNum <= 100
+      ? weightKg * (bfPctNum / 100)
       : null;
 
     try {
@@ -157,7 +161,7 @@ export default function ProfilePage() {
 
       if (res.ok) {
         setWeighInWeight("");
-        setWeighInFatMass("");
+        setWeighInBodyFatPct("");
         setWeighInDate(new Date().toISOString().split("T")[0]);
         setWeighInOpen(false);
         await fetchData();
@@ -174,7 +178,6 @@ export default function ProfilePage() {
   // Body fat % from latest entry
   const bodyFatPercent = useMemo(() => {
     if (weightEntries.length === 0) return null;
-    // Find most recent entry with fat mass data
     const sorted = [...weightEntries].sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
     const withFat = sorted.find((e) => e.fat_mass_kg != null && e.fat_mass_kg > 0);
     if (!withFat || !withFat.fat_mass_kg) return null;
@@ -187,15 +190,17 @@ export default function ProfilePage() {
     startingWeight: user?.starting_weight?.toString() || "",
     goalWeight: user?.goal_weight?.toString() || "",
     heightCm: user?.height_cm?.toString() || "",
+    bodyFatPct: user?.body_fat_pct?.toString() || "",
     unitPref: (user?.unit_pref || "kg") as "kg" | "lbs",
   }), [user]);
 
   const [displayName, setDisplayName] = useState(defaults.displayName);
-  const [useBaseName, setUseBaseName] = useState(
+  const [baseNameChecked, setBaseNameChecked] = useState(
     () => !!(resolvedBaseName && defaults.displayName && defaults.displayName === resolvedBaseName),
   );
   const [startingWeight, setStartingWeight] = useState(defaults.startingWeight);
   const [goalWeight, setGoalWeight] = useState(defaults.goalWeight);
+  const [bodyFatPct, setBodyFatPct] = useState(defaults.bodyFatPct);
   const [unitPref, setUnitPref] = useState<"kg" | "lbs">(defaults.unitPref);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -230,11 +235,31 @@ export default function ProfilePage() {
 
   // Base name checkbox handler
   const handleBaseNameToggle = useCallback((checked: boolean) => {
-    setUseBaseName(checked);
+    setBaseNameChecked(checked);
     if (checked && resolvedBaseName) {
       setDisplayName(resolvedBaseName);
+    } else if (!checked) {
+      setDisplayName("");
+      setBaseNameError("");
     }
   }, [resolvedBaseName]);
+
+  // Auto-populate display name when Base Name resolves while checkbox is ticked
+  useEffect(() => {
+    if (baseNameChecked && resolvedBaseName) {
+      setDisplayName(resolvedBaseName);
+    }
+  }, [baseNameChecked, resolvedBaseName]);
+
+  // Verify user-entered Base Name
+  const handleBaseNameVerify = useCallback(async () => {
+    if (!baseNameInput.trim()) return;
+    setBaseNameError("");
+    const valid = await verifyName(baseNameInput.trim());
+    if (!valid) {
+      setBaseNameError("Name not found or doesn't match your wallet");
+    }
+  }, [baseNameInput, verifyName]);
 
   // Unit toggle with value conversion
   const handleUnitToggle = useCallback((newUnit: "kg" | "lbs") => {
@@ -294,8 +319,32 @@ export default function ProfilePage() {
     return { label: "Obese", modifier: "obese" };
   }, [bmi]);
 
+  // Body fat % — prefer user's profile value, fallback to latest weight entry calculation
+  const effectiveBodyFatPct = useMemo(() => {
+    if (user?.body_fat_pct) return user.body_fat_pct;
+    return bodyFatPercent;
+  }, [user?.body_fat_pct, bodyFatPercent]);
+
+  // Fat mass & lean mass from body fat % + current weight
+  const fatMassKg = useMemo(() => {
+    if (effectiveBodyFatPct === null || !currentWeightKg) return null;
+    return currentWeightKg * (effectiveBodyFatPct / 100);
+  }, [effectiveBodyFatPct, currentWeightKg]);
+
+  const leanMassKg = useMemo(() => {
+    if (fatMassKg === null || !currentWeightKg) return null;
+    return currentWeightKg - fatMassKg;
+  }, [fatMassKg, currentWeightKg]);
+
+  const [activeTab, setActiveTab] = useState<"dashboard" | "challenges">("dashboard");
   const [bmiTooltipOpen, setBmiTooltipOpen] = useState(false);
   const [bmiHovered, setBmiHovered] = useState(false);
+
+  // Profile setup: one-time onboarding — form hidden after mandatory fields saved
+  const isProfileSetup = !!(user?.starting_weight && user?.goal_weight && user?.height_cm && user?.display_name);
+  const [editing, setEditing] = useState(false);
+  const showForm = !isProfileSetup || editing;
+  const canSave = !!(displayName.trim() && heightCm && startingWeight && goalWeight);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -319,6 +368,7 @@ export default function ProfilePage() {
           starting_weight: swKg,
           goal_weight: gwKg,
           height_cm: heightCm ? parseFloat(heightCm) : null,
+          body_fat_pct: bodyFatPct ? parseFloat(bodyFatPct) : null,
           unit_pref: unitPref,
         }),
       });
@@ -327,6 +377,7 @@ export default function ProfilePage() {
         const data = await res.json();
         updateUser(data.user);
         setMessage("Profile saved");
+        setEditing(false);
       } else {
         const data = await res.json();
         setMessage(data.error || "Failed to save");
@@ -339,11 +390,38 @@ export default function ProfilePage() {
 
   return (
     <div className="profile">
+      <div className="profile-tabs" role="tablist" aria-label="Profile sections">
+        <button
+          role="tab"
+          aria-selected={activeTab === "dashboard"}
+          className={`profile-tabs__tab${activeTab === "dashboard" ? " profile-tabs__tab--active" : ""}`}
+          onClick={() => setActiveTab("dashboard")}
+        >
+          Dashboard
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === "challenges"}
+          className={`profile-tabs__tab${activeTab === "challenges" ? " profile-tabs__tab--active" : ""}`}
+          onClick={() => setActiveTab("challenges")}
+        >
+          Challenges
+        </button>
+      </div>
+
+      {activeTab === "challenges" && <ChallengesTab />}
+
+      {activeTab === "dashboard" && <>
       <div className="dash-home__greeting">
         <h1 className="dash-home__title">
           {user?.display_name || "Profile"}
         </h1>
         <p className="dash-home__subtitle">Your personal fat burn tracker</p>
+        {isProfileSetup && !editing && (
+          <button type="button" className="dash-home__edit-profile" onClick={() => setEditing(true)}>
+            Edit Profile
+          </button>
+        )}
         <div className="dash-home__metrics">
           <div className="dash-home__metric">
             <span className="dash-home__metric-label">current weight</span>
@@ -351,9 +429,9 @@ export default function ProfilePage() {
               {currentWeightDisplay} <span className="dash-home__current-unit">{unit}</span>
             </p>
           </div>
-          {bmi !== null && bmiCategory && (
-            <div className="dash-home__metric">
-              <span className="dash-home__metric-label">bmi</span>
+          <div className="dash-home__metric">
+            <span className="dash-home__metric-label">bmi</span>
+            {bmi !== null && bmiCategory ? (
               <div className="dash-home__bmi-display">
                 <span className="dash-home__bmi-number">{bmi.toFixed(1)}</span>
                 <span className={`dash-home__bmi-category profile__bmi-label--${bmiCategory.modifier}`}>
@@ -383,8 +461,26 @@ export default function ProfilePage() {
                   )}
                 </span>
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="dash-home__metric-value dash-home__metric-value--empty">—</p>
+            )}
+          </div>
+          <div className="dash-home__metric">
+            <span className="dash-home__metric-label">fat mass</span>
+            <p className="dash-home__metric-value">
+              {fatMassKg !== null
+                ? <>{unitPref === "lbs" ? (fatMassKg * 2.20462).toFixed(1) : fatMassKg.toFixed(1)} <span className="dash-home__current-unit">{unit}</span></>
+                : <span className="dash-home__metric-value--empty">—</span>}
+            </p>
+          </div>
+          <div className="dash-home__metric">
+            <span className="dash-home__metric-label">lean mass</span>
+            <p className="dash-home__metric-value">
+              {leanMassKg !== null
+                ? <>{unitPref === "lbs" ? (leanMassKg * 2.20462).toFixed(1) : leanMassKg.toFixed(1)} <span className="dash-home__current-unit">{unit}</span></>
+                : <span className="dash-home__metric-value--empty">—</span>}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -484,18 +580,19 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="quick-weighin__field">
-                <label className="quick-weighin__label" htmlFor="qw-fatmass">
-                  Fat Mass ({unit}) <span className="quick-weighin__optional">optional</span>
+                <label className="quick-weighin__label" htmlFor="qw-bodyfat">
+                  Body Fat % <span className="quick-weighin__optional">optional</span>
                 </label>
                 <input
-                  id="qw-fatmass"
+                  id="qw-bodyfat"
                   type="number"
                   step="0.1"
-                  min="0"
+                  min="1"
+                  max="70"
                   className="quick-weighin__input"
-                  placeholder={unit === "kg" ? "18.0" : "39.7"}
-                  value={weighInFatMass}
-                  onChange={(e) => setWeighInFatMass(e.target.value)}
+                  placeholder="22.0"
+                  value={weighInBodyFatPct}
+                  onChange={(e) => setWeighInBodyFatPct(e.target.value)}
                 />
               </div>
               <button
@@ -529,8 +626,13 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Profile form */}
+      {/* Profile form — visible on first setup or when editing */}
+      {showForm && (
       <form className="profile__form" onSubmit={handleSave}>
+        {!isProfileSetup && (
+          <h2 className="profile__form-title">Set Up Your Profile</h2>
+        )}
+
         {/* Display name + Base name checkbox */}
         <div className="profile__field">
           <label className="profile__label" htmlFor="profile-name">
@@ -540,20 +642,46 @@ export default function ProfilePage() {
             id="profile-name"
             type="text"
             className="profile__input"
-            placeholder="anon"
+            placeholder="Your name"
             value={displayName}
-            disabled={useBaseName}
+            disabled={baseNameChecked}
             onChange={(e) => setDisplayName(e.target.value)}
+            required
           />
           <label className="profile__basename-check">
             <input
               type="checkbox"
-              checked={useBaseName}
-              disabled={!resolvedBaseName}
+              checked={baseNameChecked}
               onChange={(e) => handleBaseNameToggle(e.target.checked)}
             />
-            <span>Use Base Name{resolvedBaseName ? ` (${resolvedBaseName})` : ""}</span>
+            <span>
+              Use Base Name
+              {resolvedBaseName ? ` (${resolvedBaseName})` : ""}
+            </span>
           </label>
+          {baseNameChecked && !resolvedBaseName && (
+            <div className="profile__basename-verify">
+              <div className="profile__basename-row">
+                <input
+                  type="text"
+                  className="profile__input"
+                  placeholder="yourname.base.eth"
+                  value={baseNameInput}
+                  onChange={(e) => setBaseNameInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleBaseNameVerify(); } }}
+                />
+                <button
+                  type="button"
+                  className="profile__basename-btn"
+                  onClick={handleBaseNameVerify}
+                  disabled={nameLoading || !baseNameInput.trim()}
+                >
+                  {nameLoading ? "..." : "Verify"}
+                </button>
+              </div>
+              {baseNameError && <p className="profile__basename-error">{baseNameError}</p>}
+            </div>
+          )}
         </div>
 
         {/* Height */}
@@ -570,6 +698,7 @@ export default function ProfilePage() {
               placeholder="178"
               value={heightCm}
               onChange={(e) => setHeightCm(e.target.value)}
+              required
             />
           ) : (
             <div className="profile__height-row">
@@ -583,6 +712,7 @@ export default function ProfilePage() {
                 placeholder="5"
                 value={heightFt}
                 onChange={(e) => handleFtChange(e.target.value)}
+                required
               />
               <span className="profile__height-separator">ft</span>
               <input
@@ -614,6 +744,7 @@ export default function ProfilePage() {
               placeholder={unitPref === "kg" ? "90.0" : "198.0"}
               value={startingWeight}
               onChange={(e) => setStartingWeight(e.target.value)}
+              required
             />
           </div>
           <div className="profile__field">
@@ -628,6 +759,7 @@ export default function ProfilePage() {
               placeholder={unitPref === "kg" ? "75.0" : "165.0"}
               value={goalWeight}
               onChange={(e) => setGoalWeight(e.target.value)}
+              required
             />
           </div>
         </div>
@@ -653,9 +785,32 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <button type="submit" className="profile__save" disabled={saving}>
-          {saving ? "Saving..." : "Save Profile"}
+        {/* Body Fat % (optional) */}
+        <div className="profile__field">
+          <label className="profile__label" htmlFor="profile-bodyfat">
+            Body Fat % <span className="profile__optional">optional</span>
+          </label>
+          <input
+            id="profile-bodyfat"
+            type="number"
+            step="0.1"
+            min="1"
+            max="70"
+            className="profile__input"
+            placeholder="22.0"
+            value={bodyFatPct}
+            onChange={(e) => setBodyFatPct(e.target.value)}
+          />
+        </div>
+
+        <button type="submit" className="profile__save" disabled={saving || !canSave}>
+          {saving ? "Saving..." : isProfileSetup ? "Update Profile" : "Save Profile"}
         </button>
+        {editing && (
+          <button type="button" className="profile__cancel" onClick={() => setEditing(false)}>
+            Cancel
+          </button>
+        )}
 
         {message && (
           <p className={`profile__message ${message === "Profile saved" ? "profile__message--success" : "profile__message--error"}`}>
@@ -663,6 +818,9 @@ export default function ProfilePage() {
           </p>
         )}
       </form>
+      )}
+
+      </>}
 
     </div>
   );

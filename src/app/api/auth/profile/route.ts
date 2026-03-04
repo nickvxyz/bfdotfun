@@ -14,6 +14,7 @@ export async function PATCH(request: NextRequest) {
       starting_weight: body.starting_weight !== undefined ? body.starting_weight : DEV_USER.starting_weight,
       goal_weight: body.goal_weight !== undefined ? body.goal_weight : DEV_USER.goal_weight,
       height_cm: body.height_cm !== undefined ? body.height_cm : DEV_USER.height_cm,
+      body_fat_pct: body.body_fat_pct !== undefined ? body.body_fat_pct : DEV_USER.body_fat_pct,
       unit_pref: body.unit_pref !== undefined ? body.unit_pref : DEV_USER.unit_pref,
     };
     return NextResponse.json({ user: updatedUser });
@@ -25,7 +26,7 @@ export async function PATCH(request: NextRequest) {
 
   const session = JSON.parse(sessionRaw);
 
-  const allowed = ["display_name", "starting_weight", "goal_weight", "height_cm", "unit_pref"];
+  const allowed = ["display_name", "starting_weight", "goal_weight", "height_cm", "body_fat_pct", "unit_pref"];
   const updates: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in body) updates[key] = body[key];

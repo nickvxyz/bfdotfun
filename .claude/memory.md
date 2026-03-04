@@ -1,16 +1,5 @@
 ## 2026-03-01
 **Recent commits:**
-f4c56c7 fix: suppress hydration warning for theme anti-flash script
-f333154 fix: add dark mode support for miniapp layout on main page
-c25a200 feat: redesign main page to match mini app UI, add cards and faster feed
-
-**Files changed:**
-src/app/layout.tsx
-
----
-
-## 2026-03-01
-**Recent commits:**
 0a99d49 chore: update auto-memory notes
 f4c56c7 fix: suppress hydration warning for theme anti-flash script
 f333154 fix: add dark mode support for miniapp layout on main page
@@ -271,5 +260,17 @@ src/app/api/weight-entries/route.ts
 src/app/globals.css
 src/app/profile/page.tsx
 src/app/profile/retrospective/page.tsx
+
+---
+
+## 2026-03-03
+**Recent commits:**
+e70e4d2 chore: update CLAUDE.md and memory with auth fixes, patterns learned
+0c9497d fix: code review + UX audit — .single(), nonce validation, IS_DEV dedup, UX polish
+46e02c7 fix: Smart Wallet sign-in — ERC-1271 verification, RLS bypass, race condition guard
+
+**Files changed:**
+.claude/memory.md
+CLAUDE.md
 
 ---

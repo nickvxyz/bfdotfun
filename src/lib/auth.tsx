@@ -20,6 +20,7 @@ export interface User {
   starting_weight: number | null;
   goal_weight: number | null;
   height_cm: number | null;
+  body_fat_pct: number | null;
   unit_pref: "kg" | "lbs";
   group_id: string | null;
   has_used_retrospective: boolean;

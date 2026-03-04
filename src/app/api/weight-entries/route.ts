@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
 
     // Recalculate all deltas and rebuild unsubmitted burn units
     recalculateDeltas();
+    // Challenge attribution handled via API in production
 
     return NextResponse.json({ entry });
   }
@@ -134,7 +135,19 @@ export async function POST(request: NextRequest) {
     .limit(1)
     .maybeSingle();
 
-  const delta_kg = prev ? Number(prev.weight_kg) - Number(weight_kg) : 0;
+  let delta_kg = 0;
+  if (prev) {
+    delta_kg = Number(prev.weight_kg) - Number(weight_kg);
+  } else {
+    const { data: userRow } = await supabase
+      .from("users")
+      .select("starting_weight")
+      .eq("id", session.userId)
+      .maybeSingle();
+    if (userRow?.starting_weight) {
+      delta_kg = Number(userRow.starting_weight) - Number(weight_kg);
+    }
+  }
 
   const insertData: Record<string, unknown> = {
     user_id: session.userId,
@@ -159,14 +172,76 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  let burnUnitId: string | null = null;
+
   if (delta_kg > 0) {
-    const { error: burnError } = await supabase.from("burn_units").insert({
-      user_id: session.userId,
-      weight_entry_id: entry.id,
-      kg_amount: delta_kg,
-      status: "unsubmitted",
-    });
+    const { data: burnUnit, error: burnError } = await supabase
+      .from("burn_units")
+      .insert({
+        user_id: session.userId,
+        weight_entry_id: entry.id,
+        kg_amount: delta_kg,
+        status: "unsubmitted",
+      })
+      .select("id")
+      .single();
     if (burnError) console.error("Failed to create burn unit:", burnError);
+    else burnUnitId = burnUnit?.id ?? null;
+  }
+
+  // Challenge attribution — best-effort, wrapped in try/catch
+  try {
+    const { data: participations } = await supabase
+      .from("challenge_participants")
+      .select("id, challenge_id, challenges!inner(status)")
+      .eq("user_id", session.userId)
+      .eq("challenges.status", "active");
+
+    if (participations && participations.length > 0) {
+      // Attribute to ALL active challenges the user participates in
+      for (const rawParticipation of participations) {
+        const participation = rawParticipation as unknown as {
+          id: string;
+          challenge_id: string;
+          challenges: { status: string };
+        };
+
+        // Insert challenge_weight_entries junction record
+        const { error: cweError } = await supabase
+          .from("challenge_weight_entries")
+          .insert({
+            challenge_id: participation.challenge_id,
+            weight_entry_id: entry.id,
+            participant_id: participation.id,
+            delta_kg,
+          });
+        if (cweError) console.error("Failed to insert challenge_weight_entry:", cweError);
+      }
+
+      // If positive delta, update burn unit and create auto-submission (once, for the first challenge)
+      if (delta_kg > 0 && burnUnitId) {
+        const firstParticipation = participations[0] as unknown as { challenge_id: string };
+        const { error: burnUpdateError } = await supabase
+          .from("burn_units")
+          .update({
+            status: "attributed_to_challenge",
+            challenge_id: firstParticipation.challenge_id,
+          })
+          .eq("id", burnUnitId);
+        if (burnUpdateError) console.error("Failed to update burn unit for challenge:", burnUpdateError);
+
+        const { error: subError } = await supabase.from("submissions").insert({
+          submitter_id: session.userId,
+          kg_total: delta_kg,
+          usdc_amount: 0,
+          tx_hash: `challenge-auto-${entry.id}`,
+          submission_type: "challenge_auto",
+        });
+        if (subError) console.error("Failed to create challenge auto-submission:", subError);
+      }
+    }
+  } catch (err) {
+    console.error("Challenge attribution failed (non-fatal):", err);
   }
 
   return NextResponse.json({ entry });

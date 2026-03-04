@@ -104,7 +104,7 @@ export default function Header() {
         <nav className="header__nav">
           <Link href="/feed" className="header__link">Live Feed</Link>
           <Link href="/coaches" className="header__link">Coaches</Link>
-          <Link href="/companies" className="header__link">Companies</Link>
+          <Link href="/challenges" className="header__link">Challenges</Link>
         </nav>
 
         <div className="header__right">
@@ -170,7 +170,7 @@ export default function Header() {
         <div className="header__mobile-menu">
           <Link href="/feed" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Live Feed</Link>
           <Link href="/coaches" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Coaches</Link>
-          <Link href="/companies" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Companies</Link>
+          <Link href="/challenges" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Challenges</Link>
           {isAuthed ? (
             <>
               <Link href="/profile" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Profile</Link>
