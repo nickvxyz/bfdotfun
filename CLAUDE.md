@@ -60,10 +60,9 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `POST /api/email-verify/confirm` — verify code, update user email
 
 ## Components
-- `Header.tsx` — nav links, ThemeToggle, auth UI (sign in / signing in... / user dropdown), mobile burger, double-click guard
+- `Header.tsx` — nav links, auth UI (sign in / signing in... / user btn), unified full-screen overlay menu (same for desktop sign-in, mobile burger, and authed user), double-click guard
 - `LiveCounter.tsx` — global counter display + animated burn feed
 - `ConnectWalletButton.tsx` — wallet connection states (connect / sign in / connected)
-- `ThemeToggle.tsx` — dark/light mode toggle, persists to localStorage
 - `GateModal.tsx` — "How it works" overlay, localStorage dismiss, try/catch for webview
 - `WaitlistForm.tsx` — email + consent → Formspree
 - `FaqAccordion.tsx` — FAQ items with ARIA (currently hidden)
@@ -114,7 +113,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **Monospace fonts only:** SF Mono → Fira Code → Consolas
 - **Responsive:** `clamp()` for typography, breakpoints at 900px and 768px
 - **Alternating sections:** black/white backgrounds
-- **Dark mode:** `[data-theme="dark"] .classname {}` at bottom of globals.css
+- **Dark-only theme** — `data-theme="dark"` hardcoded on `<html>`, no toggle, no light mode. Legacy `[data-theme="dark"]` overrides still exist in CSS but are always active
 
 ## Code style
 - **Early returns** — reduce nesting, improve readability
