@@ -24,7 +24,16 @@ export async function PATCH(request: NextRequest) {
   const sessionRaw = cookieStore.get("bf_session")?.value;
   if (!sessionRaw) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const session = JSON.parse(sessionRaw);
+  let session: { userId: string };
+  try {
+    const parsed = JSON.parse(sessionRaw);
+    if (!parsed?.userId || typeof parsed.userId !== "string") {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
+    session = parsed;
+  } catch {
+    return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+  }
 
   const allowed = ["display_name", "starting_weight", "goal_weight", "height_cm", "body_fat_pct", "unit_pref"];
   const updates: Record<string, unknown> = {};

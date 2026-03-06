@@ -15,12 +15,14 @@ export const devSubmissions: Array<{
   created_at: string;
 }> = [];
 
-async function getSession() {
+async function getSession(): Promise<{ userId: string } | null> {
   const c = await cookies();
   const raw = c.get("bf_session")?.value;
   if (!raw) return null;
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
+    return parsed;
   } catch {
     return null;
   }

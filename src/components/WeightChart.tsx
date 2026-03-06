@@ -198,7 +198,8 @@ export default function WeightChart({ entries, goalWeight, heightCm, unitPref }:
         className="weight-chart__svg"
         viewBox={`0 0 ${CHART_W} ${totalH}`}
         preserveAspectRatio="xMidYMid meet"
-        aria-label="Weight progress chart"
+        role="img"
+        aria-label={`Weight progress chart showing ${filteredEntries.length} entries over the selected ${range} time range`}
       >
         {!hasData && (
           <text

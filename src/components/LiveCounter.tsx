@@ -117,7 +117,8 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
         const res = await fetch("/api/counter");
         if (res.ok) {
           const data = await res.json();
-          setCounterValue(data.total_kg || 0);
+          const totalKg = Number(data.total_kg);
+          if (isFinite(totalKg)) setCounterValue(totalKg);
         }
       } catch {
         // Fall back to 0

@@ -3,11 +3,15 @@ import { cookies } from "next/headers";
 
 import { IS_DEV_MODE } from "@/lib/dev";
 
-async function getSession() {
+async function getSession(): Promise<{ userId: string } | null> {
   const c = await cookies();
   const raw = c.get("bf_session")?.value;
   if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
+    return parsed;
+  } catch { return null; }
 }
 
 function generateCode(): string {

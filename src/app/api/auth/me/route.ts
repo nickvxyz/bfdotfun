@@ -16,7 +16,16 @@ export async function GET() {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const session = JSON.parse(sessionRaw);
+    let session: { userId: string };
+    try {
+      const parsed = JSON.parse(sessionRaw);
+      if (!parsed?.userId || typeof parsed.userId !== "string") {
+        return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+      }
+      session = parsed;
+    } catch {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
     const { createAdminClient } = await import("@/lib/supabase/admin");
     const supabase = createAdminClient();
 

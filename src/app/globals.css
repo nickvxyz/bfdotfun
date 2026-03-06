@@ -428,7 +428,7 @@
   }
 
   .waitlist-section__button:disabled {
-    opacity: 0.3;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 
@@ -1561,6 +1561,11 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .coaches__card:hover {
+    border-color: var(--c-green);
   }
 
   .coaches__card-top {
@@ -1580,6 +1585,7 @@
     font-size: 16px;
     font-weight: 700;
     flex-shrink: 0;
+    border-radius: 50% !important;
   }
 
   .coaches__card-info {
@@ -1701,7 +1707,8 @@
   }
 
   .challenges__create-btn:hover {
-    opacity: 0.85;
+    background: transparent;
+    color: var(--c-black);
   }
 
   .challenges__filters {
@@ -1914,6 +1921,7 @@
     padding: 88px 48px 32px;
     background: var(--c-white);
     color: var(--c-black);
+    overflow-x: hidden;
   }
 
   .challenge-detail__back {
@@ -3689,8 +3697,13 @@
     color: var(--c-black);
   }
 
+  .connect-wallet:focus-visible {
+    outline: 2px solid var(--c-green);
+    outline-offset: 2px;
+  }
+
   .connect-wallet--loading {
-    opacity: 0.4;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 
@@ -3732,6 +3745,11 @@
   .connect-wallet__disconnect:hover {
     background: var(--c-orange);
     color: var(--c-white);
+  }
+
+  .connect-wallet__disconnect:focus-visible {
+    outline: 2px solid var(--c-green);
+    outline-offset: 2px;
   }
 
   .miniapp__cta-wrap {
@@ -4692,6 +4710,10 @@
     border-color: var(--c-black);
   }
 
+  .profile__input:invalid:not(:placeholder-shown) {
+    border-color: var(--c-orange);
+  }
+
   .profile__toggle {
     display: flex;
     gap: 0;
@@ -5119,7 +5141,7 @@
   }
 
   [data-theme="dark"] .profile-tabs__tab {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.6);
   }
 
   [data-theme="dark"] .profile-tabs__tab--active {

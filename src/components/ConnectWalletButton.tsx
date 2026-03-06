@@ -15,7 +15,7 @@ export default function ConnectWalletButton() {
   }, [connectors, connect]);
 
   if (loading) {
-    return <button className="connect-wallet connect-wallet--loading" disabled>...</button>;
+    return <button className="connect-wallet connect-wallet--loading" disabled aria-busy="true" aria-label="Loading wallet">...</button>;
   }
 
   if (isConnected && user) {

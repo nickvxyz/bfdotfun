@@ -45,6 +45,7 @@ export default function ProfilePage() {
 
   // Weight entries for chart
   const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Dashboard stats
   const [stats, setStats] = useState<Stats>({
@@ -58,53 +59,55 @@ export default function ProfilePage() {
   });
   const [statsLoading, setStatsLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [entriesRes, burnRes, submissionsRes] = await Promise.all([
-        fetch("/api/weight-entries"),
-        fetch("/api/burn-units"),
-        fetch("/api/submissions"),
-      ]);
-
-      const { entries } = await entriesRes.json();
-      const { burn_units } = await burnRes.json();
-      const { submissions } = await submissionsRes.json();
-
-      setWeightEntries(entries || []);
-
-      const totalBurned = (burn_units || []).reduce(
-        (sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount),
-        0,
-      );
-      const unsubmitted = (burn_units || [])
-        .filter((b: { status: string }) => b.status === "unsubmitted")
-        .reduce((sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount), 0);
-
-      const submittedFromBurns = totalBurned - unsubmitted;
-      const retroKg = (submissions || [])
-        .filter((s: { submission_type: string }) => s.submission_type === "retrospective")
-        .reduce((sum: number, s: { kg_total: number }) => sum + Number(s.kg_total), 0);
-      const submitted = submittedFromBurns + retroKg;
-
-      setStats({
-        totalBurned: totalBurned + retroKg,
-        unsubmitted,
-        submitted,
-        entryCount: entries?.length || 0,
-        lastWeight: entries?.[0]?.weight_kg || null,
-        startWeight: user?.starting_weight || null,
-        goalWeight: user?.goal_weight || null,
-      });
-      setStatsLoading(false);
-    } catch {
-      setStatsLoading(false);
-    }
-  }, [user?.starting_weight, user?.goal_weight]);
-
   useEffect(() => {
+    let cancelled = false;
+    async function fetchData() {
+      try {
+        const [entriesRes, burnRes, submissionsRes] = await Promise.all([
+          fetch("/api/weight-entries"),
+          fetch("/api/burn-units"),
+          fetch("/api/submissions"),
+        ]);
+
+        const { entries } = await entriesRes.json();
+        const { burn_units } = await burnRes.json();
+        const { submissions } = await submissionsRes.json();
+
+        if (cancelled) return;
+
+        setWeightEntries(entries || []);
+
+        const totalBurned = (burn_units || []).reduce(
+          (sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount),
+          0,
+        );
+        const unsubmitted = (burn_units || [])
+          .filter((b: { status: string }) => b.status === "unsubmitted")
+          .reduce((sum: number, b: { kg_amount: number }) => sum + Number(b.kg_amount), 0);
+
+        const submittedFromBurns = totalBurned - unsubmitted;
+        const retroKg = (submissions || [])
+          .filter((s: { submission_type: string }) => s.submission_type === "retrospective")
+          .reduce((sum: number, s: { kg_total: number }) => sum + Number(s.kg_total), 0);
+        const submitted = submittedFromBurns + retroKg;
+
+        setStats({
+          totalBurned: totalBurned + retroKg,
+          unsubmitted,
+          submitted,
+          entryCount: entries?.length || 0,
+          lastWeight: entries?.[0]?.weight_kg || null,
+          startWeight: user?.starting_weight || null,
+          goalWeight: user?.goal_weight || null,
+        });
+        setStatsLoading(false);
+      } catch {
+        if (!cancelled) setStatsLoading(false);
+      }
+    }
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return () => { cancelled = true; };
+  }, [user, refreshKey]);
 
   const unit = user?.unit_pref === "lbs" ? "lbs" : "kg";
 
@@ -164,7 +167,7 @@ export default function ProfilePage() {
         setWeighInBodyFatPct("");
         setWeighInDate(new Date().toISOString().split("T")[0]);
         setWeighInOpen(false);
-        await fetchData();
+        setRefreshKey((k) => k + 1);
       } else {
         const data = await res.json();
         setWeighInError(data.error || "Failed to save");
@@ -245,11 +248,7 @@ export default function ProfilePage() {
   }, [resolvedBaseName]);
 
   // Auto-populate display name when Base Name resolves while checkbox is ticked
-  useEffect(() => {
-    if (baseNameChecked && resolvedBaseName) {
-      setDisplayName(resolvedBaseName);
-    }
-  }, [baseNameChecked, resolvedBaseName]);
+  const effectiveDisplayName = baseNameChecked && resolvedBaseName ? resolvedBaseName : displayName;
 
   // Verify user-entered Base Name
   const handleBaseNameVerify = useCallback(async () => {
@@ -323,7 +322,7 @@ export default function ProfilePage() {
   const effectiveBodyFatPct = useMemo(() => {
     if (user?.body_fat_pct) return user.body_fat_pct;
     return bodyFatPercent;
-  }, [user?.body_fat_pct, bodyFatPercent]);
+  }, [user, bodyFatPercent]);
 
   // Fat mass & lean mass from body fat % + current weight
   const fatMassKg = useMemo(() => {
@@ -344,7 +343,7 @@ export default function ProfilePage() {
   const isProfileSetup = !!(user?.starting_weight && user?.goal_weight && user?.height_cm && user?.display_name);
   const [editing, setEditing] = useState(false);
   const showForm = !isProfileSetup || editing;
-  const canSave = !!(displayName.trim() && heightCm && startingWeight && goalWeight);
+  const canSave = !!(effectiveDisplayName.trim() && heightCm && startingWeight && goalWeight);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -364,7 +363,7 @@ export default function ProfilePage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          display_name: displayName || null,
+          display_name: effectiveDisplayName || null,
           starting_weight: swKg,
           goal_weight: gwKg,
           height_cm: heightCm ? parseFloat(heightCm) : null,
@@ -643,7 +642,7 @@ export default function ProfilePage() {
             type="text"
             className="profile__input"
             placeholder="Your name"
-            value={displayName}
+            value={effectiveDisplayName}
             disabled={baseNameChecked}
             onChange={(e) => setDisplayName(e.target.value)}
             required
@@ -724,6 +723,7 @@ export default function ProfilePage() {
                 placeholder="10"
                 value={heightIn}
                 onChange={(e) => handleInChange(e.target.value)}
+                required
               />
               <span className="profile__height-separator">in</span>
             </div>

@@ -22,7 +22,7 @@ export default function BodyFatMeter({ bodyFatPercent }: BodyFatMeterProps) {
   const currentZone = ZONES.find((z) => bodyFatPercent <= z.max) ?? ZONES[ZONES.length - 1];
 
   return (
-    <div className="bf-meter">
+    <div className="bf-meter" role="figure" aria-label={`Body fat meter: ${bodyFatPercent.toFixed(1)}% — ${currentZone.label}`}>
       <div className="bf-meter__header">
         <span className="bf-meter__label">body fat</span>
         <span className="bf-meter__value">

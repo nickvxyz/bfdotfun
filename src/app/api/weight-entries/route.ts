@@ -59,11 +59,15 @@ function recalculateDeltas() {
   }
 }
 
-async function getSession() {
+async function getSession(): Promise<{ userId: string } | null> {
   const c = await cookies();
   const raw = c.get("bf_session")?.value;
   if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
+    return parsed;
+  } catch { return null; }
 }
 
 export async function GET() {
@@ -156,6 +160,9 @@ export async function POST(request: NextRequest) {
     delta_kg,
   };
   if (fat_mass_kg != null) {
+    if (Number(fat_mass_kg) > Number(weight_kg)) {
+      return NextResponse.json({ error: "Fat mass cannot exceed total weight" }, { status: 400 });
+    }
     insertData.fat_mass_kg = fat_mass_kg;
   }
 

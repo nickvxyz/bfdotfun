@@ -41,7 +41,7 @@ export default function FaqAccordion() {
 
         return (
           <div
-            key={index}
+            key={`faq-${index}`}
             className={`faq__item${isOpen ? " faq__item--open" : ""}`}
             role="listitem"
           >

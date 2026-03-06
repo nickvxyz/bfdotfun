@@ -18,7 +18,16 @@ export async function GET(request: NextRequest) {
   const sessionRaw = cookieStore.get("bf_session")?.value;
   if (!sessionRaw) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const session = JSON.parse(sessionRaw);
+  let session: { userId: string };
+  try {
+    const parsed = JSON.parse(sessionRaw);
+    if (!parsed?.userId || typeof parsed.userId !== "string") {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
+    session = parsed;
+  } catch {
+    return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+  }
   const { createAdminClient } = await import("@/lib/supabase/admin");
   const supabase = createAdminClient();
 
