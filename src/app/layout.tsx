@@ -70,15 +70,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Anti-flash: apply saved theme before first paint */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}})();`,
-          }}
-        />
-      </head>
+    <html lang="en" data-theme="dark">
+      <head />
       <body className={`${inter.variable} ${chakraPetch.variable} ${ibmPlexMono.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>

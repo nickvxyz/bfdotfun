@@ -68,7 +68,7 @@ function generateEntry(lastPseudonym: string, id: number, secsAgo: number): Feed
       return { id, name, action: `committed to burn ${kg} kg`, color: "feed__item--yellow", icon: "bolt", kgDelta: 0, timestamp };
     }
     case "milestone": {
-      const milestones = ["hit 10 kg burned", "hit 25 kg burned", "hit 50 kg total", "reached goal weight"];
+      const milestones = ["hit 10 kg burned", "hit 25 kg burned", "hit 50 kg total", "reached target weight"];
       const m = milestones[Math.floor(Math.random() * milestones.length)];
       return { id, name, action: m, color: "feed__item--green", icon: "trophy", kgDelta: 0, timestamp };
     }

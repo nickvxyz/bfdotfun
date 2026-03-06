@@ -1135,26 +1135,6 @@
     animation: counter-bump 0.3s ease;
   }
 
-  /* Theme Toggle */
-  .theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: inherit;
-    opacity: 0.4;
-    cursor: pointer;
-    padding: 12px;
-    min-width: 44px;
-    min-height: 44px;
-    transition: opacity 0.15s;
-  }
-
-  .theme-toggle:hover {
-    opacity: 0.8;
-  }
-
   /* Header */
   .header {
     position: fixed;
@@ -1342,8 +1322,8 @@
     opacity: 1;
   }
 
-  /* Mobile menu overlay */
-  .header__mobile-menu {
+  /* Full-screen overlay menu (desktop + mobile) */
+  .header__overlay {
     position: fixed;
     top: 56px;
     left: 0;
@@ -1352,13 +1332,26 @@
     z-index: 999;
     background: var(--c-white);
     display: flex;
-    flex-direction: column;
-    padding: 24px 32px;
-    gap: 0;
+    align-items: center;
+    justify-content: center;
     animation: header-slide-in 0.2s ease-out;
   }
 
-  .header__mobile-link {
+  .header__overlay-card {
+    width: 100%;
+    max-width: 28rem;
+    text-align: center;
+    margin-top: -80px;
+    padding: 0 24px;
+  }
+
+  .header__overlay-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .header__overlay-link {
     font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 16px;
     padding: 16px 0;
@@ -1370,20 +1363,33 @@
     border-right: none;
     border-top: none;
     cursor: pointer;
-    text-align: left;
+    text-align: center;
     width: 100%;
     transition: opacity 0.15s;
   }
 
-  .header__mobile-link:hover {
+  .header__overlay-link:hover {
     opacity: 0.6;
   }
 
-  .header__mobile-link--danger {
+  .header__overlay-link--danger {
     color: var(--c-orange);
   }
 
-  .header__mobile-signin {
+  .header__overlay-actions {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .header__overlay-subtitle {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    color: var(--c-muted);
+  }
+
+  .header__overlay-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1399,11 +1405,10 @@
     border: 1px solid var(--c-black);
     cursor: pointer;
     transition: all 0.15s;
-    margin-top: 16px;
     width: 100%;
   }
 
-  .header__mobile-signin:hover {
+  .header__overlay-btn:hover {
     background: transparent;
     color: var(--c-black);
   }
@@ -3855,16 +3860,18 @@
 
   .dash-home__metrics {
     display: flex;
-    gap: 40px;
+    gap: 32px;
     align-items: flex-start;
     margin-top: 20px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .dash-home__metric {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    flex-shrink: 1;
   }
 
   .dash-home__metric-label {
@@ -3872,14 +3879,20 @@
     font-size: var(--fs-label);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    opacity: 0.45;
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    height: 14px;
   }
 
   .dash-home__current-weight {
     font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
-    font-size: clamp(28px, 6vw, 40px);
+    font-size: clamp(18px, 3vw, 24px);
     font-weight: 700;
     line-height: 1;
+    white-space: nowrap;
   }
 
   .dash-home__current-unit {
@@ -3890,9 +3903,10 @@
 
   .dash-home__metric-value {
     font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
-    font-size: clamp(20px, 4vw, 28px);
+    font-size: clamp(18px, 3vw, 24px);
     font-weight: 700;
     line-height: 1;
+    white-space: nowrap;
   }
 
   .dash-home__metric-value--empty {
@@ -3908,7 +3922,7 @@
 
   .dash-home__bmi-number {
     font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
-    font-size: clamp(28px, 6vw, 40px);
+    font-size: clamp(18px, 3vw, 24px);
     font-weight: 700;
     line-height: 1;
   }
@@ -3922,16 +3936,17 @@
   }
 
   .dash-home__bmi-info {
-    font-size: 16px;
+    font-size: var(--fs-label);
     opacity: 0.35;
     cursor: pointer;
     background: none;
     border: none;
     color: inherit;
-    padding: 4px;
+    padding: 0;
     line-height: 1;
-    margin-left: 4px;
+    margin-left: 2px;
     transition: opacity 0.15s;
+    vertical-align: middle;
   }
 
   .dash-home__bmi-info:hover {
@@ -3941,7 +3956,7 @@
   .dash-home__bmi-info-wrap {
     position: relative;
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
   }
 
   .dash-home__bmi-tooltip {
@@ -3981,6 +3996,56 @@
     color: var(--c-white);
   }
 
+  /* Weight Progress Row */
+  .weight-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 32px;
+    margin-bottom: 36px;
+  }
+
+  .weight-progress-row__target {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Weight Progress Bar */
+  .weight-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .weight-progress__bar {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: clamp(12px, 2vw, 16px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .weight-progress__empty {
+    color: rgba(255, 255, 255, 0.1);
+  }
+
+  .weight-progress__pct {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .dash-home__counter {
     display: flex;
     flex-direction: column;
@@ -4018,7 +4083,7 @@
   /* Stats Grid (inside counter frame) */
   .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     width: 100%;
     padding: 20px 24px 0;
@@ -5466,21 +5531,21 @@
     border-top-color: rgba(255, 255, 255, 0.08);
   }
 
-  [data-theme="dark"] .header__mobile-menu {
+  [data-theme="dark"] .header__overlay {
     background: var(--c-black);
   }
 
-  [data-theme="dark"] .header__mobile-link {
+  [data-theme="dark"] .header__overlay-link {
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
-  [data-theme="dark"] .header__mobile-signin {
+  [data-theme="dark"] .header__overlay-btn {
     background: var(--c-white);
     color: var(--c-black);
     border-color: var(--c-white);
   }
 
-  [data-theme="dark"] .header__mobile-signin:hover {
+  [data-theme="dark"] .header__overlay-btn:hover {
     background: transparent;
     color: var(--c-white);
   }
@@ -5827,9 +5892,9 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  /* Profile: metrics row wraps at tablet */
+  /* Profile: metrics row — tighter gap at tablet */
   .dash-home__metrics {
-    gap: 24px;
+    gap: 20px;
   }
 }
 
@@ -6000,9 +6065,9 @@
 
   /* ── Profile page — mobile ── */
 
-  /* Metrics: reduce gap, let chips wrap naturally */
+  /* Metrics: tight gap on mobile, stay in one row */
   .dash-home__metrics {
-    gap: 20px;
+    gap: 16px;
   }
 
   /* Stats grid: 2-col stays on mobile, reduce padding */

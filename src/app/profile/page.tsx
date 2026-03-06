@@ -7,7 +7,6 @@ import { useAuth } from "@/lib/auth";
 import { useBaseName } from "@/hooks/useBaseName";
 import { IS_DEV_MODE } from "@/lib/dev";
 import WeightChart from "@/components/WeightChart";
-import BodyFatMeter from "@/components/BodyFatMeter";
 import { ChallengesTab } from "@/components/ChallengesTab";
 
 interface WeightEntry {
@@ -26,6 +25,31 @@ interface Stats {
   lastWeight: number | null;
   startWeight: number | null;
   goalWeight: number | null;
+}
+
+const PROGRESS_BLOCKS = 20;
+
+function progressColor(pct: number): string {
+  // Red (0%) → Yellow (50%) → Green (100%)
+  const r = pct < 50 ? 255 : Math.round(255 - (pct - 50) * 5.1);
+  const g = pct < 50 ? Math.round(pct * 5.1) : 255;
+  return `rgb(${r}, ${g}, 40)`;
+}
+
+function ProgressBar({ progress }: { progress: number }) {
+  const filled = Math.round((progress / 100) * PROGRESS_BLOCKS);
+  const empty = PROGRESS_BLOCKS - filled;
+  const color = progressColor(progress);
+
+  return (
+    <div className="weight-progress">
+      <div className="weight-progress__bar">
+        <span style={{ color }}>{"█".repeat(filled)}</span>
+        <span className="weight-progress__empty">{"░".repeat(empty)}</span>
+      </div>
+      <span className="weight-progress__pct" style={{ color }}>{progress}%</span>
+    </div>
+  );
 }
 
 export default function ProfilePage() {
@@ -429,35 +453,37 @@ export default function ProfilePage() {
             </p>
           </div>
           <div className="dash-home__metric">
-            <span className="dash-home__metric-label">bmi</span>
+            <span className="dash-home__metric-label">
+              bmi
+              <span
+                className="dash-home__bmi-info-wrap"
+                onMouseEnter={() => setBmiHovered(true)}
+                onMouseLeave={() => setBmiHovered(false)}
+              >
+                <button
+                  type="button"
+                  className="dash-home__bmi-info"
+                  onClick={() => setBmiTooltipOpen(!bmiTooltipOpen)}
+                  aria-label="BMI info"
+                  aria-expanded={bmiTooltipOpen || bmiHovered}
+                >
+                  &#9432;
+                </button>
+                {(bmiHovered || bmiTooltipOpen) && (
+                  <div className="dash-home__bmi-tooltip" role="tooltip">
+                    <span className={`dash-home__bmi-grade${bmi !== null && bmi < 18.5 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--underweight`}>&lt;18.5 Underweight</span>
+                    <span className={`dash-home__bmi-grade${bmi !== null && bmi >= 18.5 && bmi < 25 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--normal`}>18.5–24.9 Normal</span>
+                    <span className={`dash-home__bmi-grade${bmi !== null && bmi >= 25 && bmi < 30 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--overweight`}>25–29.9 Overweight</span>
+                    <span className={`dash-home__bmi-grade${bmi !== null && bmi >= 30 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--obese`}>30+ Obese</span>
+                  </div>
+                )}
+              </span>
+            </span>
             {bmi !== null && bmiCategory ? (
               <div className="dash-home__bmi-display">
                 <span className="dash-home__bmi-number">{bmi.toFixed(1)}</span>
                 <span className={`dash-home__bmi-category profile__bmi-label--${bmiCategory.modifier}`}>
                   {bmiCategory.label}
-                </span>
-                <span
-                  className="dash-home__bmi-info-wrap"
-                  onMouseEnter={() => setBmiHovered(true)}
-                  onMouseLeave={() => setBmiHovered(false)}
-                >
-                  <button
-                    type="button"
-                    className="dash-home__bmi-info"
-                    onClick={() => setBmiTooltipOpen(!bmiTooltipOpen)}
-                    aria-label="BMI info"
-                    aria-expanded={bmiTooltipOpen || bmiHovered}
-                  >
-                    &#9432;
-                  </button>
-                  {(bmiHovered || bmiTooltipOpen) && (
-                    <div className="dash-home__bmi-tooltip" role="tooltip">
-                      <span className={`dash-home__bmi-grade${bmi < 18.5 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--underweight`}>&lt;18.5 Underweight</span>
-                      <span className={`dash-home__bmi-grade${bmi >= 18.5 && bmi < 25 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--normal`}>18.5–24.9 Normal</span>
-                      <span className={`dash-home__bmi-grade${bmi >= 25 && bmi < 30 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--overweight`}>25–29.9 Overweight</span>
-                      <span className={`dash-home__bmi-grade${bmi >= 30 ? " dash-home__bmi-grade--active" : ""} profile__bmi-label--obese`}>30+ Obese</span>
-                    </div>
-                  )}
                 </span>
               </div>
             ) : (
@@ -483,9 +509,19 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Body Fat Meter — only shown when fat mass data exists */}
-      {bodyFatPercent !== null && (
-        <BodyFatMeter bodyFatPercent={bodyFatPercent} />
+      {/* Weight Progress Bar — terminal style */}
+      {progress !== null && startWeightForProgress && goalWeightForProgress && (
+        <div className="weight-progress-row">
+          <div className="weight-progress-row__target">
+            <span className="dash-home__metric-label">target weight</span>
+            <p className="dash-home__current-weight">
+              {unitPref === "lbs"
+                ? (goalWeightForProgress * 2.20462).toFixed(1)
+                : goalWeightForProgress.toFixed(1)} <span className="dash-home__current-unit">{unit}</span>
+            </p>
+          </div>
+          <ProgressBar progress={Math.max(0, Math.min(100, progress))} />
+        </div>
       )}
 
       {/* Weight Progress Chart */}
@@ -493,7 +529,6 @@ export default function ProfilePage() {
         <WeightChart
           entries={weightEntries}
           goalWeight={user?.goal_weight ?? null}
-          heightCm={user?.height_cm ?? null}
           unitPref={unitPref}
         />
       )}
@@ -507,6 +542,30 @@ export default function ProfilePage() {
         <span className="dash-home__counter-label">total burned</span>
 
         <div className="stats-grid">
+          <div className="stats-grid__card">
+            <span className="stats-grid__value">
+              {user?.starting_weight
+                ? unitPref === "lbs"
+                  ? (user.starting_weight * 2.20462).toFixed(1)
+                  : user.starting_weight.toFixed(1)
+                : "—"}
+            </span>
+            <span className="stats-grid__label">
+              starting {unit}
+            </span>
+          </div>
+          <div className="stats-grid__card">
+            <span className="stats-grid__value">
+              {user?.height_cm
+                ? unitPref === "lbs"
+                  ? `${Math.floor(user.height_cm / 30.48)}'${Math.round((user.height_cm % 30.48) / 2.54)}"`
+                  : `${user.height_cm}`
+                : "—"}
+            </span>
+            <span className="stats-grid__label">
+              height {unitPref === "lbs" ? "ft/in" : "cm"}
+            </span>
+          </div>
           <div className="stats-grid__card">
             <span className="stats-grid__value">
               {statsLoading ? "—" : stats.unsubmitted.toFixed(1)}
@@ -533,7 +592,7 @@ export default function ProfilePage() {
             <span className="stats-grid__value">
               {progress !== null ? `${progress}%` : "—"}
             </span>
-            <span className="stats-grid__label">goal progress</span>
+            <span className="stats-grid__label">target progress</span>
           </div>
         </div>
       </div>
@@ -749,7 +808,7 @@ export default function ProfilePage() {
           </div>
           <div className="profile__field">
             <label className="profile__label" htmlFor="profile-goal">
-              Goal Weight ({unitPref})
+              Target Weight ({unitPref})
             </label>
             <input
               id="profile-goal"

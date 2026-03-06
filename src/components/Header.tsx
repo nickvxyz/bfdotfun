@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccount, useConnect } from "wagmi";
 import { useAuth } from "@/lib/auth";
-import ThemeToggle from "@/components/ThemeToggle";
 
 function BaseLogo() {
   return (
@@ -40,28 +39,15 @@ export default function Header() {
   const { connectors, connectAsync } = useConnect();
   const { user, loading, beginSignIn, cancelSignIn, signIn, signOut, devMode } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isAuthed = !!user;
   const short = user?.wallet_address
     ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
     : "";
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    }
-    if (dropdownOpen) document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [dropdownOpen]);
-
   const handleSignIn = useCallback(async () => {
     if (loading) return; // Prevent double-click during auth
 
-    setDropdownOpen(false);
     setMenuOpen(false);
 
     // Set guard BEFORE connectAsync to prevent useEffect race
@@ -91,7 +77,6 @@ export default function Header() {
   }, [devMode, loading, beginSignIn, cancelSignIn, signIn, connectors, connectAsync, router, isConnected]);
 
   const handleSignOut = useCallback(() => {
-    setDropdownOpen(false);
     setMenuOpen(false);
     signOut();
   }, [signOut]);
@@ -108,49 +93,29 @@ export default function Header() {
         </nav>
 
         <div className="header__right">
-          <ThemeToggle />
-
           {isAuthed ? (
-            <div className="header__user" ref={dropdownRef}>
+            <div className="header__user">
               <button
                 className="header__user-btn"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                aria-expanded={dropdownOpen}
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-expanded={menuOpen}
               >
                 <BaseLogo />
                 <span className="header__user-name">{user?.display_name || short}</span>
               </button>
-              {dropdownOpen && (
-                <div className="header__dropdown">
-                  <Link href="/profile" className="header__dropdown-item" onClick={() => setDropdownOpen(false)}>Profile</Link>
-                  <button className="header__dropdown-item header__dropdown-item--danger" onClick={handleSignOut}>
-                    Sign Out
-                  </button>
-                </div>
-              )}
             </div>
           ) : (
-            <div className="header__signin" ref={dropdownRef}>
+            <div className="header__signin">
               {loading ? (
                 <span className="header__loading" aria-live="polite" aria-busy="true">Signing in...</span>
               ) : (
-                <>
-                  <button
-                    className="header__signin-btn"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                    aria-expanded={dropdownOpen}
-                  >
-                    Sign In
-                  </button>
-                  {dropdownOpen && (
-                    <div className="header__dropdown">
-                      <button className="header__dropdown-item header__dropdown-item--base" onClick={handleSignIn}>
-                        <BaseLogo />
-                        Sign in with Base
-                      </button>
-                    </div>
-                  )}
-                </>
+                <button
+                  className="header__signin-btn"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  aria-expanded={menuOpen}
+                >
+                  Sign In
+                </button>
               )}
             </div>
           )}
@@ -167,23 +132,26 @@ export default function Header() {
       </header>
 
       {menuOpen && (
-        <div className="header__mobile-menu">
-          <Link href="/feed" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Live Feed</Link>
-          <Link href="/coaches" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Coaches</Link>
-          <Link href="/challenges" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Challenges</Link>
-          {isAuthed ? (
-            <>
-              <Link href="/profile" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Profile</Link>
-              <button className="header__mobile-link header__mobile-link--danger" onClick={handleSignOut}>Sign Out</button>
-            </>
-          ) : loading ? (
-            <span className="header__loading" aria-live="polite" aria-busy="true">Signing in...</span>
-          ) : (
-            <button className="header__mobile-signin" onClick={handleSignIn}>
-              <BaseLogo />
-              Sign in with Base
-            </button>
-          )}
+        <div className="header__overlay">
+          <div className="header__overlay-card">
+            <nav className="header__overlay-nav">
+              <Link href="/feed" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Live Feed</Link>
+              <Link href="/coaches" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Coaches</Link>
+              <Link href="/challenges" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Challenges</Link>
+              {isAuthed ? (
+                <>
+                  <Link href="/profile" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Profile</Link>
+                  <button className="header__overlay-link header__overlay-link--danger" onClick={handleSignOut}>Sign Out</button>
+                </>
+              ) : loading ? (
+                <span className="header__loading" aria-live="polite" aria-busy="true">Signing in...</span>
+              ) : (
+                <button className="header__overlay-link" onClick={handleSignIn}>
+                  Sign in with Base
+                </button>
+              )}
+            </nav>
+          </div>
         </div>
       )}
     </>

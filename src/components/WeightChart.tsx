@@ -13,7 +13,6 @@ interface WeightEntry {
 interface WeightChartProps {
   entries: WeightEntry[];
   goalWeight: number | null;
-  heightCm: number | null;
   unitPref: "kg" | "lbs";
 }
 
@@ -32,8 +31,6 @@ const PAD_TOP = 24;
 const PAD_BOTTOM = 32;
 const PAD_LEFT = 52;
 const PAD_RIGHT = 16;
-const BMI_SECTION_H = 40;
-
 function convertWeight(kg: number, unit: "kg" | "lbs"): number {
   return unit === "lbs" ? kg * 2.20462 : kg;
 }
@@ -42,23 +39,12 @@ function formatWeight(kg: number, unit: "kg" | "lbs"): string {
   return convertWeight(kg, unit).toFixed(1);
 }
 
-function bmiFromKg(weightKg: number, heightCm: number): number {
-  const heightM = heightCm / 100;
-  return weightKg / (heightM * heightM);
-}
-
-function bmiColor(bmi: number): string {
-  if (bmi < 18.5) return "var(--c-yellow)";
-  if (bmi < 25) return "var(--c-green)";
-  return "var(--c-orange)";
-}
-
 function dateLabel(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-export default function WeightChart({ entries, goalWeight, heightCm, unitPref }: WeightChartProps) {
+export default function WeightChart({ entries, goalWeight, unitPref }: WeightChartProps) {
   const [range, setRange] = useState<TimeRange>("M");
 
   const filteredEntries = useMemo(() => {
@@ -72,8 +58,7 @@ export default function WeightChart({ entries, goalWeight, heightCm, unitPref }:
       .sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
   }, [entries, range]);
 
-  const showBmi = heightCm != null && heightCm > 0;
-  const totalH = showBmi ? CHART_H + BMI_SECTION_H : CHART_H;
+  const totalH = CHART_H;
 
   const { points, yMin, yMax, xLabels, goalY } = useMemo(() => {
     if (filteredEntries.length === 0) {
@@ -143,38 +128,6 @@ export default function WeightChart({ entries, goalWeight, heightCm, unitPref }:
     }
     return ticks;
   }, [filteredEntries.length, yMin, yMax]);
-
-  // BMI trend line segments
-  const bmiSegments = useMemo(() => {
-    if (!showBmi || filteredEntries.length < 2) return [];
-
-    const plotW = CHART_W - PAD_LEFT - PAD_RIGHT;
-
-    // BMI range for y-axis: 15 to 40
-    const bmiMin = 15;
-    const bmiMax = 40;
-    const bmiPlotTop = CHART_H + 4;
-
-    const segments: { x1: number; y1: number; x2: number; y2: number; color: string }[] = [];
-
-    for (let i = 0; i < filteredEntries.length - 1; i++) {
-      const e1 = filteredEntries[i];
-      const e2 = filteredEntries[i + 1];
-      const bmi1 = bmiFromKg(e1.weight_kg, heightCm!);
-      const bmi2 = bmiFromKg(e2.weight_kg, heightCm!);
-
-      const x1 = PAD_LEFT + (i / (filteredEntries.length - 1)) * plotW;
-      const x2 = PAD_LEFT + ((i + 1) / (filteredEntries.length - 1)) * plotW;
-
-      const y1 = bmiPlotTop + BMI_SECTION_H - ((Math.min(Math.max(bmi1, bmiMin), bmiMax) - bmiMin) / (bmiMax - bmiMin)) * (BMI_SECTION_H - 8);
-      const y2 = bmiPlotTop + BMI_SECTION_H - ((Math.min(Math.max(bmi2, bmiMin), bmiMax) - bmiMin) / (bmiMax - bmiMin)) * (BMI_SECTION_H - 8);
-
-      const avgBmi = (bmi1 + bmi2) / 2;
-      segments.push({ x1, y1, x2, y2, color: bmiColor(avgBmi) });
-    }
-
-    return segments;
-  }, [showBmi, filteredEntries, heightCm]);
 
   const hasData = filteredEntries.length > 0;
 
@@ -300,39 +253,6 @@ export default function WeightChart({ entries, goalWeight, heightCm, unitPref }:
               );
             })}
 
-            {/* BMI trend section */}
-            {showBmi && bmiSegments.length > 0 && (
-              <>
-                {/* Separator line */}
-                <line
-                  x1={PAD_LEFT}
-                  y1={CHART_H + 2}
-                  x2={CHART_W - PAD_RIGHT}
-                  y2={CHART_H + 2}
-                  className="weight-chart__grid-line"
-                />
-                <text
-                  x={PAD_LEFT - 8}
-                  y={CHART_H + BMI_SECTION_H / 2 + 4}
-                  textAnchor="end"
-                  className="weight-chart__bmi-label"
-                >
-                  BMI
-                </text>
-                {bmiSegments.map((seg, i) => (
-                  <line
-                    key={i}
-                    x1={seg.x1}
-                    y1={seg.y1}
-                    x2={seg.x2}
-                    y2={seg.y2}
-                    stroke={seg.color}
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                  />
-                ))}
-              </>
-            )}
           </>
         )}
       </svg>
