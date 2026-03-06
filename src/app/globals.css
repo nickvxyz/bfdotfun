@@ -1376,6 +1376,13 @@
     color: var(--c-orange);
   }
 
+  .header__overlay-link--signin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
   .header__overlay-actions {
     margin-top: 32px;
     display: flex;

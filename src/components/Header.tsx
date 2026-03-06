@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { useAccount, useConnect } from "wagmi";
 import { useAuth } from "@/lib/auth";
 
-function BaseLogo() {
+function BaseLogo({ size = 16 }: { size?: number }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 1280 1280" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size} height={size} viewBox="0 0 1280 1280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", flexShrink: 0 }}>
       <path d="M0,101.12c0-34.64,0-51.95,6.53-65.28,6.25-12.76,16.56-23.07,29.32-29.32C49.17,0,66.48,0,101.12,0h1077.76c34.63,0,51.96,0,65.28,6.53,12.75,6.25,23.06,16.56,29.32,29.32,6.52,13.32,6.52,30.64,6.52,65.28v1077.76c0,34.63,0,51.96-6.52,65.28-6.26,12.75-16.57,23.06-29.32,29.32-13.32,6.52-30.65,6.52-65.28,6.52H101.12c-34.64,0-51.95,0-65.28-6.52-12.76-6.26-23.07-16.57-29.32-29.32-6.53-13.32-6.53-30.65-6.53-65.28V101.12Z" fill="#0052FF"/>
     </svg>
   );
@@ -146,7 +146,8 @@ export default function Header() {
               ) : loading ? (
                 <span className="header__loading" aria-live="polite" aria-busy="true">Signing in...</span>
               ) : (
-                <button className="header__overlay-link" onClick={handleSignIn}>
+                <button className="header__overlay-link header__overlay-link--signin" onClick={handleSignIn}>
+                  <BaseLogo />
                   Sign in with Base
                 </button>
               )}
