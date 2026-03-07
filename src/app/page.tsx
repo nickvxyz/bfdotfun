@@ -14,13 +14,6 @@ export default function Home() {
           <p className="miniapp__subtitle">A Public Ledger for Fat Burned</p>
         </div>
 
-        <Countdown />
-
-        <div className="miniapp__waitlist">
-          <p className="miniapp__waitlist-label">Get Early Access</p>
-          <WaitlistForm />
-        </div>
-
         <div className="miniapp__counter">
           <LiveCounter label="" hook="You fight to burn every gram, kilogram, pound of fat. The Fat Burn Ledger records it permanently." />
         </div>
@@ -45,6 +38,13 @@ export default function Home() {
               <p className="miniapp__card-desc">Create a company counter. Employees submit weigh-ins, run wellness challenges with prize pools. All results recorded permanently.</p>
             </div>
           </div>
+        </div>
+
+        <Countdown />
+
+        <div className="miniapp__waitlist">
+          <p className="miniapp__waitlist-label">Get Early Access</p>
+          <WaitlistForm />
         </div>
 
         <p className="miniapp__launching">Launching shortly.</p>
