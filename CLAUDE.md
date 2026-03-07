@@ -22,7 +22,8 @@ Multi-layer web app: live counter + activity feed, user accounts, coach accounts
 - `src/app/page.tsx` — server component, static HTML sections
 - `src/app/globals.css` — ALL styles (BEM, @layer components)
 - `src/app/layout.tsx` — root layout
-- `src/components/LiveCounter.tsx` — counter animation, banner rotation (client)
+- `src/components/LiveCounter.tsx` — global counter (accumulates burned kg from feed) + animated burn feed (client)
+- `src/components/Countdown.tsx` — countdown timer to Genesis event, March 12 2026 15:00 CET (client)
 - `src/components/WaitlistForm.tsx` — email + consent, submits to Formspree (client)
 - `src/components/FaqAccordion.tsx` — accordion toggle, ARIA attrs (client) [currently hidden]
 - `src/app/privacy/page.tsx` — static privacy policy
@@ -40,8 +41,10 @@ Multi-layer web app: live counter + activity feed, user accounts, coach accounts
 
 ## Key patterns
 - SVG icons: inline React components, `ICONS` map for dynamic render
-- Activity feed: rotates every 4s via `setInterval` in `useEffect`
-- Counter increments when feed item has `kgDelta > 0`
+- Activity feed: rotates via random interval in `useEffect`
+- Counter: accumulates kgDelta from orange "burned" feed items, bump animation on increment
+- Countdown: terminal green `#00ff00`, date line blue `#2d6abf`
+- Landing page order: title → countdown → waitlist → counter/feed → cards
 - Waitlist: Formspree `https://formspree.io/f/mbdayrbn`
 - FAQ: single open item state `null | number` — section currently hidden via `display:none`
 

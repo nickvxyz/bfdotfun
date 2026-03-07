@@ -108,6 +108,8 @@ function formatNumber(num: number) {
 // --- Component ---
 
 export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
+  const [counterValue, setCounterValue] = useState(0);
+  const [isBumping, setIsBumping] = useState(false);
   const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
   const [enterId, setEnterId] = useState<number | null>(null);
 
@@ -124,6 +126,12 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
 
       setEnterId(id);
       setItems(prev => [newItem, ...prev.slice(0, VISIBLE_COUNT)]);
+
+      if (newItem.kgDelta > 0) {
+        setCounterValue(v => v + newItem.kgDelta);
+        setIsBumping(true);
+        setTimeout(() => setIsBumping(false), 300);
+      }
 
       cleanupTimeout.current = setTimeout(() => {
         setEnterId(null);
@@ -153,8 +161,8 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
 
       <div className="counter">
         <div className="counter__row">
-          <span className="counter__number">
-            {formatNumber(0)}
+          <span className={`counter__number${isBumping ? " bump" : ""}`}>
+            {formatNumber(counterValue)}
           </span>
           <span className="counter__unit">KG</span>
         </div>
