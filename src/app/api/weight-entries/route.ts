@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
         if (cweError) console.error("Failed to insert challenge_weight_entry:", cweError);
       }
 
-      // If positive delta, update burn unit and create auto-submission (once, for the first challenge)
+      // If positive delta, attribute burn unit to first challenge and create auto-submission per challenge
       if (delta_kg > 0 && burnUnitId) {
         const firstParticipation = participations[0] as unknown as { challenge_id: string };
         const { error: burnUpdateError } = await supabase
@@ -237,14 +237,18 @@ export async function POST(request: NextRequest) {
           .eq("id", burnUnitId);
         if (burnUpdateError) console.error("Failed to update burn unit for challenge:", burnUpdateError);
 
-        const { error: subError } = await supabase.from("submissions").insert({
-          submitter_id: session.userId,
-          kg_total: delta_kg,
-          usdc_amount: 0,
-          tx_hash: `challenge-auto-${entry.id}`,
-          submission_type: "challenge_auto",
-        });
-        if (subError) console.error("Failed to create challenge auto-submission:", subError);
+        // Create auto-submission for EACH active challenge (unique tx_hash per challenge)
+        for (const rawParticipation of participations) {
+          const participation = rawParticipation as unknown as { challenge_id: string };
+          const { error: subError } = await supabase.from("submissions").insert({
+            submitter_id: session.userId,
+            kg_total: delta_kg,
+            usdc_amount: 0,
+            tx_hash: `challenge-auto-${entry.id}-${participation.challenge_id}`,
+            submission_type: "challenge_auto",
+          });
+          if (subError) console.error("Failed to create challenge auto-submission:", subError);
+        }
       }
     }
   } catch (err) {

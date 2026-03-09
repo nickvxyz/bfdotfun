@@ -23,7 +23,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 ## Routes
 
 ### Pages
-- `/` — landing page (server component): GateModal, Header, LiveCounter, WaitlistForm, card sections
+- `/` — landing page (server component): GateModal, Header, Hero, Counter+Feed, StorySection (scroll-reveal), Truth, Countdown+WaitlistForm
 - `/app` — Farcaster mini app (client): platform detection, GateModal (skipped for Base App)
 - `/feed` — pseudo-live activity feed with generated entries
 - `/coaches` — coach directory (mock data)
@@ -65,6 +65,8 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `ConnectWalletButton.tsx` — wallet connection states (connect / sign in / connected)
 - `GateModal.tsx` — "How it works" overlay, localStorage dismiss, try/catch for webview
 - `WaitlistForm.tsx` — email + consent → Formspree
+- `StorySection.tsx` — emotional narrative with IntersectionObserver scroll-reveal animation
+- `Countdown.tsx` — countdown timer to Genesis event, March 12 2026 15:00 CET
 - `FaqAccordion.tsx` — FAQ items with ARIA (currently hidden)
 - `WeightChart.tsx` — custom SVG weight chart with W/M/3M/Y time range tabs, goal line, BMI trend
 - `BodyFatMeter.tsx` — horizontal body fat % bar with colored zones (lean/healthy/elevated/high)
@@ -113,7 +115,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **Monospace fonts only:** SF Mono → Fira Code → Consolas
 - **Responsive:** `clamp()` for typography, breakpoints at 900px and 768px
 - **Alternating sections:** black/white backgrounds
-- **Dark-only theme** — `data-theme="dark"` hardcoded on `<html>`, no toggle, no light mode. Legacy `[data-theme="dark"]` overrides still exist in CSS but are always active
+- **Light theme (default)** — no `data-theme` attribute on `<html>`. Legacy `[data-theme="dark"]` overrides exist in CSS but are inactive. No theme toggle.
 
 ## Code style
 - **Early returns** — reduce nesting, improve readability

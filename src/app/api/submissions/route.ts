@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 
 import { IS_DEV_MODE } from "@/lib/dev";
 
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
 // In-memory store for dev mode — starts empty, persists within server session
 export const devSubmissions: Array<{
   id: string;
@@ -117,55 +119,57 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ submission: existing });
   }
 
-  // Verify transaction on-chain
-  try {
-    const { baseSepoliaClient } = await import("@/lib/viem");
-    const { BURNFAT_TREASURY_ABI } = await import("@/lib/contracts/BurnFatTreasury");
+  // Verify transaction on-chain (skipped in demo mode)
+  if (!IS_DEMO) {
+    try {
+      const { baseSepoliaClient } = await import("@/lib/viem");
+      const { BURNFAT_TREASURY_ABI } = await import("@/lib/contracts/BurnFatTreasury");
 
-    const receipt = await baseSepoliaClient.getTransactionReceipt({
-      hash: tx_hash as `0x${string}`,
-    });
+      const receipt = await baseSepoliaClient.getTransactionReceipt({
+        hash: tx_hash as `0x${string}`,
+      });
 
-    if (receipt.status !== "success") {
-      return NextResponse.json({ error: "Transaction failed on-chain" }, { status: 400 });
+      if (receipt.status !== "success") {
+        return NextResponse.json({ error: "Transaction failed on-chain" }, { status: 400 });
+      }
+
+      // Parse BurnSubmitted event from logs
+      const { parseEventLogs } = await import("viem");
+      const burnEvents = parseEventLogs({
+        abi: BURNFAT_TREASURY_ABI,
+        eventName: "BurnSubmitted",
+        logs: receipt.logs,
+      });
+
+      if (burnEvents.length === 0) {
+        return NextResponse.json({ error: "No BurnSubmitted event found" }, { status: 400 });
+      }
+
+      const event = burnEvents[0];
+      const onChainKg = Number(event.args.kgAmount);
+      const onChainUsdc = Number(event.args.usdcAmount);
+
+      if (onChainKg !== kg_total) {
+        return NextResponse.json(
+          { error: `On-chain kg (${onChainKg}) doesn't match submitted kg (${kg_total})` },
+          { status: 400 },
+        );
+      }
+
+      // Calculate expected USDC amount (6 decimals)
+      const pricePerKg = submission_type === "retrospective" ? 500_000 : 1_000_000;
+      const expectedUsdc = kg_total * pricePerKg;
+
+      if (onChainUsdc !== expectedUsdc) {
+        return NextResponse.json(
+          { error: "USDC amount mismatch" },
+          { status: 400 },
+        );
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Verification failed";
+      return NextResponse.json({ error: `TX verification failed: ${message}` }, { status: 400 });
     }
-
-    // Parse BurnSubmitted event from logs
-    const { parseEventLogs } = await import("viem");
-    const burnEvents = parseEventLogs({
-      abi: BURNFAT_TREASURY_ABI,
-      eventName: "BurnSubmitted",
-      logs: receipt.logs,
-    });
-
-    if (burnEvents.length === 0) {
-      return NextResponse.json({ error: "No BurnSubmitted event found" }, { status: 400 });
-    }
-
-    const event = burnEvents[0];
-    const onChainKg = Number(event.args.kgAmount);
-    const onChainUsdc = Number(event.args.usdcAmount);
-
-    if (onChainKg !== kg_total) {
-      return NextResponse.json(
-        { error: `On-chain kg (${onChainKg}) doesn't match submitted kg (${kg_total})` },
-        { status: 400 },
-      );
-    }
-
-    // Calculate expected USDC amount (6 decimals)
-    const pricePerKg = submission_type === "retrospective" ? 500_000 : 1_000_000;
-    const expectedUsdc = kg_total * pricePerKg;
-
-    if (onChainUsdc !== expectedUsdc) {
-      return NextResponse.json(
-        { error: "USDC amount mismatch" },
-        { status: 400 },
-      );
-    }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Verification failed";
-    return NextResponse.json({ error: `TX verification failed: ${message}` }, { status: 400 });
   }
 
   // Insert submission (trigger auto-increments global_counter)

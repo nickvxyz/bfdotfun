@@ -13,9 +13,9 @@ export default function Countdown() {
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
-    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
+    const raf = requestAnimationFrame(() => setNow(new Date()));
+    return () => { clearInterval(id); cancelAnimationFrame(raf); };
   }, []);
 
   if (!now) {

@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSendCalls } from "wagmi";
+import { useSendCalls, useConfig } from "wagmi";
+import { getCallsStatus } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
 import { baseSepolia } from "viem/chains";
 import { IS_DEV_MODE } from "@/lib/dev";
+
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 import { CHALLENGE_POOL_ADDRESS, CHALLENGE_POOL_ABI } from "@/lib/contracts/ChallengePool";
 import { USDC_ADDRESS, ERC20_ABI } from "@/lib/contracts/erc20";
 
@@ -33,6 +36,7 @@ export function useChallengeCreate({
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const config = useConfig();
   const { sendCallsAsync } = useSendCalls();
 
   const reset = useCallback(() => {
@@ -54,6 +58,19 @@ export function useChallengeCreate({
         setTxHash(fakeTxHash);
         setState("success");
         return { txHash: fakeTxHash, contractChallengeId: Math.floor(Math.random() * 1000) + 1 };
+      }
+
+      // Demo mode: realistic delays, fake tx hash, no chain call
+      if (IS_DEMO) {
+        setState("confirming");
+        await new Promise(r => setTimeout(r, 2000));
+        setState("verifying");
+        await new Promise(r => setTimeout(r, 1500));
+
+        const demoTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
+        setTxHash(demoTxHash);
+        setState("success");
+        return { txHash: demoTxHash, contractChallengeId: Math.floor(Math.random() * 1000) + 1 };
       }
 
       if (!CHALLENGE_POOL_ADDRESS || !USDC_ADDRESS) {
@@ -83,13 +100,36 @@ export function useChallengeCreate({
       });
 
       const batchId = callsId.id;
-      setTxHash(batchId);
       setState("verifying");
 
-      // Extract contract_challenge_id from event — not available synchronously from batch
-      // The backend will need to parse this from the receipt
+      // Poll getCallsStatus for real tx hash (same pattern as useBurnSubmit)
+      const MAX_POLLS = 60;
+      const POLL_INTERVAL = 2000;
+      let realTxHash: string | null = null;
+
+      for (let i = 0; i < MAX_POLLS; i++) {
+        const result = await getCallsStatus(config, { id: batchId });
+
+        if (result.status === "success" && result.receipts?.length) {
+          realTxHash = result.receipts[result.receipts.length - 1].transactionHash;
+          break;
+        }
+
+        if (result.status === "failure") {
+          throw new Error("Transaction failed on-chain");
+        }
+
+        await new Promise(r => setTimeout(r, POLL_INTERVAL));
+      }
+
+      if (!realTxHash) {
+        throw new Error("Timed out waiting for transaction confirmation");
+      }
+
+      setTxHash(realTxHash);
       setState("success");
-      return { txHash: batchId, contractChallengeId: null };
+      // Backend will parse contract_challenge_id from the receipt
+      return { txHash: realTxHash, contractChallengeId: null };
     } catch (err) {
       const message = err instanceof Error ? err.message : "Transaction failed";
       if (message.includes("User rejected") || message.includes("denied")) {
@@ -100,7 +140,7 @@ export function useChallengeCreate({
       setState("error");
       return null;
     }
-  }, [prizePoolUsdc, endsAt, claimDeadline, sendCallsAsync]);
+  }, [prizePoolUsdc, endsAt, claimDeadline, sendCallsAsync, config]);
 
   return { submit, state, error, reset, txHash };
 }

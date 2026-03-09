@@ -6,6 +6,8 @@ import { getCallsStatus } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
 import { baseSepolia } from "viem/chains";
 import { IS_DEV_MODE } from "@/lib/dev";
+
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 import { BURNFAT_TREASURY_ADDRESS, BURNFAT_TREASURY_ABI } from "@/lib/contracts/BurnFatTreasury";
 import { USDC_ADDRESS, ERC20_ABI } from "@/lib/contracts/erc20";
 import { calculateCostUsdc } from "@/lib/pricing";
@@ -65,6 +67,37 @@ export function useBurnSubmit({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             tx_hash: fakeTxHash,
+            kg_total: kgAmount,
+            submission_type: isRetrospective ? "retrospective" : "individual",
+            burn_unit_ids: burnUnitIds,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Submission failed");
+        }
+
+        setState("success");
+        onSuccess?.();
+        return;
+      }
+
+      // Demo mode: realistic delays, fake tx hash, real backend recording
+      if (IS_DEMO) {
+        setState("confirming");
+        await new Promise(r => setTimeout(r, 2000));
+        setState("verifying");
+        await new Promise(r => setTimeout(r, 1500));
+
+        const demoTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
+        setTxHash(demoTxHash);
+
+        const res = await fetch("/api/submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tx_hash: demoTxHash,
             kg_total: kgAmount,
             submission_type: isRetrospective ? "retrospective" : "individual",
             burn_unit_ids: burnUnitIds,

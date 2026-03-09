@@ -50,10 +50,15 @@
 @layer components {
   /* Hero */
   .hero {
-    padding: 80px 48px;
+    padding: 120px 48px 120px;
+    padding-top: calc(120px + 56px);
     background: var(--c-white);
     color: var(--c-black);
     border-bottom: 2px solid var(--c-black);
+  }
+
+  .hero__content {
+    max-width: 720px;
   }
 
   .hero__label {
@@ -68,7 +73,7 @@
 
   .hero__title {
     font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
-    font-size: clamp(36px, 8vw, 72px);
+    font-size: clamp(36px, 6vw, 64px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0.1em;
@@ -78,18 +83,42 @@
 
   .hero__subtitle {
     font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.8;
     opacity: 0.7;
-    max-width: 640px;
+    max-width: 560px;
   }
 
-  .hero__trust {
+  /* CTA Block — question + button pattern */
+  .cta-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .cta-block__question {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .cta-block .cta {
+    margin-top: 0;
+  }
+
+  .cta-block__sub {
     font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 13px;
-    line-height: 1.6;
     opacity: 0.35;
-    margin-top: 16px;
+    margin-top: 12px;
+  }
+
+  .cta-block--dark .cta-block__question {
+    color: var(--c-white);
   }
 
   /* Statement Section */
@@ -183,6 +212,7 @@
     margin-top: 16px;
   }
 
+
   .counter-section__hook-line {
     font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
     font-size: 14px;
@@ -241,6 +271,7 @@
     font-weight: 900;
     line-height: 1;
     transition: transform 0.2s;
+    color: var(--c-white);
   }
 
   .counter__unit {
@@ -375,8 +406,9 @@
   }
 
   .cta:hover {
-    background: transparent;
-    color: var(--c-white);
+    background: var(--c-green);
+    color: var(--c-black);
+    border-color: var(--c-green);
   }
 
   .cta--inverted {
@@ -386,8 +418,9 @@
   }
 
   .cta--inverted:hover {
-    background: transparent;
+    background: var(--c-green);
     color: var(--c-black);
+    border-color: var(--c-green);
   }
 
   .cta svg {
@@ -623,6 +656,166 @@
   }
 
   /* Truth Section */
+  /* Countdown */
+  .countdown {
+    margin-bottom: 48px;
+  }
+
+  .countdown__title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  .countdown__timer {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .countdown__segment {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(36px, 8vw, 64px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .countdown__unit {
+    font-size: clamp(14px, 2vw, 20px);
+    opacity: 0.4;
+    margin-left: 2px;
+  }
+
+  .countdown__sep {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(24px, 5vw, 40px);
+    font-weight: 700;
+    opacity: 0.2;
+  }
+
+  .countdown__date {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    opacity: 0.35;
+    letter-spacing: 0.05em;
+  }
+
+  .countdown__live {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(36px, 8vw, 64px);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--c-green);
+    margin-bottom: 16px;
+  }
+
+  /* Burners (Early Adopters) */
+  .burners {
+    padding: 120px 48px;
+    background: var(--c-white);
+    color: var(--c-black);
+    border-bottom: 2px solid var(--c-black);
+  }
+
+  .burners__label {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-green);
+    opacity: 0.6;
+    margin-bottom: 32px;
+  }
+
+  .burners__title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .burners__sub {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 15px;
+    line-height: 1.7;
+    opacity: 0.5;
+    max-width: 520px;
+    margin-bottom: 48px;
+  }
+
+  .burners__track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+  }
+
+  .burners__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .burners__card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+    border: 2px solid var(--c-black);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .burners__dots {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .burners__dot {
+    width: 8px;
+    height: 8px;
+    background: var(--c-black);
+    opacity: 0.2;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s;
+  }
+
+  .burners__dot:hover {
+    opacity: 0.6;
+  }
+
+  .burners__goal {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-green);
+  }
+
+  .burners__quote {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.65;
+    font-style: italic;
+  }
+
   .truth {
     padding: 120px 48px;
     background: var(--c-black);
@@ -641,10 +834,18 @@
     line-height: 1.6;
     max-width: 720px;
     opacity: 0.9;
+    border-left: 3px solid var(--c-green);
+    padding-left: 24px;
   }
 
   .truth__cta {
     margin-top: 48px;
+  }
+
+  .truth .cta:hover {
+    background: var(--c-green);
+    color: var(--c-black);
+    border-color: var(--c-green);
   }
 
   /* Launch Section (Countdown + Waitlist) */
@@ -718,6 +919,13 @@
     cursor: pointer;
     white-space: nowrap;
     margin-left: -2px;
+    transition: all 0.2s;
+  }
+
+  .launch-section .waitlist-section__button:hover {
+    background: var(--c-green);
+    color: var(--c-black);
+    border-color: var(--c-green);
   }
 
   .launch-section .waitlist-section__button:disabled {
@@ -796,7 +1004,7 @@
 
   /* Story Section */
   .story {
-    padding: 100px 48px;
+    padding: 120px 48px;
     background: var(--c-white);
     color: var(--c-black);
     border-bottom: 2px solid var(--c-black);
@@ -808,7 +1016,8 @@
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    opacity: 0.35;
+    color: var(--c-green);
+    opacity: 0.6;
     margin-bottom: 32px;
   }
 
@@ -899,10 +1108,26 @@
 
   .story__text--punchline.story__text--visible {
     opacity: 1;
+    color: var(--c-green);
   }
 
-  .story__cta {
-    margin-top: 48px;
+
+  .story__expand {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--c-green);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 16px;
+    transition: opacity 0.2s;
+  }
+
+  .story__expand:hover {
+    opacity: 0.7;
   }
 
   .story__link {
@@ -912,6 +1137,181 @@
 
   .story__link:hover {
     opacity: 0.7;
+  }
+
+  /* Story typewriter cursor */
+  .story__text--typewriter::after {
+    content: "\2588";
+    animation: cursor-blink 0.6s step-end infinite;
+    margin-left: 1px;
+    color: var(--c-green);
+    opacity: 0.7;
+  }
+
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0; }
+  }
+
+  /* How It Works Section */
+  .how-it-works {
+    padding: 120px 48px;
+    background: var(--c-white);
+    color: var(--c-black);
+    border-bottom: 2px solid var(--c-black);
+  }
+
+  .how-it-works__label {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-green);
+    opacity: 0.6;
+    margin-bottom: 32px;
+  }
+
+  .how-it-works__title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .how-it-works__steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    max-width: 960px;
+  }
+
+  .how-it-works__step {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .how-it-works__number {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--c-green);
+    opacity: 0.35;
+  }
+
+  .how-it-works__step-title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .how-it-works__step-desc {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.55;
+  }
+
+  /* Footer (expanded) */
+  .footer-main {
+    padding: 64px 48px 32px;
+    background: var(--c-black);
+    color: var(--c-white);
+    border-top: 2px solid var(--c-white);
+  }
+
+  .footer-main__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .footer-main__brand-name {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .footer-main__brand-desc {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    opacity: 0.45;
+    max-width: 320px;
+  }
+
+  .footer-main__col-title {
+    font-family: var(--font-title), "Square 721 Extended", "Microgramma", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-bottom: 16px;
+  }
+
+  .footer-main__links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-main__link {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 13px;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+
+  .footer-main__link:hover {
+    opacity: 1;
+  }
+
+  .footer-main__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-main__copy {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 11px;
+    opacity: 0.3;
+  }
+
+  .footer-main__socials {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-main__social {
+    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
+    font-size: 11px;
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: opacity 0.15s;
+  }
+
+  .footer-main__social:hover {
+    opacity: 1;
   }
 
   /* Building Section */
@@ -6232,6 +6632,10 @@
     gap: 32px;
   }
 
+  .burners__card {
+    flex: 0 0 240px;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -6244,7 +6648,17 @@
 
 @media (max-width: 768px) {
   .hero {
-    padding: 48px 24px;
+    padding: calc(48px + 56px) 24px 48px;
+  }
+
+  .hero__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .hero__title {
+    order: 1;
   }
 
   .statement {
@@ -6288,11 +6702,15 @@
   }
 
   .story {
-    padding: 64px 24px;
+    padding: 80px 24px;
   }
 
   .truth {
     padding: 80px 24px;
+  }
+
+  .countdown__timer {
+    gap: 4px;
   }
 
   .launch-section {
@@ -6305,6 +6723,32 @@
     padding-right: 8px;
     font-size: 10px;
     letter-spacing: 0.05em;
+  }
+
+  .how-it-works {
+    padding: 64px 24px;
+  }
+
+  .how-it-works__steps {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .burners {
+    padding: 64px 24px;
+  }
+
+  .burners__card {
+    flex: 0 0 220px;
+  }
+
+  .footer-main {
+    padding: 48px 24px 24px;
+  }
+
+  .footer-main__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
   }
 
   .building {

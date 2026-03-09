@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import CTAButton from "@/components/CTAButton";
 
 const PARAGRAPHS = [
   {
@@ -65,20 +66,47 @@ const PARAGRAPHS = [
   },
 ];
 
+const VISIBLE_COUNT = 7;
+
 export default function StorySection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const expandedRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const paragraphs = container.querySelectorAll(".story__text");
+  const observeParagraphs = useCallback((root: HTMLElement) => {
+    const paragraphs = root.querySelectorAll(".story__text:not(.story__text--observed)");
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            (entry.target as HTMLElement).classList.add("story__text--visible");
+            const el = entry.target as HTMLElement;
+            el.classList.add("story__text--visible");
+
+            if (
+              el.classList.contains("story__text--accent") ||
+              el.classList.contains("story__text--strong") ||
+              el.classList.contains("story__text--break") ||
+              el.classList.contains("story__text--punchline")
+            ) {
+              el.classList.add("story__text--typewriter");
+              const text = el.textContent || "";
+              el.textContent = "";
+              el.style.opacity = "1";
+              let i = 0;
+              const speed = el.classList.contains("story__text--break") ? 60 : 30;
+              function type() {
+                if (i < text.length) {
+                  el.textContent = text.slice(0, i + 1);
+                  i++;
+                  setTimeout(type, speed);
+                } else {
+                  el.classList.remove("story__text--typewriter");
+                }
+              }
+              type();
+            }
+
             observer.unobserve(entry.target);
           }
         });
@@ -86,9 +114,29 @@ export default function StorySection() {
       { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
     );
 
-    paragraphs.forEach((p) => observer.observe(p));
+    paragraphs.forEach((p) => {
+      p.classList.add("story__text--observed");
+      observer.observe(p);
+    });
+
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    return observeParagraphs(container);
+  }, [observeParagraphs]);
+
+  useEffect(() => {
+    if (expanded && expandedRef.current) {
+      return observeParagraphs(expandedRef.current);
+    }
+  }, [expanded, observeParagraphs]);
+
+  const handleExpand = () => {
+    setExpanded(true);
+  };
 
   return (
     <section className="story" ref={containerRef}>
@@ -97,20 +145,33 @@ export default function StorySection() {
       <h3 className="story__subheadline">You Know That Morning.</h3>
 
       <div className="story__content">
-        {PARAGRAPHS.map((p, i) => (
-          <p key={i} className={p.className}>
+        {PARAGRAPHS.slice(0, VISIBLE_COUNT).map((p, i) => (
+          <p key={i} className={`${p.className} story__text--visible`}>
             {p.text}
           </p>
         ))}
+
+        {!expanded && (
+          <button className="story__expand" onClick={handleExpand}>
+            Read the full story &rarr;
+          </button>
+        )}
+
+        {expanded && (
+          <div ref={expandedRef}>
+            {PARAGRAPHS.slice(VISIBLE_COUNT).map((p, i) => (
+              <p key={i + VISIBLE_COUNT} className={p.className}>
+                {p.text}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
-      <a href="#" className="cta cta--inverted story__cta">
-        <span>Launch Your Counter</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-          <line x1="5" y1="12" x2="19" y2="12" />
-          <polyline points="12 5 19 12 12 19" />
-        </svg>
-      </a>
+      <div className="cta-block">
+        <p className="cta-block__question">Ready to be seen?</p>
+        <CTAButton>Put Your Result on the Record</CTAButton>
+      </div>
     </section>
   );
 }
