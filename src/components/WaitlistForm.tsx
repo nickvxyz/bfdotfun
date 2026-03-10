@@ -40,7 +40,7 @@ export default function WaitlistForm() {
   return (
     <form onSubmit={handleSubmit}>
       {submitted ? (
-        <p className="waitlist-section__success">You&apos;re on the list.</p>
+        <p className="waitlist-section__success">You&apos;re in. We&apos;ll be in touch.</p>
       ) : (
         <>
           <div className="waitlist-section__form">
@@ -57,7 +57,7 @@ export default function WaitlistForm() {
               className="waitlist-section__button"
               disabled={!consent || submitting}
             >
-              {submitting ? "Sending..." : "Get Early Access"}
+              {submitting ? "Sending..." : "Subscribe"}
             </button>
           </div>
           {error && <p className="waitlist-section__error">{error}</p>}
@@ -69,7 +69,7 @@ export default function WaitlistForm() {
               className="waitlist-section__checkbox"
             />
             <span>
-              I agree to receive launch updates. See our{" "}
+              I agree to receive updates from BurnFat.fun. See our{" "}
               <a href="/privacy" className="waitlist-section__link">Privacy Policy</a>.
             </span>
           </label>

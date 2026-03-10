@@ -27,6 +27,15 @@
 
 ---
 
+### UX (Claude Code — Sonnet)
+**Role:** UI/UX reviewer and fixer
+**Owns:** Visual design, accessibility, responsiveness, interaction quality
+**Called by:** Forge after reviewer passes, or founder directly
+**Fixes:** Edits components and CSS directly — not read-only
+**Never:** changes business logic, routing, or API code
+
+---
+
 ### Codex (OpenAI — external)
 **Role:** Smart contract engineer + security auditor
 **Owns:**
@@ -53,6 +62,7 @@
 | Frontend ↔ contract interface | Codex audits, Forge implements |
 | Codebase exploration | Explorer |
 | Post-change review | Reviewer |
+| UI/UX review + fixes | UX |
 
 ## Rule
 No member works outside their boundary without explicit founder approval.

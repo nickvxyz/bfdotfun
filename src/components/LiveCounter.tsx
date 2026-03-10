@@ -109,7 +109,23 @@ function formatNumber(num: number) {
 
 export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
   const [counterValue, setCounterValue] = useState(0);
-  const [isBumping, setIsBumping] = useState(false);
+
+  // Fetch real counter value on mount
+  useEffect(() => {
+    async function fetchCounter() {
+      try {
+        const res = await fetch("/api/counter");
+        if (res.ok) {
+          const data = await res.json();
+          const totalKg = Number(data.total_kg);
+          if (isFinite(totalKg)) setCounterValue(totalKg);
+        }
+      } catch {
+        // Fall back to 0
+      }
+    }
+    fetchCounter();
+  }, []);
   const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
   const [enterId, setEnterId] = useState<number | null>(null);
 
@@ -127,11 +143,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
       setEnterId(id);
       setItems(prev => [newItem, ...prev.slice(0, VISIBLE_COUNT)]);
 
-      if (newItem.kgDelta > 0) {
-        setCounterValue(v => v + newItem.kgDelta);
-        setIsBumping(true);
-        setTimeout(() => setIsBumping(false), 300);
-      }
+      // Feed is cosmetic only — counter shows real DB value, not fake increments
 
       cleanupTimeout.current = setTimeout(() => {
         setEnterId(null);
@@ -161,7 +173,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
 
       <div className="counter">
         <div className="counter__row">
-          <span className={`counter__number${isBumping ? " bump" : ""}`}>
+          <span className="counter__number">
             {formatNumber(counterValue)}
           </span>
           <span className="counter__unit">KG</span>

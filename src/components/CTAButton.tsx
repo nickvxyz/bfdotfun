@@ -1,0 +1,29 @@
+"use client";
+
+export default function CTAButton({
+  children,
+  variant = "inverted",
+  className,
+}: {
+  children: React.ReactNode;
+  variant?: "default" | "inverted";
+  className?: string;
+}) {
+  const handleClick = () => {
+    const el = document.getElementById("waitlist");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <button
+      className={`cta${variant === "inverted" ? " cta--inverted" : ""}${className ? ` ${className}` : ""}`}
+      onClick={handleClick}
+    >
+      <span>{children}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <line x1="5" y1="12" x2="19" y2="12" />
+        <polyline points="12 5 19 12 12 19" />
+      </svg>
+    </button>
+  );
+}

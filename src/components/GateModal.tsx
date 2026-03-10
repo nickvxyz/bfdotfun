@@ -1,30 +1,37 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect, useSyncExternalStore } from "react";
+
+function getGateVisible() {
+  try {
+    return !localStorage.getItem("gate_dismissed");
+  } catch {
+    return true;
+  }
+}
+
+function subscribeGate(cb: () => void) {
+  window.addEventListener("storage", cb);
+  return () => window.removeEventListener("storage", cb);
+}
 
 export default function GateModal() {
-  const [visible, setVisible] = useState(false);
+  const shouldShow = useSyncExternalStore(subscribeGate, getGateVisible, () => false);
+  const [dismissed, setDismissed] = useState(false);
   const [exiting, setExiting] = useState(false);
+  const visible = shouldShow && !dismissed;
 
   useEffect(() => {
-    try {
-      if (!localStorage.getItem("gate_dismissed")) {
-        setVisible(true);
-        document.body.style.overflow = "hidden";
-      }
-    } catch {
-      // localStorage unavailable (e.g. Base App webview) — show modal anyway
-      setVisible(true);
-      document.body.style.overflow = "hidden";
-    }
-  }, []);
+    document.body.style.overflow = visible ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [visible]);
 
   const handleDismiss = useCallback(() => {
     setExiting(true);
     setTimeout(() => {
       try { localStorage.setItem("gate_dismissed", "true"); } catch { /* no-op */ }
       document.body.style.overflow = "";
-      setVisible(false);
+      setDismissed(true);
     }, 300);
   }, []);
 
@@ -69,7 +76,7 @@ export default function GateModal() {
           </a>
           {" | "}
           <a href="/privacy" target="_blank" rel="noopener noreferrer">
-            Terms of service
+            Terms of use
           </a>
         </p>
       </div>
