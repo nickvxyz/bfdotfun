@@ -1,5 +1,10 @@
 "use client";
 
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useAccount, useConnect } from "wagmi";
+import { useAuth } from "@/lib/auth";
+
 export default function CTAButton({
   children,
   variant = "inverted",
@@ -9,15 +14,52 @@ export default function CTAButton({
   variant?: "default" | "inverted";
   className?: string;
 }) {
-  const handleClick = () => {
-    const el = document.getElementById("waitlist");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+  const router = useRouter();
+  const { user, beginSignIn, signIn, cancelSignIn } = useAuth();
+  const { address, isConnected } = useAccount();
+  const { connectors, connect } = useConnect();
+
+  const handleClick = useCallback(async () => {
+    if (user) {
+      router.push("/profile");
+      return;
+    }
+
+    beginSignIn();
+    try {
+      if (!isConnected) {
+        const connector = connectors[0];
+        if (!connector) return;
+        connect(
+          { connector },
+          {
+            onSuccess: (data) => {
+              const connectedAddress = data.accounts[0];
+              if (connectedAddress) {
+                signIn(connectedAddress).then((success) => {
+                  if (success) router.push("/profile");
+                });
+              }
+            },
+            onError: () => {
+              cancelSignIn();
+            },
+          },
+        );
+      } else if (address) {
+        const success = await signIn(address);
+        if (success) router.push("/profile");
+      }
+    } catch {
+      cancelSignIn();
+    }
+  }, [user, beginSignIn, cancelSignIn, signIn, isConnected, address, connectors, connect, router]);
 
   return (
     <button
       className={`cta${variant === "inverted" ? " cta--inverted" : ""}${className ? ` ${className}` : ""}`}
       onClick={handleClick}
+      aria-label={user ? "Go to profile" : "Sign in to get started"}
     >
       <span>{children}</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
