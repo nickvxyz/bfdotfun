@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function BurgerIcon() {
   return (
@@ -23,13 +24,18 @@ function CloseIcon() {
 }
 
 export default function Header() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const scrollToWaitlist = useCallback(() => {
     setMenuOpen(false);
     const el = document.getElementById("waitlist");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  }, []);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      router.push("/#waitlist");
+    }
+  }, [router]);
 
   return (
     <>
