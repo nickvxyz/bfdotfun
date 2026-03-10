@@ -141,6 +141,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **SVG icons:** inline React components, `ICONS` map for dynamic render
 - **Activity feed:** cosmetic only — generates entries with weighted random types, does NOT increment counter (counter shows real DB value only)
 - **Waitlist:** Formspree `https://formspree.io/f/mbdayrbn`
+- **Countdown CSS:** single style block (lines ~660-727 in globals.css) using `clamp()` + `var(--c-green)`. Old miniapp-era duplicate block was removed — do NOT re-add a second `.countdown` block
 
 ## Smart contract — BurnFatTreasury
 - Deployed on Base Sepolia (testnet for closed community testing)

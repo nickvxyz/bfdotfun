@@ -705,6 +705,7 @@
     font-size: 13px;
     opacity: 0.35;
     letter-spacing: 0.05em;
+    margin-top: 12px;
   }
 
   .countdown__live {
@@ -714,6 +715,12 @@
     letter-spacing: 0.15em;
     color: var(--c-green);
     margin-bottom: 16px;
+    animation: pulse-live 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 
   /* Burners (Early Adopters) */
@@ -1642,78 +1649,6 @@
     color: var(--c-green);
   }
 
-  /* Countdown */
-  .countdown {
-    text-align: center;
-    padding: 40px 24px 48px;
-  }
-
-  .countdown__title {
-    font-family: var(--font-title, "SF Mono", monospace);
-    font-size: clamp(13px, 2.5vw, 16px);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--c-black);
-    margin-bottom: 16px;
-  }
-
-  .countdown__timer {
-    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
-    font-size: clamp(14px, 3.5vw, 24px);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #00ff00;
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .countdown__segment {
-    display: inline-flex;
-    align-items: baseline;
-  }
-
-  .countdown__unit {
-    font-size: 0.6em;
-    opacity: 0.5;
-    margin-left: 1px;
-  }
-
-  .countdown__sep {
-    opacity: 0.3;
-    margin: 0 2px;
-  }
-
-  .countdown__live {
-    font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
-    font-size: clamp(14px, 3.5vw, 24px);
-    font-weight: 700;
-    color: #00ff00;
-    animation: pulse-live 1.5s ease-in-out infinite;
-  }
-
-  @keyframes pulse-live {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  .countdown__date {
-    font-family: var(--font-title, "SF Mono", monospace);
-    font-size: clamp(13px, 2.5vw, 16px);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #2d6abf;
-    margin-top: 12px;
-  }
-
-  [data-theme="dark"] .countdown__title {
-    color: #ffffff;
-  }
-
-  [data-theme="dark"] .countdown__timer {
-    color: #00ff00;
-  }
 
   .miniapp__launching {
     font-family: "SF Mono", var(--font-body), "Menlo", "Courier New", monospace;
@@ -6780,10 +6715,6 @@
 
   .truth {
     padding: 80px 24px;
-  }
-
-  .countdown__timer {
-    gap: 4px;
   }
 
   .launch-section {
