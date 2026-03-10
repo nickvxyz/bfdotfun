@@ -5,7 +5,6 @@ import GateModal from "@/components/GateModal";
 import Header from "@/components/Header";
 import Countdown from "@/components/Countdown";
 import StorySection from "@/components/StorySection";
-import BurnersCarousel from "@/components/BurnersCarousel";
 import CTAButton from "@/components/CTAButton";
 
 export default function Home() {
@@ -19,7 +18,7 @@ export default function Home() {
         <div className="hero__content">
           <h1 className="hero__title">
             Every Kilogram Matters.<br />
-            Every Fat Burner Is a Hero.
+            Every Fat Burner Is a Superhero.
           </h1>
           <p className="hero__subtitle">
             You fight to burn every gram, kilogram, pound of fat. Now add it to the global counter and take your place among millions of people who refused to quit. Your result deserves to be on the record.
@@ -83,9 +82,6 @@ export default function Home() {
       {/* SECTION 4 — The Story → shapes: These people are just like me */}
       <StorySection />
 
-      {/* SECTION 5 — Early Burners → shapes: Real people are already here */}
-      <BurnersCarousel />
-
       {/* SECTION 7 — The Uncomfortable Truth → shapes: I need this */}
       <section className="truth">
         <p className="truth__text">
@@ -97,7 +93,7 @@ export default function Home() {
       {/* SECTION 8 — Countdown + Subscribe */}
       <section className="launch-section">
         <Countdown />
-        <div className="launch-section__waitlist">
+        <div id="waitlist" className="launch-section__waitlist">
           <p className="launch-section__waitlist-label">Stay in the loop</p>
           <WaitlistForm />
         </div>

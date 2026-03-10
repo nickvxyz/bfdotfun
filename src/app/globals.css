@@ -4623,7 +4623,7 @@
     font-size: var(--fs-label);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.45);
+    color: var(--c-muted);
     white-space: nowrap;
     display: flex;
     align-items: center;
@@ -4778,7 +4778,7 @@
   }
 
   .weight-progress__empty {
-    color: rgba(255, 255, 255, 0.1);
+    color: rgba(0, 0, 0, 0.15);
   }
 
   .weight-progress__pct {

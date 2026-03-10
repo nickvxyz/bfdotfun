@@ -23,7 +23,7 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 ## Routes
 
 ### Pages
-- `/` — landing page (server component): GateModal, Header, Hero, Counter+Feed, StorySection (scroll-reveal), Truth, Countdown+WaitlistForm
+- `/` — landing page (server component): GateModal, Header, Hero ("Every Fat Burner Is a Superhero"), Counter+Feed, HowItWorks, StorySection (scroll-reveal, VISIBLE_COUNT=3), Truth, Countdown+WaitlistForm. **Production mode:** all CTAs and Header "Join Waitlist" scroll to `#waitlist` (auth disabled). To re-enable auth: restore CTAButton.tsx and Header.tsx from dev branch git history.
 - `/app` — Farcaster mini app (client): platform detection, GateModal (skipped for Base App)
 - `/feed` — pseudo-live activity feed with generated entries
 - `/coaches` — coach directory (mock data)

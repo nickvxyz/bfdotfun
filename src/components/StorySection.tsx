@@ -29,6 +29,10 @@ const PARAGRAPHS = [
     className: "story__text story__text--strong",
   },
   {
+    text: "You set a goal that felt impossible, you suffered for it, you showed up on days you had zero motivation, and you won. That\u2019s not discipline. That\u2019s a superpower.",
+    className: "story__text story__text--accent",
+  },
+  {
     text: "And then\u2026 nothing.",
     className: "story__text story__text--break",
   },
@@ -66,7 +70,7 @@ const PARAGRAPHS = [
   },
 ];
 
-const VISIBLE_COUNT = 7;
+const VISIBLE_COUNT = 3;
 
 export default function StorySection() {
   const containerRef = useRef<HTMLDivElement>(null);
