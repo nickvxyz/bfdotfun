@@ -1997,7 +1997,7 @@
   .header__loading {
     font-family: var(--font-body), "Space Mono", "Menlo", "Courier New", monospace;
     font-size: 12px;
-    opacity: 0.3;
+    color: var(--c-muted);
   }
 
   /* Sign In button */
@@ -2040,14 +2040,14 @@
     font-size: 12px;
     padding: 6px 12px;
     background: none;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    color: inherit;
+    border: 1px solid var(--c-border-ember);
+    color: var(--c-white);
     cursor: pointer;
     transition: border-color 0.15s;
   }
 
   .header__user-btn:hover {
-    border-color: rgba(0, 0, 0, 0.3);
+    border-color: var(--c-ember);
   }
 
   .header__user-name {
@@ -2063,9 +2063,9 @@
     top: calc(100% + 6px);
     right: 0;
     min-width: 200px;
-    background: var(--c-white);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    background: var(--c-black-alt);
+    border: 1px solid var(--c-border-ember);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 1001;
     display: flex;
     flex-direction: column;
@@ -2081,7 +2081,7 @@
     padding: 12px 16px;
     background: none;
     border: none;
-    color: inherit;
+    color: var(--c-white);
     text-decoration: none;
     cursor: pointer;
     transition: background 0.1s;
@@ -2090,11 +2090,11 @@
   }
 
   .header__dropdown-item:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: rgba(255, 107, 26, 0.08);
   }
 
   .header__dropdown-item + .header__dropdown-item {
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid var(--c-border-ember);
   }
 
   .header__dropdown-item--base {
@@ -2102,7 +2102,7 @@
   }
 
   .header__dropdown-item--danger {
-    color: var(--c-orange);
+    color: var(--c-ember);
   }
 
   /* Burger — hidden on desktop */
@@ -2197,6 +2197,7 @@
     font-family: var(--font-body), "Space Mono", "Menlo", "Courier New", monospace;
     font-size: 14px;
     color: var(--c-muted);
+    text-align: center;
   }
 
   .header__overlay-btn {
