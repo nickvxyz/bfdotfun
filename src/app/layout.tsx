@@ -1,23 +1,18 @@
 import type { Metadata } from "next";
-import { Inter, Chakra_Petch, IBM_Plex_Mono } from "next/font/google";
+import { Orbitron, Space_Mono } from "next/font/google";
 import Providers from "@/providers/Providers";
 import "./globals.css";
 
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const chakraPetch = Chakra_Petch({
-  weight: "700",
+const orbitron = Orbitron({
+  weight: ["700", "900"],
   subsets: ["latin"],
   variable: "--font-title",
   display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  weight: ["400", "500", "700"],
+const spaceMono = Space_Mono({
+  weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -72,7 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head />
-      <body className={`${inter.variable} ${chakraPetch.variable} ${ibmPlexMono.variable} antialiased`}>
+      <body className={`${orbitron.variable} ${spaceMono.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

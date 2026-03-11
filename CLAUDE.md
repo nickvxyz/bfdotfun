@@ -108,14 +108,16 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 ## Design system rules
 - **BEM only:** `.block__element--modifier`
 - **All styles in** `globals.css` `@layer components` — no style tags, no CSS modules
-- **Colors (CSS vars):** `--c-black`, `--c-white`, `--c-green`, `--c-orange`, `--c-yellow`, `--c-muted`, `--c-muted-light`
+- **Colors (CSS vars):** `--c-black` (#0a0a0a), `--c-black-alt` (#111111), `--c-white` (#f5f5f0), `--c-ember` (#ff6b1a, primary accent), `--c-ember-hover` (#ff9500), `--c-green` (#00ff88, live indicators), `--c-muted` (#888880), `--c-border-ember` (rgba(255,107,26,0.2))
 - **Font sizes:** `--fs-label`, `--fs-body`, `--fs-small`, `--fs-cta`
 - **Spacing:** `--spacing-section`
 - **Zero border-radius** — enforced globally, never override
-- **Monospace fonts only:** SF Mono → Fira Code → Consolas
+- **Typography:** Orbitron (Google Font, weight 700/900) for headlines/logo via `--font-title`; Space Mono (Google Font, weight 400/700) for body/UI via `--font-body`
 - **Responsive:** `clamp()` for typography, breakpoints at 900px and 768px
-- **Alternating sections:** black/white backgrounds
-- **Light theme (default)** — no `data-theme` attribute on `<html>`. Legacy `[data-theme="dark"]` overrides exist in CSS but are inactive. No theme toggle.
+- **Dark theme throughout** — `#0a0a0a` base, `#111111` alternate sections, ember (#ff6b1a) accents
+- **Ember borders:** thin `1px solid var(--c-border-ember)` between sections (no thick white/black borders)
+- **Buttons:** ember background, black text, Orbitron font, uppercase, letter-spacing 3px, hover lifts with ember glow
+- **Section labels:** uppercase, letter-spacing 4px, 11px, ember color
 
 ## Code style
 - **Early returns** — reduce nesting, improve readability

@@ -16,9 +16,10 @@ export default function Home() {
       {/* SECTION 1 — Hero → shapes: This place is for me */}
       <section className="hero">
         <div className="hero__content">
+          <p className="hero__label">The Global Fat Burning Ledger</p>
           <h1 className="hero__title">
             Every Kilogram Matters.<br />
-            Every Fat Burner Is a Superhero.
+            Every Fat Burner Is a <span className="hero__ember">Superhero</span>.
           </h1>
           <p className="hero__subtitle">
             You fight to burn every gram, kilogram, pound of fat. Now add it to the global counter and take your place among millions of people who refused to quit. Your result deserves to be on the record.
@@ -36,6 +37,7 @@ export default function Home() {
         <div className="counter-section__header">
           <h2 className="counter-section__title">The Global Fat Counter</h2>
           <p className="counter-section__sub">Every number here is a real person. A real result. Permanently on the record.</p>
+          <p className="counter-section__live"><span className="counter-section__live-dot" aria-hidden="true" />Burning right now</p>
         </div>
         <div className="counter-section__feed">
           <LiveCounter label="" hook="" />
