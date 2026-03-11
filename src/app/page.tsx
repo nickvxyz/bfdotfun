@@ -115,31 +115,21 @@ export default function Home() {
             <p className="footer-main__col-title">Product</p>
             <ul className="footer-main__links">
               <li><a href="#" className="footer-main__link">Launch Counter</a></li>
+              <li><Link href="/coaches" className="footer-main__link">Coaches</Link></li>
               <li><Link href="/challenges" className="footer-main__link">Challenges</Link></li>
               <li><a href="/privacy" className="footer-main__link">Privacy Policy</a></li>
-            </ul>
-          </div>
-          <div>
-            <p className="footer-main__col-title">Built On</p>
-            <ul className="footer-main__links">
-              <li><a href="https://base.org" target="_blank" rel="noopener noreferrer" className="footer-main__link">Base</a></li>
-              <li><a href="https://www.coinbase.com/wallet" target="_blank" rel="noopener noreferrer" className="footer-main__link">Coinbase Wallet</a></li>
             </ul>
           </div>
           <div>
             <p className="footer-main__col-title">Connect</p>
             <ul className="footer-main__links">
               <li><a href="https://x.com/burnfatdotfun" target="_blank" rel="noopener noreferrer" className="footer-main__link">X / Twitter</a></li>
-              <li><a href="#" className="footer-main__link">Farcaster</a></li>
               <li><a href="https://t.me/c/basefatburning/1" target="_blank" rel="noopener noreferrer" className="footer-main__link">Telegram</a></li>
             </ul>
           </div>
         </div>
         <div className="footer-main__bottom">
           <p className="footer-main__copy">&copy; 2026 BurnFat.fun — All rights reserved.</p>
-          <div className="footer-main__socials">
-            <a href="https://base.org" target="_blank" rel="noopener noreferrer" className="footer-main__social">Built on Base</a>
-          </div>
         </div>
       </footer>
     </>
