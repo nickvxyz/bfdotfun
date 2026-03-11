@@ -15,8 +15,8 @@ export default function ChallengesPage() {
         </p>
         <div className="coming-soon__divider" aria-hidden="true" />
         <div className="cta-block">
-          <p className="cta-block__question">Want to compete?</p>
-          <CTAButton>Join the Waitlist</CTAButton>
+          <p className="cta-block__question">Ready to compete?</p>
+          <CTAButton>Subscribe to Get Notified</CTAButton>
         </div>
       </main>
     </>

@@ -15,8 +15,8 @@ export default function CoachesPage() {
         </p>
         <div className="coming-soon__divider" aria-hidden="true" />
         <div className="cta-block">
-          <p className="cta-block__question">Want a coach?</p>
-          <CTAButton>Join the Waitlist</CTAButton>
+          <p className="cta-block__question">Ready for a coach?</p>
+          <CTAButton>Subscribe to Get Notified</CTAButton>
         </div>
       </main>
     </>
