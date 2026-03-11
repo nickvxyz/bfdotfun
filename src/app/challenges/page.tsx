@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import CTAButton from "@/components/CTAButton";
 
 export default function ChallengesPage() {
   return (
@@ -13,9 +14,10 @@ export default function ChallengesPage() {
           win prizes. Every hero needs a worthy challenge.
         </p>
         <div className="coming-soon__divider" aria-hidden="true" />
-        <p className="coming-soon__note">
-          Burn fat now. Compete soon.
-        </p>
+        <div className="cta-block">
+          <p className="cta-block__question">Want to compete?</p>
+          <CTAButton>Join the Waitlist</CTAButton>
+        </div>
       </main>
     </>
   );

@@ -11,7 +11,11 @@ export default function CTAButton({
 }) {
   const handleClick = () => {
     const el = document.getElementById("waitlist");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = "/#waitlist";
+    }
   };
 
   return (

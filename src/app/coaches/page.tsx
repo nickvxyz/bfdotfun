@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import CTAButton from "@/components/CTAButton";
 
 export default function CoachesPage() {
   return (
@@ -13,9 +14,10 @@ export default function CoachesPage() {
           Every superhero has a mentor.
         </p>
         <div className="coming-soon__divider" aria-hidden="true" />
-        <p className="coming-soon__note">
-          Burn fat now. Find your coach soon.
-        </p>
+        <div className="cta-block">
+          <p className="cta-block__question">Want a coach?</p>
+          <CTAButton>Join the Waitlist</CTAButton>
+        </div>
       </main>
     </>
   );
