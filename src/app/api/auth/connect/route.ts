@@ -87,7 +87,8 @@ export async function POST(request: NextRequest) {
     await setSession({ userId: user.id, wallet: walletLower });
 
     return NextResponse.json({ user });
-  } catch {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: `Server error: ${msg}` }, { status: 500 });
   }
 }

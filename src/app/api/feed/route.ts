@@ -86,6 +86,7 @@ export async function GET() {
 
     return NextResponse.json({ feed });
   } catch {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    // Return empty feed instead of 500 — feed is non-critical
+    return NextResponse.json({ feed: [] });
   }
 }
