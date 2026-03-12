@@ -4689,8 +4689,8 @@
   }
 
   .gate__card {
-    background: var(--c-white);
-    color: var(--c-black);
+    background: var(--c-black-alt);
+    color: var(--c-white);
     width: 100%;
     max-width: 520px;
     max-height: 90vh;
@@ -4747,6 +4747,7 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     font-size: 11px;
+    color: var(--c-ember);
   }
 
   .gate__terms {
@@ -4766,17 +4767,19 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    background: var(--c-black);
-    color: var(--c-white);
-    border: 2px solid var(--c-black);
+    background: var(--c-ember);
+    color: var(--c-black);
+    border: none;
     cursor: pointer;
     transition: all 0.2s;
     margin-bottom: 20px;
   }
 
   .gate__cta:hover {
-    background: transparent;
+    background: var(--c-ember-hover);
     color: var(--c-black);
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.3);
+    transform: translateY(-1px);
   }
 
   .gate__links {
@@ -6363,24 +6366,6 @@
     background: rgba(0, 0, 0, 0.9);
   }
 
-  [data-theme="dark"] .gate__card {
-    background: var(--c-black-alt);
-    color: var(--c-white);
-    border-color: var(--c-border-ember);
-  }
-
-  [data-theme="dark"] .gate__cta {
-    background: var(--c-ember);
-    color: var(--c-black);
-    border-color: var(--c-ember);
-  }
-
-  [data-theme="dark"] .gate__cta:hover {
-    background: var(--c-ember-hover);
-    color: var(--c-black);
-    box-shadow: 0 0 20px rgba(255, 107, 26, 0.3);
-    transform: translateY(-1px);
-  }
 
   /* Dark mode overrides removed — base styles are now dark-themed with ember accents */
 
