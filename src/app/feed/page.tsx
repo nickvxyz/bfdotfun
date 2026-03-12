@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import BackToProfile from "@/components/BackToProfile";
 
 interface FeedEntry {
   id: string;
@@ -148,6 +149,7 @@ export default function FeedPage() {
     <>
       <Header />
       <div className="feed page-body">
+        <BackToProfile />
         <div className="feed__header">
           <h1 className="feed__title">Live Feed</h1>
           <p className="feed__subtitle">Real-time activity from the burn ledger</p>

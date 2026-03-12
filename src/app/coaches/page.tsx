@@ -1,11 +1,13 @@
 import Header from "@/components/Header";
 import CTAButton from "@/components/CTAButton";
+import BackToProfile from "@/components/BackToProfile";
 
 export default function CoachesPage() {
   return (
     <>
       <Header />
       <main className="coming-soon">
+        <BackToProfile />
         <div className="coming-soon__icon" aria-hidden="true">&#9889;</div>
         <h1 className="coming-soon__title">Coaches</h1>
         <p className="coming-soon__subtitle">Coming Soon</p>
