@@ -86,6 +86,7 @@ export default function Header() {
           <Link href="/feed" className="header__link">Live Feed</Link>
           <Link href="/coaches" className="header__link">Coaches</Link>
           <Link href="/challenges" className="header__link">Challenges</Link>
+          {isAuthed && <Link href="/profile" className="header__link">Profile</Link>}
         </nav>
 
         <div className="header__right">
