@@ -4697,7 +4697,7 @@
     overflow-y: auto;
     padding: 40px 36px;
     text-align: center;
-    border: 2px solid var(--c-black);
+    border: 1px solid var(--c-border-ember);
     animation: gate-card-in 0.3s ease-out;
   }
 
@@ -4723,7 +4723,7 @@
   }
 
   .gate__highlight {
-    color: var(--c-green);
+    color: var(--c-ember);
     font-weight: 700;
     opacity: 1;
   }
@@ -6364,20 +6364,22 @@
   }
 
   [data-theme="dark"] .gate__card {
-    background: var(--c-black);
+    background: var(--c-black-alt);
     color: var(--c-white);
-    border-color: var(--c-white);
+    border-color: var(--c-border-ember);
   }
 
   [data-theme="dark"] .gate__cta {
-    background: var(--c-white);
+    background: var(--c-ember);
     color: var(--c-black);
-    border-color: var(--c-white);
+    border-color: var(--c-ember);
   }
 
   [data-theme="dark"] .gate__cta:hover {
-    background: transparent;
-    color: var(--c-white);
+    background: var(--c-ember-hover);
+    color: var(--c-black);
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.3);
+    transform: translateY(-1px);
   }
 
   /* Dark mode overrides removed — base styles are now dark-themed with ember accents */
