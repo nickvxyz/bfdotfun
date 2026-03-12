@@ -134,11 +134,18 @@ export default function SubmitPage() {
       {loading ? (
         <p className="submit__loading">Loading burn units...</p>
       ) : burnUnits.length === 0 ? (
-        <p className="submit__empty">
-          {state === "success"
-            ? "All burns submitted! Check the global ledger."
-            : "No unsubmitted burns yet. Log weight entries to generate burn units."}
-        </p>
+        state === "success" ? (
+          <div className="submit__success">
+            <span className="submit__success-icon">&#10003;</span>
+            <h2 className="submit__success-title">Submitted to the Global Ledger</h2>
+            <p className="submit__success-text">Your fat burn is now permanently recorded. The world counter has been updated.</p>
+            <Link href="/profile" className="submit__success-link">Back to Profile →</Link>
+          </div>
+        ) : (
+          <p className="submit__empty">
+            No unsubmitted burns yet. Log weight entries to generate burn units.
+          </p>
+        )
       ) : (
         <>
           <div className="submit__units">

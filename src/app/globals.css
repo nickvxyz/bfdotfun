@@ -366,6 +366,14 @@
     animation: counter-glow 3s ease-in-out infinite;
   }
 
+  .counter__number--desktop { display: none; }
+  .counter__number--mobile { display: inline; }
+
+  @media (min-width: 1201px) {
+    .counter__number--desktop { display: inline; }
+    .counter__number--mobile { display: none; }
+  }
+
   @keyframes counter-glow {
     0%, 100% { text-shadow: 0 0 40px rgba(255, 107, 26, 0.3); }
     50% { text-shadow: 0 0 80px rgba(255, 107, 26, 0.6); }
@@ -5222,15 +5230,16 @@
 
   .dash-home__actions .cta {
     margin-top: 0;
-    border-color: var(--c-border-ember);
-    background: transparent;
-    color: var(--c-white);
+    border-color: var(--c-green);
+    background: var(--c-green);
+    color: var(--c-black);
   }
 
   .dash-home__actions .cta:hover {
-    background: var(--c-ember);
+    background: #00cc6e;
     color: var(--c-black);
-    border-color: var(--c-ember);
+    border-color: #00cc6e;
+    box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
   }
 
   .dash-home__actions .cta--inverted {
@@ -5985,6 +5994,56 @@
     font-size: 14px;
     opacity: 0.5;
     padding: 32px 0;
+  }
+
+  .submit__success {
+    border: 2px solid var(--c-green);
+    padding: 32px 24px;
+    text-align: center;
+    margin: 24px 0;
+  }
+
+  .submit__success-icon {
+    display: block;
+    font-size: 48px;
+    color: var(--c-green);
+    margin-bottom: 16px;
+  }
+
+  .submit__success-title {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--c-green);
+    margin-bottom: 8px;
+  }
+
+  .submit__success-text {
+    font-size: 13px;
+    color: var(--c-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .submit__success-link {
+    display: inline-block;
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-green);
+    text-decoration: none;
+    border: 1px solid var(--c-green);
+    padding: 10px 24px;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .submit__success-link:hover {
+    background: var(--c-green);
+    color: var(--c-black);
   }
 
   .submit__units {

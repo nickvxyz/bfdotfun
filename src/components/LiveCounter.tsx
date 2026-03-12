@@ -26,8 +26,8 @@ interface FeedItem {
 
 const VISIBLE_COUNT = 3;
 const ITEM_HEIGHT = 80; // 72px item + 8px gap
-const ROTATE_INTERVAL = 3000;
 const ANIM_DURATION = 500;
+const ANIM_STAGGER = 300;
 
 // --- Helpers ---
 
@@ -56,12 +56,23 @@ function entryToFeedItem(entry: FeedEntry): FeedItem {
   }
 
   const kg = entry.kg_total ?? 0;
+
+  if (entry.submission_type === "weight_logged") {
+    return {
+      id: entry.id,
+      name,
+      action: `new weigh-in${kg > 0 ? ` — ${kg} kg burned` : ""}`,
+      color: "banner--orange",
+      icon: "check",
+    };
+  }
+
   return {
     id: entry.id,
     name,
-    action: `burned ${kg} kg fat`,
+    action: `burned ${kg} kg on the ledger`,
     color: "banner--orange",
-    icon: "check",
+    icon: "bolt",
   };
 }
 
@@ -93,10 +104,10 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-function formatNumber(num: number) {
+function formatNumber(num: number, digits: number = 9) {
   const rounded = (Math.round(num * 10) / 10).toFixed(1);
   const [intPart, decPart] = rounded.split(".");
-  const padded = intPart.padStart(9, "0");
+  const padded = intPart.padStart(digits, "0");
   const withCommas = padded.replace(/(\d{3})(?=\d)/g, "$1,");
   return `${withCommas}.${decPart}`;
 }
@@ -128,14 +139,11 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
   const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
   const [enterId, setEnterId] = useState<string | null>(null);
   const [feedLoaded, setFeedLoaded] = useState(false);
-  const [emptyFeed, setEmptyFeed] = useState(false);
 
-  const allItems = useRef<FeedItem[]>([]);
-  const rotateIndex = useRef(0);
-  const tickTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const cleanupTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const knownIds = useRef<Set<string>>(new Set());
+  const animTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Fetch real feed data + poll every 20s
+  // Fetch real feed data + poll every 20s — event-driven animation
   useEffect(() => {
     async function fetchFeed() {
       try {
@@ -145,8 +153,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
         const data = await res.json();
         const entries: FeedEntry[] = data.feed ?? [];
 
-        if (entries.length === 0) {
-          setEmptyFeed(true);
+        if (entries.length === 0 && !feedLoaded) {
           setItems([{
             id: "empty",
             name: "",
@@ -159,56 +166,50 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
         }
 
         const feedItems = entries.map(entryToFeedItem);
-        allItems.current = feedItems;
 
-        // Show first batch (only reset visible items on initial load)
         if (!feedLoaded) {
-          rotateIndex.current = 0;
+          // Initial load — show first batch, no animation
+          feedItems.forEach((item) => knownIds.current.add(item.id));
           setItems(feedItems.slice(0, VISIBLE_COUNT));
+          setFeedLoaded(true);
+          return;
         }
-        setFeedLoaded(true);
+
+        // Find genuinely new items (IDs not seen before)
+        const newItems = feedItems.filter((item) => !knownIds.current.has(item.id));
+        feedItems.forEach((item) => knownIds.current.add(item.id));
+
+        if (newItems.length === 0) return;
+
+        // Animate new items in one by one, staggered
+        // Clear any pending animation timers
+        animTimers.current.forEach(clearTimeout);
+        animTimers.current = [];
+
+        newItems.forEach((newItem, i) => {
+          const timer = setTimeout(() => {
+            setEnterId(newItem.id);
+            setItems((prev) => [newItem, ...prev.slice(0, VISIBLE_COUNT)]);
+
+            const clearTimer = setTimeout(() => {
+              setEnterId(null);
+              setItems((prev) => prev.slice(0, VISIBLE_COUNT));
+            }, ANIM_DURATION);
+            animTimers.current.push(clearTimer);
+          }, i * ANIM_STAGGER);
+          animTimers.current.push(timer);
+        });
       } catch {
-        // Keep initial placeholder
+        // Keep current state
       }
     }
     fetchFeed();
     const interval = setInterval(fetchFeed, 20_000);
-    return () => clearInterval(interval);
-  }, [feedLoaded]);
-
-  // Rotate through feed items
-  useEffect(() => {
-    if (!feedLoaded || emptyFeed || allItems.current.length <= VISIBLE_COUNT) return;
-
-    function tick() {
-      const pool = allItems.current;
-      if (pool.length === 0) return;
-
-      rotateIndex.current = (rotateIndex.current + 1) % pool.length;
-      const nextItem = pool[rotateIndex.current];
-
-      setEnterId(nextItem.id);
-      setItems(prev => [nextItem, ...prev.slice(0, VISIBLE_COUNT)]);
-
-      cleanupTimeout.current = setTimeout(() => {
-        setEnterId(null);
-        setItems(prev => prev.slice(0, VISIBLE_COUNT));
-      }, ANIM_DURATION);
-    }
-
-    function scheduleNext() {
-      tickTimeout.current = setTimeout(() => {
-        tick();
-        scheduleNext();
-      }, ROTATE_INTERVAL);
-    }
-
-    scheduleNext();
     return () => {
-      if (tickTimeout.current) clearTimeout(tickTimeout.current);
-      if (cleanupTimeout.current) clearTimeout(cleanupTimeout.current);
+      clearInterval(interval);
+      animTimers.current.forEach(clearTimeout);
     };
-  }, [feedLoaded, emptyFeed]);
+  }, [feedLoaded]);
 
   return (
     <>
@@ -217,8 +218,11 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
 
       <div className="counter">
         <div className="counter__row">
-          <span className="counter__number">
-            {formatNumber(counterValue)}
+          <span className="counter__number counter__number--desktop">
+            {formatNumber(counterValue, 9)}
+          </span>
+          <span className="counter__number counter__number--mobile">
+            {formatNumber(counterValue, 6)}
           </span>
           <span className="counter__unit">KG</span>
         </div>
