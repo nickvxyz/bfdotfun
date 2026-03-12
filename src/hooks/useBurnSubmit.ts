@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useSendCalls, useConfig } from "wagmi";
 import { getCallsStatus } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
-import { baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { IS_DEV_MODE } from "@/lib/dev";
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -18,6 +18,7 @@ interface UseBurnSubmitOptions {
   kgAmount: number;
   isRetrospective: boolean;
   burnUnitIds?: string[];
+  referrerAddress?: string;
   onSuccess?: () => void;
 }
 
@@ -29,10 +30,13 @@ interface UseBurnSubmitReturn {
   reset: () => void;
 }
 
+const zeroAddress = "0x0000000000000000000000000000000000000000" as `0x${string}`;
+
 export function useBurnSubmit({
   kgAmount,
   isRetrospective,
   burnUnitIds,
+  referrerAddress,
   onSuccess,
 }: UseBurnSubmitOptions): UseBurnSubmitReturn {
   const [state, setState] = useState<SubmitState>("idle");
@@ -130,7 +134,7 @@ export function useBurnSubmit({
       const submitBurnData = encodeFunctionData({
         abi: BURNFAT_TREASURY_ABI,
         functionName: "submitBurn",
-        args: [BigInt(kgAmount), isRetrospective],
+        args: [BigInt(kgAmount), isRetrospective, (referrerAddress || zeroAddress) as `0x${string}`],
       });
 
       setState("confirming");
@@ -146,7 +150,7 @@ export function useBurnSubmit({
             data: submitBurnData,
           },
         ],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       // sendCallsAsync returns { id } — a batch ID, NOT a tx hash.
@@ -209,7 +213,7 @@ export function useBurnSubmit({
       setError(message);
       setState("error");
     }
-  }, [kgAmount, isRetrospective, burnUnitIds, onSuccess, sendCallsAsync, config]);
+  }, [kgAmount, isRetrospective, burnUnitIds, referrerAddress, onSuccess, sendCallsAsync, config]);
 
   return { submit, state, txHash, error, reset };
 }

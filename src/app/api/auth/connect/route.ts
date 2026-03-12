@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { baseClient } from "@/lib/viem";
+import { setSession } from "@/lib/session";
 
 export async function POST(request: NextRequest) {
   try {
-    const { address, signature, message } = await request.json();
+    const { address, signature, message, referral_code } = await request.json();
 
     if (!address || !signature || !message) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -61,16 +62,29 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
       }
       user = newUser;
+
+      // Wire referral if code provided — best-effort
+      if (referral_code) {
+        try {
+          const { data: refCode } = await supabase
+            .from("referral_codes")
+            .select("id, user_id")
+            .eq("code", referral_code)
+            .maybeSingle();
+
+          if (refCode) {
+            await supabase.from("referrals").insert({
+              referrer_id: refCode.user_id,
+              referee_id: newUser.id,
+              referral_code_id: refCode.id,
+            });
+          }
+        } catch { /* non-blocking */ }
+      }
     }
 
-    // Set session cookie (simple JWT-like approach using wallet address)
-    cookieStore.set("bf_session", JSON.stringify({ userId: user.id, wallet: walletLower }), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
+    // Set HMAC-signed session cookie
+    await setSession({ userId: user.id, wallet: walletLower });
 
     return NextResponse.json({ user });
   } catch {

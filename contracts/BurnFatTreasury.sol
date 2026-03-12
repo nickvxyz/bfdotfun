@@ -8,7 +8,6 @@ contract BurnFatTreasury is Ownable {
     IERC20 public immutable usdcToken;
 
     address public operationsWallet;
-    uint256 public referralPool;
     uint256 public reservePool;
 
     // Pricing in USDC (6 decimals)
@@ -23,8 +22,8 @@ contract BurnFatTreasury is Ownable {
         uint256 usdcAmount,
         bool isRetrospective
     );
+    event ReferralPaid(address indexed referrer, address indexed user, uint256 amount);
     event OperationsWalletUpdated(address indexed oldWallet, address indexed newWallet);
-    event ReferralPoolWithdrawn(address indexed to, uint256 amount);
     event ReservePoolWithdrawn(address indexed to, uint256 amount);
 
     constructor(address _usdcToken, address _operationsWallet) Ownable(msg.sender) {
@@ -34,7 +33,7 @@ contract BurnFatTreasury is Ownable {
         operationsWallet = _operationsWallet;
     }
 
-    function submitBurn(uint256 kgAmount, bool isRetrospective) external {
+    function submitBurn(uint256 kgAmount, bool isRetrospective, address referrer) external {
         require(kgAmount > 0, "Amount must be > 0");
 
         if (isRetrospective) {
@@ -51,14 +50,21 @@ contract BurnFatTreasury is Ownable {
             "USDC transfer failed"
         );
 
-        // Split: 1/3 to operations, 2/3 stays in contract (tracked as pools)
+        // Split: 1/3 operations, 1/3 referral (or operations if no referrer), 1/3 reserve
         uint256 opsShare = totalAmount / 3;
         uint256 remaining = totalAmount - opsShare;
         uint256 referralShare = remaining / 2;
         uint256 reserveShare = remaining - referralShare;
 
         require(usdcToken.transfer(operationsWallet, opsShare), "Ops transfer failed");
-        referralPool += referralShare;
+
+        if (referrer != address(0) && referrer != msg.sender) {
+            require(usdcToken.transfer(referrer, referralShare), "Referral transfer failed");
+            emit ReferralPaid(referrer, msg.sender, referralShare);
+        } else {
+            require(usdcToken.transfer(operationsWallet, referralShare), "Ops referral transfer failed");
+        }
+
         reservePool += reserveShare;
 
         emit BurnSubmitted(msg.sender, kgAmount, totalAmount, isRetrospective);
@@ -73,14 +79,8 @@ contract BurnFatTreasury is Ownable {
         emit OperationsWalletUpdated(old, _newWallet);
     }
 
-    function withdrawReferralPool(address to, uint256 amount) external onlyOwner {
-        require(amount <= referralPool, "Exceeds referral pool");
-        referralPool -= amount;
-        require(usdcToken.transfer(to, amount), "Transfer failed");
-        emit ReferralPoolWithdrawn(to, amount);
-    }
-
     function withdrawReservePool(address to, uint256 amount) external onlyOwner {
+        require(to != address(0), "Invalid address");
         require(amount <= reservePool, "Exceeds reserve pool");
         reservePool -= amount;
         require(usdcToken.transfer(to, amount), "Transfer failed");

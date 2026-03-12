@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import Header from "@/components/Header";
 
 interface WeightEntry {
   id: string;
@@ -100,7 +102,10 @@ export default function EntriesPage() {
   const hasFatMassData = entries.some((e) => e.fat_mass_kg != null);
 
   return (
+    <>
+    <Header />
     <div className="entries">
+      <Link href="/profile" className="back-link" aria-label="Back to Profile">&larr; Back to Profile</Link>
       <h1 className="entries__title">Weight Log</h1>
 
       <form className="entries__form" onSubmit={handleSubmit}>
@@ -207,5 +212,6 @@ export default function EntriesPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

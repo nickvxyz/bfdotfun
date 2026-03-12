@@ -9,7 +9,8 @@
     "lint": "eslint",
     "compile": "hardhat compile",
     "deploy:treasury": "hardhat run scripts/deploy-treasury.ts --network baseSepolia",
-    "deploy:challenge-pool": "hardhat run scripts/deploy-challenge-pool.ts --network baseSepolia"
+    "deploy:challenge-pool": "hardhat run scripts/deploy-challenge-pool.ts --network baseSepolia",
+    "deploy:treasury-mainnet": "hardhat run scripts/deploy-treasury-mainnet.ts --network base"
   },
   "dependencies": {
     "@coinbase/onchainkit": "^1.1.2",

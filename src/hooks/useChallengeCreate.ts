@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useSendCalls, useConfig } from "wagmi";
 import { getCallsStatus } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
-import { baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { IS_DEV_MODE } from "@/lib/dev";
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -96,7 +96,7 @@ export function useChallengeCreate({
           { to: USDC_ADDRESS, data: approveData },
           { to: CHALLENGE_POOL_ADDRESS, data: createChallengeData },
         ],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       const batchId = callsId.id;

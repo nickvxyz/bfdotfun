@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
+import { getSession } from "@/lib/session";
 import { IS_DEV_MODE } from "@/lib/dev";
 
 // In-memory store for dev mode — starts empty, persists within server session
@@ -57,17 +57,6 @@ function recalculateDeltas() {
       });
     }
   }
-}
-
-async function getSession(): Promise<{ userId: string } | null> {
-  const c = await cookies();
-  const raw = c.get("bf_session")?.value;
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
-    return parsed;
-  } catch { return null; }
 }
 
 export async function GET() {
@@ -178,6 +167,15 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Activity feed — best-effort
+  try {
+    await supabase.from("activity_feed").insert({
+      user_id: session.userId,
+      type: "weight_logged",
+      payload: { weight_kg: Number(weight_kg), delta_kg },
+    });
+  } catch { /* non-blocking */ }
 
   let burnUnitId: string | null = null;
 

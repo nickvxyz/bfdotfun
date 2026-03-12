@@ -2,76 +2,72 @@
 
 import { useState, useEffect, useRef } from "react";
 
-// --- Data Layer (swap this for real data later) ---
+// --- Types ---
 
-const PSEUDONYMS = [
-  "anon.base.eth", "nickv.base.eth", "chad.base.eth", "fitness.base.eth",
-  "burner420.base.eth", "maria.base.eth", "coach_k.base.eth", "noexcuses.base.eth",
-  "letsgo.base.eth", "whale.base.eth", "grind.base.eth", "healthnut.base.eth",
-];
-
-type ActionType = "burned" | "joined" | "committed";
-
-const ACTION_WEIGHTS: [ActionType, number][] = [
-  ["burned", 0.5],
-  ["joined", 0.3],
-  ["committed", 0.2],
-];
+interface FeedEntry {
+  id: string;
+  display_name: string | null;
+  wallet_address: string;
+  kg_total: number | null;
+  submission_type: string | null;
+  created_at: string;
+  type: "burned" | "joined";
+}
 
 interface FeedItem {
-  id: number;
+  id: string;
   name: string;
   action: string;
   color: string;
   icon: string;
-  kgDelta: number;
-}
-
-function pickWeighted(): ActionType {
-  const r = Math.random();
-  let sum = 0;
-  for (const [type, weight] of ACTION_WEIGHTS) {
-    sum += weight;
-    if (r < sum) return type;
-  }
-  return "burned";
-}
-
-function generateFeedItem(lastPseudonym: string, id: number): FeedItem {
-  let name: string;
-  do {
-    name = PSEUDONYMS[Math.floor(Math.random() * PSEUDONYMS.length)];
-  } while (name === lastPseudonym);
-
-  const actionType = pickWeighted();
-
-  switch (actionType) {
-    case "burned": {
-      const kg = Math.round((Math.random() * 7.5 + 0.5) * 10) / 10;
-      return { id, name, action: `burned ${kg} kg fat`, color: "banner--orange", icon: "check", kgDelta: kg };
-    }
-    case "joined":
-      return { id, name, action: "joined the crew", color: "banner--green", icon: "user-plus", kgDelta: 0 };
-    case "committed": {
-      const kg = Math.floor(Math.random() * 14) + 2;
-      return { id, name, action: `committed to burn ${kg} kg`, color: "banner--yellow", icon: "bolt", kgDelta: 0 };
-    }
-  }
 }
 
 // --- Constants ---
 
 const VISIBLE_COUNT = 3;
 const ITEM_HEIGHT = 80; // 72px item + 8px gap
-const MIN_INTERVAL = 1200;
-const MAX_INTERVAL = 2500;
+const ROTATE_INTERVAL = 3000;
 const ANIM_DURATION = 500;
+
+// --- Helpers ---
+
+function abbreviateWallet(address: string): string {
+  if (!address || address.length < 10) return "anon";
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+function getDisplayName(entry: FeedEntry): string {
+  if (entry.display_name) return entry.display_name;
+  if (entry.wallet_address) return abbreviateWallet(entry.wallet_address);
+  return "anon";
+}
+
+function entryToFeedItem(entry: FeedEntry): FeedItem {
+  const name = getDisplayName(entry);
+
+  if (entry.type === "joined") {
+    return {
+      id: entry.id,
+      name,
+      action: "joined the crew",
+      color: "banner--green",
+      icon: "user-plus",
+    };
+  }
+
+  const kg = entry.kg_total ?? 0;
+  return {
+    id: entry.id,
+    name,
+    action: `burned ${kg} kg fat`,
+    color: "banner--orange",
+    icon: "check",
+  };
+}
 
 // Deterministic initial items (avoids SSR hydration mismatch)
 const INITIAL_ITEMS: FeedItem[] = [
-  { id: 0, name: "anon.base.eth", action: "joined the crew", color: "banner--green", icon: "user-plus", kgDelta: 0 },
-  { id: 1, name: "nickv.base.eth", action: "burned 5 kg fat", color: "banner--orange", icon: "check", kgDelta: 0 },
-  { id: 2, name: "chad.base.eth", action: "committed to burn 7 kg", color: "banner--yellow", icon: "bolt", kgDelta: 0 },
+  { id: "init-0", name: "loading...", action: "fetching live data", color: "banner--orange", icon: "check" },
 ];
 
 // --- Icons ---
@@ -110,7 +106,7 @@ function formatNumber(num: number) {
 export default function LiveCounter({ hook, label }: { hook?: string; label?: string }) {
   const [counterValue, setCounterValue] = useState(0);
 
-  // Fetch real counter value on mount
+  // Fetch real counter value on mount + poll every 20s
   useEffect(() => {
     async function fetchCounter() {
       try {
@@ -125,25 +121,74 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
       }
     }
     fetchCounter();
+    const interval = setInterval(fetchCounter, 20_000);
+    return () => clearInterval(interval);
   }, []);
-  const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
-  const [enterId, setEnterId] = useState<number | null>(null);
 
-  const nextId = useRef(INITIAL_ITEMS.length);
-  const lastPseudonym = useRef(INITIAL_ITEMS[0].name);
+  const [items, setItems] = useState<FeedItem[]>(INITIAL_ITEMS);
+  const [enterId, setEnterId] = useState<string | null>(null);
+  const [feedLoaded, setFeedLoaded] = useState(false);
+  const [emptyFeed, setEmptyFeed] = useState(false);
+
+  const allItems = useRef<FeedItem[]>([]);
+  const rotateIndex = useRef(0);
   const tickTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   const cleanupTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  // Fetch real feed data + poll every 20s
   useEffect(() => {
+    async function fetchFeed() {
+      try {
+        const res = await fetch("/api/feed");
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const entries: FeedEntry[] = data.feed ?? [];
+
+        if (entries.length === 0) {
+          setEmptyFeed(true);
+          setItems([{
+            id: "empty",
+            name: "",
+            action: "No submissions yet — be the first!",
+            color: "banner--orange",
+            icon: "bolt",
+          }]);
+          setFeedLoaded(true);
+          return;
+        }
+
+        const feedItems = entries.map(entryToFeedItem);
+        allItems.current = feedItems;
+
+        // Show first batch (only reset visible items on initial load)
+        if (!feedLoaded) {
+          rotateIndex.current = 0;
+          setItems(feedItems.slice(0, VISIBLE_COUNT));
+        }
+        setFeedLoaded(true);
+      } catch {
+        // Keep initial placeholder
+      }
+    }
+    fetchFeed();
+    const interval = setInterval(fetchFeed, 20_000);
+    return () => clearInterval(interval);
+  }, [feedLoaded]);
+
+  // Rotate through feed items
+  useEffect(() => {
+    if (!feedLoaded || emptyFeed || allItems.current.length <= VISIBLE_COUNT) return;
+
     function tick() {
-      const id = nextId.current++;
-      const newItem = generateFeedItem(lastPseudonym.current, id);
-      lastPseudonym.current = newItem.name;
+      const pool = allItems.current;
+      if (pool.length === 0) return;
 
-      setEnterId(id);
-      setItems(prev => [newItem, ...prev.slice(0, VISIBLE_COUNT)]);
+      rotateIndex.current = (rotateIndex.current + 1) % pool.length;
+      const nextItem = pool[rotateIndex.current];
 
-      // Feed is cosmetic only — counter shows real DB value, not fake increments
+      setEnterId(nextItem.id);
+      setItems(prev => [nextItem, ...prev.slice(0, VISIBLE_COUNT)]);
 
       cleanupTimeout.current = setTimeout(() => {
         setEnterId(null);
@@ -152,11 +197,10 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
     }
 
     function scheduleNext() {
-      const delay = MIN_INTERVAL + Math.random() * (MAX_INTERVAL - MIN_INTERVAL);
       tickTimeout.current = setTimeout(() => {
         tick();
         scheduleNext();
-      }, delay);
+      }, ROTATE_INTERVAL);
     }
 
     scheduleNext();
@@ -164,7 +208,7 @@ export default function LiveCounter({ hook, label }: { hook?: string; label?: st
       if (tickTimeout.current) clearTimeout(tickTimeout.current);
       if (cleanupTimeout.current) clearTimeout(cleanupTimeout.current);
     };
-  }, []);
+  }, [feedLoaded, emptyFeed]);
 
   return (
     <>

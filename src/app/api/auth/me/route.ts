@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
 import { IS_DEV_MODE } from "@/lib/dev";
 
 export async function GET() {
@@ -9,23 +9,11 @@ export async function GET() {
   }
 
   try {
-    const cookieStore = await cookies();
-    const sessionRaw = cookieStore.get("bf_session")?.value;
-
-    if (!sessionRaw) {
+    const session = await getSession();
+    if (!session) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    let session: { userId: string };
-    try {
-      const parsed = JSON.parse(sessionRaw);
-      if (!parsed?.userId || typeof parsed.userId !== "string") {
-        return NextResponse.json({ error: "Invalid session" }, { status: 401 });
-      }
-      session = parsed;
-    } catch {
-      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
-    }
     const { createAdminClient } = await import("@/lib/supabase/admin");
     const supabase = createAdminClient();
 

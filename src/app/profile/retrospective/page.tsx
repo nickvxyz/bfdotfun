@@ -1,15 +1,25 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useBurnSubmit } from "@/hooks/useBurnSubmit";
 import { calculateCostDisplay, RETROSPECTIVE_PRICE_PER_KG } from "@/lib/pricing";
+import Header from "@/components/Header";
 
 export default function RetrospectivePage() {
   const router = useRouter();
   const { user, updateUser } = useAuth();
   const [kgInput, setKgInput] = useState("");
+  const [referrerAddress, setReferrerAddress] = useState<string | undefined>();
+
+  useEffect(() => {
+    fetch("/api/referrals/my-referrer")
+      .then((r) => r.json())
+      .then((d) => { if (d.referrer_wallet) setReferrerAddress(d.referrer_wallet); })
+      .catch(() => {});
+  }, []);
 
   const unit = user?.unit_pref === "lbs" ? "lbs" : "kg";
 
@@ -29,6 +39,7 @@ export default function RetrospectivePage() {
   const { submit, state, error, reset } = useBurnSubmit({
     kgAmount,
     isRetrospective: true,
+    referrerAddress,
     onSuccess: () => {
       updateUser({ has_used_retrospective: true });
       setTimeout(() => router.push("/profile"), 2000);
@@ -57,7 +68,10 @@ export default function RetrospectivePage() {
   };
 
   return (
+    <>
+    <Header />
     <div className="retro">
+      <Link href="/profile" className="back-link" aria-label="Back to Profile">&larr; Back to Profile</Link>
       <h1 className="retro__title">Claim Past Fat Loss</h1>
       <p className="retro__subtitle">
         One-time offer: submit historical fat loss at 50% off.
@@ -132,9 +146,10 @@ export default function RetrospectivePage() {
         )}
 
         <p className="retro__note">
-          Requires USDC on Base Sepolia. One wallet popup for approve + submit.
+          Requires USDC on Base. One wallet popup for approve + submit.
         </p>
       </div>
     </div>
+    </>
   );
 }

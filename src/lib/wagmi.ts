@@ -1,9 +1,9 @@
 import { http, createConfig } from "wagmi";
-import { base, baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { coinbaseWallet } from "wagmi/connectors";
 
 export const wagmiConfig = createConfig({
-  chains: [base, baseSepolia],
+  chains: [base],
   connectors: [
     coinbaseWallet({
       appName: "BurnFat.fun",
@@ -12,7 +12,6 @@ export const wagmiConfig = createConfig({
   ],
   transports: {
     [base.id]: http(),
-    [baseSepolia.id]: http(),
   },
   ssr: true,
 });

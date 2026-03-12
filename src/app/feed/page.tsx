@@ -1,78 +1,74 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 
-const PSEUDONYMS = [
-  "anon.base.eth", "nickv.base.eth", "chad.base.eth", "fitness.base.eth",
-  "burner420.base.eth", "maria.base.eth", "coach_k.base.eth", "noexcuses.base.eth",
-  "letsgo.base.eth", "whale.base.eth", "grind.base.eth", "healthnut.base.eth",
-  "bigmac.base.eth", "runner.base.eth", "yogafan.base.eth", "ironwill.base.eth",
-];
-
-type ActionType = "burned" | "joined" | "committed" | "milestone";
-
-const ACTION_WEIGHTS: [ActionType, number][] = [
-  ["burned", 0.45],
-  ["joined", 0.2],
-  ["committed", 0.2],
-  ["milestone", 0.15],
-];
-
 interface FeedEntry {
-  id: number;
+  id: string;
+  display_name: string | null;
+  wallet_address: string;
+  kg_total: number | null;
+  submission_type: string | null;
+  created_at: string;
+  type: "burned" | "joined";
+}
+
+interface DisplayEntry {
+  id: string;
   name: string;
   action: string;
   color: string;
   icon: string;
-  kgDelta: number;
   timestamp: string;
 }
 
-function pickWeighted(): ActionType {
-  const r = Math.random();
-  let sum = 0;
-  for (const [type, weight] of ACTION_WEIGHTS) {
-    sum += weight;
-    if (r < sum) return type;
-  }
-  return "burned";
+function abbreviateWallet(address: string): string {
+  if (!address || address.length < 10) return "anon";
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-function timeAgo(seconds: number): string {
+function getDisplayName(entry: FeedEntry): string {
+  if (entry.display_name) return entry.display_name;
+  if (entry.wallet_address) return abbreviateWallet(entry.wallet_address);
+  return "anon";
+}
+
+function timeAgo(dateStr: string): string {
+  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (seconds < 0) return "just now";
   if (seconds < 60) return `${seconds}s ago`;
   const mins = Math.floor(seconds / 60);
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
-  return `${hrs}h ago`;
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
 }
 
-function generateEntry(lastPseudonym: string, id: number, secsAgo: number): FeedEntry {
-  let name: string;
-  do {
-    name = PSEUDONYMS[Math.floor(Math.random() * PSEUDONYMS.length)];
-  } while (name === lastPseudonym);
+function entryToDisplay(entry: FeedEntry): DisplayEntry {
+  const name = getDisplayName(entry);
+  const timestamp = timeAgo(entry.created_at);
 
-  const actionType = pickWeighted();
-  const timestamp = timeAgo(secsAgo);
-
-  switch (actionType) {
-    case "burned": {
-      const kg = Math.round((Math.random() * 7.5 + 0.5) * 10) / 10;
-      return { id, name, action: `burned ${kg} kg fat`, color: "feed__item--orange", icon: "check", kgDelta: kg, timestamp };
-    }
-    case "joined":
-      return { id, name, action: "joined the crew", color: "feed__item--green", icon: "user-plus", kgDelta: 0, timestamp };
-    case "committed": {
-      const kg = Math.floor(Math.random() * 14) + 2;
-      return { id, name, action: `committed to burn ${kg} kg`, color: "feed__item--yellow", icon: "bolt", kgDelta: 0, timestamp };
-    }
-    case "milestone": {
-      const milestones = ["hit 10 kg burned", "hit 25 kg burned", "hit 50 kg total", "reached target weight"];
-      const m = milestones[Math.floor(Math.random() * milestones.length)];
-      return { id, name, action: m, color: "feed__item--green", icon: "trophy", kgDelta: 0, timestamp };
-    }
+  if (entry.type === "joined") {
+    return {
+      id: entry.id,
+      name,
+      action: "joined the crew",
+      color: "feed__item--green",
+      icon: "user-plus",
+      timestamp,
+    };
   }
+
+  const kg = entry.kg_total ?? 0;
+  return {
+    id: entry.id,
+    name,
+    action: `burned ${kg} kg fat`,
+    color: "feed__item--orange",
+    icon: "check",
+    timestamp,
+  };
 }
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -106,68 +102,34 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-const INITIAL_COUNT = 20;
-
-function generateInitialFeed(): FeedEntry[] {
-  const entries: FeedEntry[] = [];
-  let lastPseudonym = "";
-  for (let i = 0; i < INITIAL_COUNT; i++) {
-    const secsAgo = i * 15 + Math.floor(Math.random() * 10);
-    const entry = generateEntry(lastPseudonym, i, secsAgo);
-    lastPseudonym = entry.name;
-    entries.push(entry);
-  }
-  return entries;
-}
-
-// Deterministic initial entries for SSR
-const SSR_ENTRIES: FeedEntry[] = [
-  { id: 0, name: "anon.base.eth", action: "burned 3.2 kg fat", color: "feed__item--orange", icon: "check", kgDelta: 3.2, timestamp: "just now" },
-  { id: 1, name: "nickv.base.eth", action: "joined the crew", color: "feed__item--green", icon: "user-plus", kgDelta: 0, timestamp: "12s ago" },
-  { id: 2, name: "chad.base.eth", action: "committed to burn 7 kg", color: "feed__item--yellow", icon: "bolt", kgDelta: 0, timestamp: "28s ago" },
-  { id: 3, name: "fitness.base.eth", action: "burned 1.8 kg fat", color: "feed__item--orange", icon: "check", kgDelta: 1.8, timestamp: "45s ago" },
-  { id: 4, name: "maria.base.eth", action: "hit 25 kg burned", color: "feed__item--green", icon: "trophy", kgDelta: 0, timestamp: "1m ago" },
-];
-
 export default function FeedPage() {
-  const [entries, setEntries] = useState<FeedEntry[]>(SSR_ENTRIES);
-  const nextId = useRef(INITIAL_COUNT);
-  const lastPseudonym = useRef("");
-  const tickTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [entries, setEntries] = useState<DisplayEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Generate random initial feed, then start live ticker
-    const initial = generateInitialFeed();
-    lastPseudonym.current = initial[0]?.name ?? "";
-    nextId.current = initial.length;
+    async function fetchFeed() {
+      try {
+        const res = await fetch("/api/feed");
+        if (!res.ok) {
+          setError("Failed to load feed");
+          setLoading(false);
+          return;
+        }
 
-    // Use a 0ms timeout to avoid synchronous setState in effect
-    const hydrationTimeout = setTimeout(() => {
-      setEntries(initial);
-    }, 0);
-
-    function scheduleNext() {
-      const delay = 2000 + Math.random() * 3000;
-      tickTimeout.current = setTimeout(() => {
-        const id = nextId.current++;
-        const entry = generateEntry(lastPseudonym.current, id, 0);
-        entry.timestamp = "just now";
-        lastPseudonym.current = entry.name;
-        setEntries(prev => [entry, ...prev.slice(0, 49)]);
-        scheduleNext();
-      }, delay);
+        const data = await res.json();
+        const feedEntries: FeedEntry[] = data.feed ?? [];
+        setEntries(feedEntries.map(entryToDisplay));
+        setError(null);
+      } catch {
+        setError("Failed to load feed");
+      } finally {
+        setLoading(false);
+      }
     }
-
-    // Start ticker after initial hydration settles
-    const startTimeout = setTimeout(() => {
-      scheduleNext();
-    }, 100);
-
-    return () => {
-      clearTimeout(hydrationTimeout);
-      clearTimeout(startTimeout);
-      if (tickTimeout.current) clearTimeout(tickTimeout.current);
-    };
+    fetchFeed();
+    const interval = setInterval(fetchFeed, 15_000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -180,6 +142,24 @@ export default function FeedPage() {
         </div>
 
         <div className="feed__list">
+          {loading && (
+            <div className="feed__empty">
+              <p className="feed__empty-text">Loading feed...</p>
+            </div>
+          )}
+
+          {!loading && error && (
+            <div className="feed__empty">
+              <p className="feed__empty-text">{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && entries.length === 0 && (
+            <div className="feed__empty">
+              <p className="feed__empty-text">No submissions yet — be the first!</p>
+            </div>
+          )}
+
           {entries.map((entry) => (
             <div key={entry.id} className={`feed__item ${entry.color}`}>
               <div className="feed__item-icon">

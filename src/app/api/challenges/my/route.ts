@@ -1,18 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
+import { getSession } from "@/lib/session";
 import { IS_DEV_MODE, DEV_CHALLENGES, DEV_PARTICIPATION } from "@/lib/dev";
-
-async function getSession(): Promise<{ userId: string } | null> {
-  const c = await cookies();
-  const raw = c.get("bf_session")?.value;
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
-    return parsed;
-  } catch { return null; }
-}
 
 export async function GET() {
   const session = await getSession();

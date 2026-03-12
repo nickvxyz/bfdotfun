@@ -424,7 +424,7 @@ export default function CreateChallengePage() {
                 </div>
               </div>
               <p className="challenge-create__on-chain-note">
-                One wallet popup will approve + create the prize pool on-chain. Requires USDC on Base Sepolia.
+                One wallet popup will approve + create the prize pool on-chain. Requires USDC on Base.
               </p>
 
               {(chainError || submitError) && (

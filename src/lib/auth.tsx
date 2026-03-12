@@ -116,15 +116,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const message = `Sign in to BurnFat.fun\n\nNonce: ${nonce}`;
       const signature = await signMessageAsync({ message });
 
+      const connectBody: Record<string, string> = { address: addr, signature, message };
+      const refCode = typeof window !== "undefined" ? localStorage.getItem("bf_ref_code") : null;
+      if (refCode) connectBody.referral_code = refCode;
+
       const res = await fetch("/api/auth/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: addr, signature, message }),
+        body: JSON.stringify(connectBody),
       });
 
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
+        if (refCode) localStorage.removeItem("bf_ref_code");
         setLoading(false);
         return true;
       }

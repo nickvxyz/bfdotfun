@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
+import { getSession } from "@/lib/session";
 import { IS_DEV_MODE, DEV_CHALLENGES, DEV_PARTICIPATION } from "@/lib/dev";
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
-
-async function getSession(): Promise<{ userId: string } | null> {
-  const c = await cookies();
-  const raw = c.get("bf_session")?.value;
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
-    return parsed;
-  } catch { return null; }
-}
 
 export async function POST(
   request: NextRequest,
@@ -78,11 +67,11 @@ export async function POST(
 
   if (isTxHash && !IS_DEMO) {
     try {
-      const { baseSepoliaClient } = await import("@/lib/viem");
+      const { baseClient } = await import("@/lib/viem");
       const { CHALLENGE_POOL_ABI } = await import("@/lib/contracts/ChallengePool");
       const { parseEventLogs } = await import("viem");
 
-      const receipt = await baseSepoliaClient.getTransactionReceipt({
+      const receipt = await baseClient.getTransactionReceipt({
         hash: tx_hash as `0x${string}`,
       });
 

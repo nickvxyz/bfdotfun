@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 export default function CTAButton({
   children,
   variant = "inverted",
@@ -9,13 +11,10 @@ export default function CTAButton({
   variant?: "default" | "inverted";
   className?: string;
 }) {
+  const router = useRouter();
+
   const handleClick = () => {
-    const el = document.getElementById("waitlist");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.location.href = "/#waitlist";
-    }
+    router.push("/profile");
   };
 
   return (

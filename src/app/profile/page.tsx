@@ -8,6 +8,8 @@ import { useBaseName } from "@/hooks/useBaseName";
 import { IS_DEV_MODE } from "@/lib/dev";
 import WeightChart from "@/components/WeightChart";
 import { ChallengesTab } from "@/components/ChallengesTab";
+import { ReferralTab } from "@/components/ReferralTab";
+import Header from "@/components/Header";
 
 interface WeightEntry {
   id: string;
@@ -359,7 +361,7 @@ export default function ProfilePage() {
     return currentWeightKg - fatMassKg;
   }, [fatMassKg, currentWeightKg]);
 
-  const [activeTab, setActiveTab] = useState<"dashboard" | "challenges">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "challenges" | "referral">("dashboard");
   const [bmiTooltipOpen, setBmiTooltipOpen] = useState(false);
   const [bmiHovered, setBmiHovered] = useState(false);
 
@@ -412,6 +414,8 @@ export default function ProfilePage() {
   };
 
   return (
+    <>
+    <Header />
     <div className="profile">
       <div className="profile-tabs" role="tablist" aria-label="Profile sections">
         <button
@@ -430,9 +434,18 @@ export default function ProfilePage() {
         >
           Challenges
         </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === "referral"}
+          className={`profile-tabs__tab${activeTab === "referral" ? " profile-tabs__tab--active" : ""}`}
+          onClick={() => setActiveTab("referral")}
+        >
+          Referral
+        </button>
       </div>
 
       {activeTab === "challenges" && <ChallengesTab />}
+      {activeTab === "referral" && <ReferralTab />}
 
       {activeTab === "dashboard" && <>
       <div className="dash-home__greeting">
@@ -882,5 +895,6 @@ export default function ProfilePage() {
       </>}
 
     </div>
+    </>
   );
 }

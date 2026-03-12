@@ -8,6 +8,7 @@ export const BURNFAT_TREASURY_ABI = [
     inputs: [
       { name: "kgAmount", type: "uint256", internalType: "uint256" },
       { name: "isRetrospective", type: "bool", internalType: "bool" },
+      { name: "referrer", type: "address", internalType: "address" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -35,13 +36,6 @@ export const BURNFAT_TREASURY_ABI = [
   },
   {
     type: "function",
-    name: "referralPool",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "reservePool",
     inputs: [],
     outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
@@ -62,6 +56,16 @@ export const BURNFAT_TREASURY_ABI = [
       { name: "kgAmount", type: "uint256", indexed: false, internalType: "uint256" },
       { name: "usdcAmount", type: "uint256", indexed: false, internalType: "uint256" },
       { name: "isRetrospective", type: "bool", indexed: false, internalType: "bool" },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ReferralPaid",
+    inputs: [
+      { name: "referrer", type: "address", indexed: true, internalType: "address" },
+      { name: "user", type: "address", indexed: true, internalType: "address" },
+      { name: "amount", type: "uint256", indexed: false, internalType: "uint256" },
     ],
     anonymous: false,
   },

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSendCalls } from "wagmi";
+import { useSendCalls, useConfig } from "wagmi";
+import { getCallsStatus } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
-import { baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { IS_DEV_MODE } from "@/lib/dev";
 import { CHALLENGE_POOL_ADDRESS, CHALLENGE_POOL_ABI } from "@/lib/contracts/ChallengePool";
 
@@ -25,6 +26,7 @@ export function useClaimReward({ slug, onSuccess }: UseClaimRewardOptions): UseC
   const [state, setState] = useState<ClaimState>("idle");
   const [error, setError] = useState<string | null>(null);
 
+  const config = useConfig();
   const { sendCallsAsync } = useSendCalls();
 
   const reset = useCallback(() => {
@@ -85,17 +87,41 @@ export function useClaimReward({ slug, onSuccess }: UseClaimRewardOptions): UseC
 
       const callsId = await sendCallsAsync({
         calls: [{ to: CHALLENGE_POOL_ADDRESS, data: claimData }],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       const batchId = callsId.id;
       setState("verifying");
 
-      // Record claim on backend (batch ID, not a tx hash)
+      // Poll getCallsStatus for real tx hash (same pattern as useBurnSubmit)
+      const MAX_POLLS = 60;
+      const POLL_INTERVAL = 2000;
+      let realTxHash: string | null = null;
+
+      for (let i = 0; i < MAX_POLLS; i++) {
+        const result = await getCallsStatus(config, { id: batchId });
+
+        if (result.status === "success" && result.receipts?.length) {
+          realTxHash = result.receipts[result.receipts.length - 1].transactionHash;
+          break;
+        }
+
+        if (result.status === "failure") {
+          throw new Error("Transaction failed on-chain");
+        }
+
+        await new Promise(r => setTimeout(r, POLL_INTERVAL));
+      }
+
+      if (!realTxHash) {
+        throw new Error("Timed out waiting for transaction confirmation");
+      }
+
+      // Record claim on backend with real tx hash
       const claimRes = await fetch(`/api/challenges/${slug}/rewards/claim`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tx_hash: batchId }),
+        body: JSON.stringify({ tx_hash: realTxHash }),
       });
 
       if (!claimRes.ok) {
@@ -114,7 +140,7 @@ export function useClaimReward({ slug, onSuccess }: UseClaimRewardOptions): UseC
       setError(message);
       setState("error");
     }
-  }, [slug, onSuccess, sendCallsAsync]);
+  }, [slug, onSuccess, sendCallsAsync, config]);
 
   return { claim, state, error, reset };
 }

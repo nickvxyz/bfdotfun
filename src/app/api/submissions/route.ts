@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
+import { getSession } from "@/lib/session";
 import { IS_DEV_MODE } from "@/lib/dev";
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -16,19 +16,6 @@ export const devSubmissions: Array<{
   group_id: string | null;
   created_at: string;
 }> = [];
-
-async function getSession(): Promise<{ userId: string } | null> {
-  const c = await cookies();
-  const raw = c.get("bf_session")?.value;
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed?.userId || typeof parsed.userId !== "string") return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
 
 export async function GET() {
   if (IS_DEV_MODE) {
@@ -122,10 +109,10 @@ export async function POST(request: NextRequest) {
   // Verify transaction on-chain (skipped in demo mode)
   if (!IS_DEMO) {
     try {
-      const { baseSepoliaClient } = await import("@/lib/viem");
+      const { baseClient } = await import("@/lib/viem");
       const { BURNFAT_TREASURY_ABI } = await import("@/lib/contracts/BurnFatTreasury");
 
-      const receipt = await baseSepoliaClient.getTransactionReceipt({
+      const receipt = await baseClient.getTransactionReceipt({
         hash: tx_hash as `0x${string}`,
       });
 
@@ -217,6 +204,33 @@ export async function POST(request: NextRequest) {
       .update({ has_used_retrospective: true })
       .eq("id", session.userId);
   }
+
+  // Activity feed — best-effort
+  try {
+    await supabase.from("activity_feed").insert({
+      user_id: session.userId,
+      type: "fat_burned",
+      payload: { kg_total, submission_type },
+    });
+  } catch { /* non-blocking */ }
+
+  // Record referral reward — best-effort
+  try {
+    const { data: referral } = await supabase
+      .from("referrals")
+      .select("referrer_id")
+      .eq("referee_id", session.userId)
+      .maybeSingle();
+
+    if (referral?.referrer_id) {
+      await supabase.from("referral_rewards").insert({
+        referrer_id: referral.referrer_id,
+        reward_usdc: Math.floor((usdcAmount * 1_000_000) / 3) / 1_000_000,
+        status: "paid",
+        submission_id: submission.id,
+      });
+    }
+  } catch { /* non-blocking */ }
 
   return NextResponse.json({ submission });
 }

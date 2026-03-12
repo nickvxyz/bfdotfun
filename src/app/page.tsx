@@ -124,7 +124,7 @@ export default function Home() {
             <p className="footer-main__col-title">Connect</p>
             <ul className="footer-main__links">
               <li><a href="https://x.com/burnfatdotfun" target="_blank" rel="noopener noreferrer" className="footer-main__link">X / Twitter</a></li>
-              <li><a href="https://t.me/c/basefatburning/1" target="_blank" rel="noopener noreferrer" className="footer-main__link">Telegram</a></li>
+              <li><a href="https://t.me/basefatburning/1" target="_blank" rel="noopener noreferrer" className="footer-main__link">Telegram</a></li>
             </ul>
           </div>
         </div>

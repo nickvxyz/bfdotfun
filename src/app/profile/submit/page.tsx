@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { useBurnSubmit } from "@/hooks/useBurnSubmit";
 import { calculateCostDisplay } from "@/lib/pricing";
+import Header from "@/components/Header";
 
 interface BurnUnit {
   id: string;
@@ -17,8 +19,16 @@ export default function SubmitPage() {
   const [burnUnits, setBurnUnits] = useState<BurnUnit[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [referrerAddress, setReferrerAddress] = useState<string | undefined>();
 
   const unit = user?.unit_pref === "lbs" ? "lbs" : "kg";
+
+  useEffect(() => {
+    fetch("/api/referrals/my-referrer")
+      .then((r) => r.json())
+      .then((d) => { if (d.referrer_wallet) setReferrerAddress(d.referrer_wallet); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function fetchBurnUnits() {
@@ -47,11 +57,14 @@ export default function SubmitPage() {
     });
   };
 
-  const selectedKg = burnUnits
-    .filter((u) => selected.has(u.id))
-    .reduce((sum, u) => sum + Number(u.kg_amount), 0);
-
-  const selectedKgRounded = Math.round(selectedKg * 10) / 10;
+  const selectedKgRounded = useMemo(
+    () => Math.round(
+      burnUnits
+        .filter((u) => selected.has(u.id))
+        .reduce((sum, u) => sum + Number(u.kg_amount), 0),
+    ),
+    [burnUnits, selected],
+  );
 
   const costDisplay = useMemo(
     () => calculateCostDisplay(selectedKgRounded, false),
@@ -67,6 +80,7 @@ export default function SubmitPage() {
     kgAmount: selectedKgRounded,
     isRetrospective: false,
     burnUnitIds: selectedIds,
+    referrerAddress,
     onSuccess: () => {
       setBurnUnits((prev) => prev.filter((u) => !selected.has(u.id)));
       setSelected(new Set());
@@ -90,8 +104,11 @@ export default function SubmitPage() {
 
   if (user?.group_id) {
     return (
-      <div className="submit">
-        <h1 className="submit__title">Submit to Global</h1>
+      <>
+        <Header />
+        <div className="submit">
+          <Link href="/profile" className="back-link" aria-label="Back to Profile">&larr; Back to Profile</Link>
+          <h1 className="submit__title">Submit to Global</h1>
         <div className="submit__auto">
           <p className="submit__auto-text">
             Your burns are automatically submitted to the Global Ledger through
@@ -100,11 +117,15 @@ export default function SubmitPage() {
           <span className="submit__auto-badge">Auto-submitted via Pro</span>
         </div>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    <Header />
     <div className="submit">
+      <Link href="/profile" className="back-link" aria-label="Back to Profile">&larr; Back to Profile</Link>
       <h1 className="submit__title">Submit to Global Ledger</h1>
       <p className="submit__desc">
         Select burn units to submit. Each kg costs $1 USDC on Base.
@@ -140,7 +161,7 @@ export default function SubmitPage() {
           <div className="submit__summary">
             <div className="submit__summary-row">
               <span>Total</span>
-              <span>{displayWeight(selectedKg)} {unit}</span>
+              <span>{displayWeight(selectedKgRounded)} {unit}</span>
             </div>
             <div className="submit__summary-row submit__summary-row--total">
               <span>Cost</span>
@@ -176,10 +197,11 @@ export default function SubmitPage() {
           )}
 
           <p className="submit__note">
-            Requires USDC on Base Sepolia. One wallet popup for approve + submit.
+            Requires USDC on Base. One wallet popup for approve + submit.
           </p>
         </>
       )}
     </div>
+    </>
   );
 }
