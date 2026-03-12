@@ -61,8 +61,8 @@ function entryToFeedItem(entry: FeedEntry): FeedItem {
     return {
       id: entry.id,
       name,
-      action: `new weigh-in${kg > 0 ? ` — ${kg} kg burned` : ""}`,
-      color: "banner--orange",
+      action: "new weigh-in",
+      color: "banner--yellow",
       icon: "check",
     };
   }

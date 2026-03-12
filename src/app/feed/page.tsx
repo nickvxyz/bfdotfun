@@ -61,6 +61,18 @@ function entryToDisplay(entry: FeedEntry): DisplayEntry {
   }
 
   const kg = entry.kg_total ?? 0;
+
+  if (entry.submission_type === "weight_logged") {
+    return {
+      id: entry.id,
+      name,
+      action: "new weigh-in",
+      color: "feed__item--yellow",
+      icon: "check",
+      timestamp,
+    };
+  }
+
   return {
     id: entry.id,
     name,
