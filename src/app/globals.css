@@ -453,9 +453,17 @@
     opacity: 0;
   }
 
-  .banner--green { background: transparent; }
-  .banner--orange { background: transparent; }
-  .banner--yellow { background: transparent; }
+  .banner--green .banner__icon { background: rgba(0, 255, 136, 0.15); }
+  .banner--green .banner__icon svg { stroke: var(--c-green); }
+  .banner--green .banner__name { color: var(--c-green); }
+
+  .banner--orange .banner__icon { background: rgba(255, 107, 26, 0.15); }
+  .banner--orange .banner__icon svg { stroke: var(--c-ember); }
+  .banner--orange .banner__name { color: var(--c-ember); }
+
+  .banner--yellow .banner__icon { background: rgba(245, 197, 66, 0.15); }
+  .banner--yellow .banner__icon svg { stroke: #f5c542; }
+  .banner--yellow .banner__name { color: #f5c542; }
 
   .banner__icon {
     width: 40px;
@@ -6973,6 +6981,7 @@
 
   .feed {
     padding: 24px 16px;
+    padding-top: 72px;
   }
 
   .coaches {
