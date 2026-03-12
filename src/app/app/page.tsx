@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { sdk } from "@farcaster/miniapp-sdk";
 import Link from "next/link";
 import LiveCounter from "@/components/LiveCounter";
@@ -14,6 +15,17 @@ import CTAButton from "@/components/CTAButton";
 type Platform = "warpcast" | "base" | "browser";
 const WARPCAST_FID = 9152;
 const BASE_APP_FID = 309857;
+
+function RefCapture() {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      try { localStorage.setItem("bf_ref_code", ref.toLowerCase()); } catch { /* no-op */ }
+    }
+  }, [searchParams]);
+  return null;
+}
 
 export default function MiniAppPage() {
   const [added, setAdded] = useState(false);
@@ -49,6 +61,7 @@ export default function MiniAppPage() {
 
   return (
     <>
+      <Suspense><RefCapture /></Suspense>
       {platform !== "base" && <GateModal />}
       <Header />
 
