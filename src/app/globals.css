@@ -4949,7 +4949,7 @@
   }
 
   .profile__form-title {
-    font-family: inherit;
+    font-family: var(--font-title), "Orbitron", sans-serif;
     font-size: 18px;
     font-weight: 700;
     text-transform: uppercase;
