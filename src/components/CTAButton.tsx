@@ -1,6 +1,9 @@
 "use client";
 
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useAccount, useConnect } from "wagmi";
+import { useAuth } from "@/lib/auth";
 
 export default function CTAButton({
   children,
@@ -12,10 +15,41 @@ export default function CTAButton({
   className?: string;
 }) {
   const router = useRouter();
+  const { isConnected } = useAccount();
+  const { connectors, connectAsync } = useConnect();
+  const { user, loading, beginSignIn, cancelSignIn, signIn, devMode } = useAuth();
 
-  const handleClick = () => {
-    router.push("/profile");
-  };
+  const handleClick = useCallback(async () => {
+    // Already signed in — go to profile
+    if (user) {
+      router.push("/profile");
+      return;
+    }
+
+    if (loading) return;
+
+    beginSignIn();
+
+    let connectedAddress: `0x${string}` | undefined;
+
+    if (!devMode && !isConnected) {
+      const connector = connectors[0];
+      if (!connector) {
+        cancelSignIn();
+        return;
+      }
+      try {
+        const result = await connectAsync({ connector });
+        connectedAddress = result.accounts[0];
+      } catch {
+        cancelSignIn();
+        return;
+      }
+    }
+
+    const ok = await signIn(connectedAddress);
+    if (ok) router.push("/profile");
+  }, [user, loading, devMode, beginSignIn, cancelSignIn, signIn, connectors, connectAsync, router, isConnected]);
 
   return (
     <button
