@@ -6776,6 +6776,559 @@
   color: var(--c-ember);
 }
 
+/* ============================================================
+   TEAMS
+   ============================================================ */
+
+/* Teams list page */
+.team-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-section);
+  padding-top: 80px;
+}
+
+.team-list-page__title {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--c-ember);
+  margin-bottom: 8px;
+}
+
+.team-list-page__subtitle {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+  margin-bottom: 40px;
+}
+
+.team-list-page__loading,
+.team-list-page__empty {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* Team card grid */
+.team-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.team-card {
+  display: block;
+  border: 1px solid var(--c-border-ember);
+  padding: 24px;
+  background: var(--c-black-alt);
+  text-decoration: none;
+  color: var(--c-white);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.team-card:hover {
+  border-color: var(--c-ember);
+  transform: translateY(-2px);
+}
+
+.team-card__name {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  color: var(--c-ember);
+}
+
+.team-card__stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.team-card__stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-card__stat-value {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-white);
+}
+
+.team-card__stat-label {
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--c-muted);
+}
+
+.team-card__owner {
+  font-size: var(--fs-small);
+  color: var(--c-muted);
+}
+
+/* Team detail page */
+.team-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-section);
+  padding-top: 80px;
+}
+
+.team-detail__loading,
+.team-detail__error {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.team-detail__header {
+  margin-bottom: 32px;
+}
+
+.team-detail__name {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--c-ember);
+  margin-bottom: 8px;
+}
+
+.team-detail__desc {
+  color: var(--c-muted-light);
+  font-size: var(--fs-body);
+  margin-bottom: 8px;
+}
+
+.team-detail__meta {
+  font-size: var(--fs-small);
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.team-detail__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0 32px;
+}
+
+/* Team counter */
+.team-counter {
+  margin: 24px 0;
+}
+
+.team-counter__sublabel {
+  text-align: center;
+  color: var(--c-muted);
+  font-size: var(--fs-small);
+  margin-top: 8px;
+}
+
+/* Team join section */
+.team-join {
+  margin: 24px 0 32px;
+  padding: 24px;
+  border: 1px solid var(--c-border-ember);
+  background: var(--c-black-alt);
+}
+
+.team-join__form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.team-join__code-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  background: var(--c-black);
+  border: 1px solid var(--c-border-ember);
+  color: var(--c-white);
+  font-family: inherit;
+  font-size: var(--fs-body);
+}
+
+.team-join__code-input::placeholder {
+  color: var(--c-muted);
+}
+
+.team-join__pending {
+  text-align: center;
+}
+
+.team-join__pending-badge {
+  display: inline-block;
+  padding: 10px 20px;
+  background: rgba(255, 107, 26, 0.1);
+  border: 1px solid var(--c-border-ember);
+  color: var(--c-ember);
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: var(--fs-small);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.team-join__submitting {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+}
+
+.team-join__leave {
+  text-align: center;
+}
+
+.team-join__leave-btn {
+  background: none;
+  border: 1px solid var(--c-muted);
+  color: var(--c-muted);
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: var(--fs-body);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.team-join__leave-btn:hover {
+  color: #ff4444;
+  border-color: #ff4444;
+}
+
+.team-join__leave-confirm {
+  color: var(--c-muted-light);
+  font-size: var(--fs-body);
+  margin-bottom: 12px;
+}
+
+.team-join__cancel {
+  background: none;
+  border: none;
+  color: var(--c-muted);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.team-join__error {
+  color: #ff4444;
+  font-size: var(--fs-small);
+  margin-top: 8px;
+}
+
+/* Team members list */
+.team-members {
+  margin-top: 32px;
+}
+
+.team-members__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.team-members__title {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--c-white);
+}
+
+.team-members__filters {
+  display: flex;
+  gap: 8px;
+}
+
+.team-members__filter {
+  background: none;
+  border: 1px solid var(--c-border-ember);
+  color: var(--c-muted);
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.team-members__filter:hover {
+  color: var(--c-white);
+  border-color: var(--c-ember);
+}
+
+.team-members__filter--active {
+  color: var(--c-ember);
+  border-color: var(--c-ember);
+}
+
+.team-member {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--c-border-ember);
+  gap: 16px;
+}
+
+.team-member__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.team-member__name {
+  font-size: var(--fs-body);
+  color: var(--c-white);
+  font-weight: 700;
+}
+
+.team-member__burned {
+  font-size: var(--fs-small);
+  color: var(--c-ember);
+}
+
+.team-member__joined {
+  font-size: var(--fs-label);
+  color: var(--c-muted);
+}
+
+.team-member__progress {
+  flex-shrink: 0;
+}
+
+.team-members__empty {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+  text-align: center;
+  padding: 40px 20px;
+}
+
+/* Team admin page */
+.team-admin {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-section);
+  padding-top: 80px;
+}
+
+.team-admin__loading,
+.team-admin__error {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.team-admin__title {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--c-ember);
+  margin-bottom: 32px;
+}
+
+.team-admin__section {
+  margin-bottom: 40px;
+  padding: 24px;
+  border: 1px solid var(--c-border-ember);
+  background: var(--c-black-alt);
+}
+
+.team-admin__section-title {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--c-white);
+  margin-bottom: 16px;
+}
+
+.team-admin__empty {
+  color: var(--c-muted);
+  font-size: var(--fs-body);
+}
+
+.team-admin__pending-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--c-border-ember);
+}
+
+.team-admin__pending-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.team-admin__pending-name {
+  font-size: var(--fs-body);
+  color: var(--c-white);
+  font-weight: 700;
+}
+
+.team-admin__pending-date {
+  font-size: var(--fs-label);
+  color: var(--c-muted);
+}
+
+.team-admin__pending-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.team-admin__approve-btn {
+  background: var(--c-green);
+  color: var(--c-black);
+  border: none;
+  padding: 8px 16px;
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.team-admin__reject-btn {
+  background: none;
+  color: #ff4444;
+  border: 1px solid #ff4444;
+  padding: 8px 16px;
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.team-admin__member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--c-border-ember);
+}
+
+.team-admin__member-name {
+  font-size: var(--fs-body);
+  color: var(--c-white);
+}
+
+.team-admin__member-burned {
+  font-size: var(--fs-body);
+  color: var(--c-ember);
+  font-weight: 700;
+}
+
+.team-admin__codes {
+  margin-top: 16px;
+}
+
+.team-admin__code-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--c-border-ember);
+}
+
+.team-admin__code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  color: var(--c-ember);
+  letter-spacing: 3px;
+}
+
+.team-admin__code-uses {
+  font-size: var(--fs-small);
+  color: var(--c-muted);
+}
+
+.team-admin__submit-info {
+  color: var(--c-muted-light);
+  font-size: var(--fs-body);
+  margin-bottom: 16px;
+}
+
+.team-admin__submit-confirm {
+  margin-top: 12px;
+}
+
+.team-admin__submit-warning {
+  color: var(--c-muted-light);
+  font-size: var(--fs-body);
+  margin-bottom: 12px;
+}
+
+.team-admin__cancel {
+  background: none;
+  border: none;
+  color: var(--c-muted);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.team-admin__submit-result {
+  margin-top: 12px;
+  font-size: var(--fs-body);
+}
+
+.team-admin__submit-result--success {
+  color: var(--c-green);
+}
+
+.team-admin__submit-result--error {
+  color: #ff4444;
+}
+
+/* Team badge (profile page) */
+.team-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(255, 107, 26, 0.1);
+  border: 1px solid var(--c-border-ember);
+  color: var(--c-ember);
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.team-badge:hover {
+  background: rgba(255, 107, 26, 0.2);
+}
+
 /* Mobile */
 @media (max-width: 900px) {
   .counter-section__grid {
@@ -6796,6 +7349,638 @@
     gap: 20px;
   }
 }
+
+  /* ===== New Home: Reality section ===== */
+  .reality {
+    min-height: 100vh;
+    padding: 120px 48px 80px;
+    padding-top: calc(120px + 56px);
+    background: var(--c-black);
+    border-bottom: 1px solid var(--c-border-ember);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reality::before {
+    content: "";
+    position: absolute;
+    bottom: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120%;
+    height: 80%;
+    background: radial-gradient(ellipse at center bottom, rgba(255, 107, 26, 0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .reality__content {
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .reality__label {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--c-ember);
+    margin-bottom: 24px;
+  }
+
+  .reality__title {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(28px, 5vw, 56px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--c-white);
+    margin-bottom: 24px;
+  }
+
+  .reality__sub {
+    font-size: 16px;
+    color: var(--c-muted);
+    max-width: 640px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* ===== Dual Counter ===== */
+  .dual-counter {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 24px;
+  }
+
+  .dual-counter__block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+  }
+
+  .dual-counter__number-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .dual-counter__static {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(36px, 8vw, 80px);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--c-ember);
+    animation: counter-glow 3s ease-in-out infinite;
+  }
+
+  .dual-counter__static-unit {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(18px, 4vw, 36px);
+    font-weight: 700;
+    color: var(--c-muted);
+  }
+
+  .dual-counter__block .counter {
+    margin-bottom: 0;
+  }
+
+  .dual-counter__block .counter__number {
+    font-size: clamp(28px, 5vw, 64px);
+  }
+
+  .dual-counter__block .counter__unit {
+    font-size: clamp(14px, 3vw, 28px);
+  }
+
+  .dual-counter__label {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dual-counter__live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--c-green);
+    display: inline-block;
+    flex-shrink: 0;
+    animation: live-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .dual-counter__info {
+    background: none;
+    border: none;
+    color: var(--c-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+  }
+
+  .dual-counter__info:hover {
+    color: var(--c-ember);
+  }
+
+  .dual-counter__tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 12px;
+    background: var(--c-black-alt);
+    border: 1px solid var(--c-border-ember);
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--c-muted);
+    max-width: 360px;
+    z-index: 100;
+  }
+
+  .dual-counter__tooltip p {
+    margin-bottom: 8px;
+  }
+
+  .dual-counter__tooltip ul {
+    list-style: disc;
+    padding-left: 16px;
+    margin-bottom: 8px;
+  }
+
+  .dual-counter__tooltip-note {
+    font-size: 11px;
+    color: var(--c-muted);
+    opacity: 0.7;
+    margin-bottom: 0;
+  }
+
+  .dual-counter__gap-text {
+    grid-column: 1 / -1;
+    font-size: 14px;
+    color: var(--c-muted);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* ===== New Home: Personal section ===== */
+  .personal {
+    padding: var(--spacing-section);
+    background: var(--c-black-alt);
+    border-bottom: 1px solid var(--c-border-ember);
+  }
+
+  .personal__content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .personal__label {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--c-ember);
+    margin-bottom: 16px;
+  }
+
+  .personal__title {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 900;
+    color: var(--c-white);
+    margin-bottom: 12px;
+  }
+
+  .personal__sub {
+    font-size: 15px;
+    color: var(--c-muted);
+    margin-bottom: 40px;
+  }
+
+  /* ===== BMI Calculator ===== */
+  .bmi-calc {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .bmi-calc__form {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .bmi-calc__form--hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .bmi-calc__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 380px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 107, 26, 0.12);
+    padding: 28px 24px;
+  }
+
+  .bmi-calc__row {
+    display: flex;
+    gap: 16px;
+  }
+
+  .bmi-calc__field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bmi-calc__label {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--c-muted);
+  }
+
+  .bmi-calc__input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid rgba(255, 107, 26, 0.3);
+    color: var(--c-white);
+    font-family: var(--font-body), "Space Mono", monospace;
+    font-size: 20px;
+    padding: 14px 16px;
+    width: 100%;
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+
+  .bmi-calc__input::placeholder {
+    color: var(--c-muted);
+    opacity: 0.35;
+  }
+
+  .bmi-calc__input:focus {
+    border-color: var(--c-ember);
+    background: rgba(255, 107, 26, 0.04);
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.12), inset 0 0 12px rgba(255, 107, 26, 0.04);
+    outline: none;
+  }
+
+  .bmi-calc__submit {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: var(--fs-cta);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    background: var(--c-ember);
+    color: var(--c-black);
+    border: none;
+    padding: 16px 32px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-top: 4px;
+  }
+
+  .bmi-calc__submit:hover {
+    background: var(--c-ember-hover);
+    box-shadow: 0 0 24px rgba(255, 107, 26, 0.3);
+  }
+
+  .bmi-calc__result {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    animation: bmi-fade-in 0.5s ease forwards;
+  }
+
+  @keyframes bmi-fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== BMI Gauge ===== */
+  .bmi-gauge {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bmi-gauge__svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Verdict — massive label below gauge */
+  .bmi-gauge__verdict {
+    text-align: center;
+    margin-top: -8px;
+    animation: verdict-slam 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .bmi-gauge__verdict-text {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(36px, 8vw, 64px);
+    font-weight: 900;
+    letter-spacing: 6px;
+    line-height: 1;
+    display: block;
+  }
+
+  @keyframes verdict-slam {
+    0% {
+      opacity: 0;
+      transform: scale(1.4);
+      filter: blur(8px);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(0.95);
+      filter: blur(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+    }
+  }
+
+  /* ===== BMI Result layout ===== */
+  .bmi-calc__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .bmi-calc__gauge-wrap {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  /* Mission block — fades in after verdict */
+  .bmi-calc__mission {
+    text-align: center;
+    max-width: 480px;
+  }
+
+  .bmi-calc__mission--enter {
+    animation: mission-fade-up 0.6s ease forwards;
+  }
+
+  @keyframes mission-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .bmi-calc__mission-label {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--c-ember);
+    margin-bottom: 12px;
+  }
+
+  .bmi-calc__mission-number {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 900;
+    color: var(--c-white);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-shadow: 0 0 40px rgba(255, 107, 26, 0.4);
+  }
+
+  .bmi-calc__mission-unit {
+    color: var(--c-muted);
+    font-size: 0.55em;
+  }
+
+  .bmi-calc__mission-status {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(24px, 5vw, 40px);
+    font-weight: 900;
+    color: var(--c-green);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+  }
+
+  .bmi-calc__mission-status--muted {
+    color: var(--c-muted);
+    text-shadow: none;
+  }
+
+  .bmi-calc__mission-text {
+    font-size: 14px;
+    color: var(--c-muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  /* Bottom row */
+  .bmi-calc__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .bmi-calc__disclaimer {
+    font-size: 11px;
+    color: var(--c-muted);
+    opacity: 0.4;
+    text-align: center;
+    max-width: 400px;
+  }
+
+  .bmi-calc__reset {
+    background: none;
+    border: 1px solid var(--c-border-ember);
+    color: var(--c-muted);
+    font-family: var(--font-body), "Space Mono", monospace;
+    font-size: 12px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .bmi-calc__reset:hover {
+    color: var(--c-ember);
+    border-color: var(--c-ember);
+  }
+
+  /* ===== New Home: CTA section ===== */
+  .home-cta {
+    padding: var(--spacing-section);
+    background: var(--c-black);
+    border-bottom: 1px solid var(--c-border-ember);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .home-cta::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 107, 26, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .home-cta__content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .home-cta__title {
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 900;
+    color: var(--c-white);
+    margin-bottom: 12px;
+  }
+
+  .home-cta__sub {
+    font-size: 15px;
+    color: var(--c-muted);
+    margin-bottom: 32px;
+  }
+
+  .home-cta__trust {
+    font-size: 12px;
+    color: var(--c-muted);
+    margin-top: 16px;
+    opacity: 0.7;
+  }
+
+  .home-cta--enter {
+    animation: cta-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes cta-reveal {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== About: final CTA section ===== */
+  .about-cta {
+    padding: 48px;
+    text-align: center;
+    background: var(--c-black);
+    border-bottom: 1px solid var(--c-border-ember);
+  }
+
+  /* ===== Header: More dropdown ===== */
+  /* Header: More dropdown — clean popover */
+  .header__more {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .header__more-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--c-white);
+    font-family: var(--font-title), "Orbitron", sans-serif;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .header__more-btn:hover {
+    color: var(--c-ember);
+  }
+
+  .header__more-caret {
+    transition: transform 0.2s ease;
+    opacity: 0.5;
+  }
+
+  .header__more-caret--open {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+
+  .header__more-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: -12px;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    padding: 4px 0;
+    z-index: 200;
+    animation: dropdown-pop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  @keyframes dropdown-pop {
+    from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .header__more-link {
+    font-family: var(--font-body), "Space Mono", monospace;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px 16px;
+    transition: color 0.15s, background 0.15s;
+    display: block;
+  }
+
+  .header__more-link:hover {
+    color: var(--c-white);
+    background: rgba(255, 255, 255, 0.06);
+  }
 
 @media (max-width: 768px) {
   .cta {
@@ -7143,5 +8328,81 @@
   /* Submit page: reduce padding on loaded items */
   .submit__auto {
     padding: 20px 16px;
+  }
+
+  /* Teams: responsive adjustments */
+  .team-list-page,
+  .team-detail,
+  .team-admin {
+    padding: 72px 16px 48px;
+  }
+
+  .team-list {
+    grid-template-columns: 1fr;
+  }
+
+  .team-detail__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .team-admin__pending-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* New Home: Reality section mobile */
+  .reality {
+    padding: 80px 20px 48px;
+    padding-top: calc(80px + 56px);
+    min-height: auto;
+  }
+
+  .reality__sub {
+    margin-bottom: 32px;
+  }
+
+  /* Dual Counter: stack on mobile */
+  .dual-counter {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .dual-counter__tooltip {
+    max-width: calc(100vw - 48px);
+  }
+
+  /* Personal section mobile */
+  .personal {
+    padding: 48px 20px;
+  }
+
+  /* BMI calc mobile */
+  .bmi-calc__gauge-wrap {
+    max-width: 260px;
+  }
+
+  .bmi-calc__fields {
+    max-width: 100%;
+    padding: 20px 16px;
+  }
+
+  .bmi-calc__row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Home CTA mobile */
+  .home-cta {
+    padding: 48px 20px;
+  }
+
+  /* About CTA mobile */
+  .about-cta {
+    padding: 32px 20px;
+  }
+
+  /* Header More: hide dropdown on mobile (links shown flat in overlay) */
+  .header__more {
+    display: none;
   }
 }

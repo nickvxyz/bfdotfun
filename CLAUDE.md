@@ -9,13 +9,13 @@ npx tsc --noEmit # TypeScript check without building
 ```
 
 ## Architecture
-Multi-layer web app: live counter + activity feed, user accounts, coach profiles, Farcaster mini app, smart contracts on Base.
+Multi-layer web app: live counter + activity feed, user accounts, teams, Farcaster mini app, smart contracts on Base.
 
 - **Next.js 15 App Router** — server components by default
 - **Tailwind CSS v4** — via `@import "tailwindcss"` in globals.css
 - **TypeScript strict mode**
 - **Path alias:** `@/*` → `./src/*`
-- **Database:** Supabase PostgreSQL — `users`, `weight_entries`, `burn_units`, `submissions`, `global_counter`, `pro_groups`, `challenges`, `challenge_participants`, `challenge_invite_codes`, `challenge_weight_entries`, `email_verifications`
+- **Database:** Supabase PostgreSQL — `users`, `weight_entries`, `burn_units`, `submissions`, `global_counter`, `pro_groups` (teams), `team_memberships`, `team_invite_codes`, `challenges`, `challenge_participants`, `challenge_invite_codes`, `challenge_weight_entries`, `email_verifications`
 - **Auth:** Wallet-based (Coinbase Smart Wallet via wagmi), ERC-1271 signature verification, httpOnly session cookies
 - **On-chain:** wagmi + viem on Base (mainnet + Sepolia), BurnFatTreasury contract for USDC payments
 - **Farcaster:** Mini app at `/app` with platform detection (Warpcast / Base App / browser)
@@ -26,7 +26,9 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `/` — landing page (server component): GateModal, Header, Hero ("Every Fat Burner Is a Superhero"), Counter+Feed, HowItWorks, StorySection (scroll-reveal, VISIBLE_COUNT=3), Truth, Countdown+WaitlistForm. **Production mode:** all CTAs and Header "Join Waitlist" scroll to `#waitlist` (auth disabled). To re-enable auth: restore CTAButton.tsx and Header.tsx from dev branch git history.
 - `/app` — Farcaster mini app (client): platform detection, GateModal (skipped for Base App)
 - `/feed` — pseudo-live activity feed with generated entries
-- `/coaches` — coach directory (mock data)
+- `/teams` — teams directory (list all teams, join flow)
+- `/teams/[slug]` — team detail (counter, members, progress bars, join/leave)
+- `/teams/[slug]/admin` — team admin (approve/reject members, invite codes, submit to global)
 - `/challenges` — challenges directory (list, filter by status)
 - `/challenges/[slug]` — challenge detail + join flow
 - `/challenges/[slug]/admin` — challenge admin (stats, participants, finalize)
@@ -56,6 +58,15 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `GET /api/challenges/[slug]/rewards` — user reward + Merkle proof
 - `POST /api/challenges/[slug]/rewards/claim` — verify on-chain claim
 - `GET /api/challenges/my` — user's challenge participations
+- `GET|POST /api/teams` — list all teams (public) + create team (TEAM_CREATOR_ID gated)
+- `GET /api/teams/my` — current user's team info
+- `GET /api/teams/[slug]` — team detail with members
+- `POST /api/teams/[slug]/join` — request to join team
+- `POST /api/teams/[slug]/leave` — leave team
+- `GET /api/teams/[slug]/members` — list memberships (owner only)
+- `PATCH /api/teams/[slug]/members/[id]` — approve/reject member (owner only)
+- `GET|POST /api/teams/[slug]/invites` — invite code management (owner only)
+- `POST /api/teams/[slug]/submit` — submit pooled kg to global ledger (owner only, 24h rate limit)
 - `POST /api/email-verify/send` — send 6-digit verification code
 - `POST /api/email-verify/confirm` — verify code, update user email
 
@@ -72,6 +83,9 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - `BodyFatMeter.tsx` — horizontal body fat % bar with colored zones (lean/healthy/elevated/high)
 - `ChallengesTab.tsx` — challenges tab for profile page
 - `ChallengeFeed.tsx` — challenge-scoped activity feed
+- `ProgressBar.tsx` — terminal-style progress bar (extracted from profile, reused in teams)
+- `TeamCounter.tsx` — simplified counter display for teams (reuses `.counter` CSS)
+- `TeamCard.tsx` — card component for teams list grid
 
 ## Key libraries
 - `src/lib/auth.tsx` — AuthProvider, User interface, useAuth hook (beginSignIn/cancelSignIn/signIn/signOut), dev mode support
@@ -95,10 +109,12 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 ## Database schema
 - **users** — wallet_address (unique), display_name, role, starting_weight, goal_weight, height_cm, body_fat_pct, unit_pref, has_used_retrospective, verified_email, verified_email_domain, group_id
 - **weight_entries** — user_id, weight_kg, recorded_at, delta_kg, fat_mass_kg (unique per user+date)
-- **burn_units** — user_id, weight_entry_id, kg_amount, status (unsubmitted/submitted_individual/submitted_via_pro/attributed_to_challenge/auto_submitted_challenge), submission_id, challenge_id
+- **burn_units** — user_id, weight_entry_id, kg_amount, status (unsubmitted/submitted_individual/submitted_via_pro/attributed_to_challenge/auto_submitted_challenge/team_pooled), submission_id, challenge_id
 - **submissions** — submitter_id, kg_total, usdc_amount, tx_hash (unique), submission_type (individual/pro_group/retrospective/challenge_auto), group_id
 - **global_counter** — singleton (id=1), total_kg, total_submissions (auto-incremented via trigger)
-- **pro_groups** — owner_id, name, type, subscription_status
+- **pro_groups** (teams) — owner_id, name, slug (unique), description, avatar_url, type, subscription_status, total_kg_burned, total_kg_submitted, member_count
+- **team_memberships** — team_id, user_id (unique per team), status (pending/active/rejected/left), invite_code, requested_at, resolved_at. Trigger `sync_team_membership` auto-syncs `users.group_id` + `pro_groups.member_count`
+- **team_invite_codes** — team_id, code (unique), max_uses, use_count, created_by, expires_at
 - **challenges** — slug (unique), title, creator_id, visibility, starts_at, ends_at, prize_pool_usdc, status, merkle_root, participant_count, total_kg_burned
 - **challenge_participants** — challenge_id, user_id (unique per challenge), kg_burned, reward_usdc, reward_claimed
 - **challenge_invite_codes** — challenge_id, code (unique), max_uses, use_count
@@ -143,6 +159,8 @@ Multi-layer web app: live counter + activity feed, user accounts, coach profiles
 - **SVG icons:** inline React components, `ICONS` map for dynamic render
 - **Activity feed:** cosmetic only — generates entries with weighted random types, does NOT increment counter (counter shows real DB value only)
 - **Waitlist:** Formspree `https://formspree.io/f/mbdayrbn`
+- **Teams:** team = `pro_groups` row. Members join via `team_memberships` (pending → approved by owner). Weight entries by team members auto-create burn units with `status: 'team_pooled'` and increment `pro_groups.total_kg_burned`. Team owner submits pooled kg to global ledger for free (no USDC). Team creation gated to `TEAM_CREATOR_ID` env var. One team per user (`users.group_id`). 24h rate limit on team submissions
+- **Team page padding:** all team pages use `padding-top: 80px` (56px fixed header + 24px gap), matching feed page pattern
 - **Countdown CSS:** single style block (lines ~660-727 in globals.css) using `clamp()` + `var(--c-green)`. Old miniapp-era duplicate block was removed — do NOT re-add a second `.countdown` block
 
 ## Smart contract — BurnFatTreasury

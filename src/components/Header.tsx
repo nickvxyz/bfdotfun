@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccount, useConnect } from "wagmi";
 import { useAuth } from "@/lib/auth";
+import HeaderMore from "@/components/HeaderMore";
 
 function BaseLogo({ size = 16 }: { size?: number }) {
   return (
@@ -83,10 +84,12 @@ export default function Header() {
         <Link href="/" className="header__logo">BurnFat.fun</Link>
 
         <nav className="header__nav">
+          <Link href="/" className="header__link">Home</Link>
           <Link href="/feed" className="header__link">Live Feed</Link>
-          <Link href="/coaches" className="header__link">Coaches</Link>
+          <Link href="/teams" className="header__link">Teams</Link>
           <Link href="/challenges" className="header__link">Challenges</Link>
           {isAuthed && <Link href="/profile" className="header__link">Profile</Link>}
+          <HeaderMore />
         </nav>
 
         <div className="header__right">
@@ -132,9 +135,11 @@ export default function Header() {
         <div className="header__overlay">
           <div className="header__overlay-card">
             <nav className="header__overlay-nav">
+              <Link href="/" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Home</Link>
               <Link href="/feed" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Live Feed</Link>
-              <Link href="/coaches" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Coaches</Link>
+              <Link href="/teams" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Teams</Link>
               <Link href="/challenges" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Challenges</Link>
+              <Link href="/about" className="header__overlay-link" onClick={() => setMenuOpen(false)}>About</Link>
               {isAuthed ? (
                 <>
                   <Link href="/profile" className="header__overlay-link" onClick={() => setMenuOpen(false)}>Profile</Link>

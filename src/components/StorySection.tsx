@@ -72,7 +72,7 @@ const PARAGRAPHS = [
 
 const VISIBLE_COUNT = 3;
 
-export default function StorySection() {
+export default function StorySection({ showCta = true }: { showCta?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const expandedRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
@@ -172,10 +172,12 @@ export default function StorySection() {
         )}
       </div>
 
-      <div className="cta-block">
-        <p className="cta-block__question">Ready to be seen?</p>
-        <CTAButton>Put Your Result on the Record</CTAButton>
-      </div>
+      {showCta && (
+        <div className="cta-block">
+          <p className="cta-block__question">Ready to be seen?</p>
+          <CTAButton>Put Your Result on the Record</CTAButton>
+        </div>
+      )}
     </section>
   );
 }
