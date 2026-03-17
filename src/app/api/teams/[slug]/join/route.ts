@@ -19,7 +19,7 @@ export async function POST(
   const { createAdminClient } = await import("@/lib/supabase/admin");
   const supabase = createAdminClient();
 
-  // Check user doesn't already have a team
+  // Check user doesn't already have a team (active or pending anywhere)
   const { data: currentUser } = await supabase
     .from("users")
     .select("group_id")
@@ -28,6 +28,18 @@ export async function POST(
 
   if (currentUser?.group_id) {
     return NextResponse.json({ error: "You are already in a team. Leave your current team first." }, { status: 400 });
+  }
+
+  // Block if user has any pending request across ANY team
+  const { data: pendingAnywhere } = await supabase
+    .from("team_memberships")
+    .select("id")
+    .eq("user_id", session.userId)
+    .eq("status", "pending")
+    .limit(1);
+
+  if (pendingAnywhere && pendingAnywhere.length > 0) {
+    return NextResponse.json({ error: "You already have a pending request. Wait for approval or cancel it first." }, { status: 400 });
   }
 
   // Find team

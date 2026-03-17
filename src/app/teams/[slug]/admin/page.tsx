@@ -260,6 +260,16 @@ export default function TeamAdminPage({ params }: { params: Promise<{ slug: stri
               {codes.map((c) => (
                 <div key={c.id} className="team-admin__code-row">
                   <code className="team-admin__code">{c.code}</code>
+                  <button
+                    type="button"
+                    className="team-admin__copy-btn"
+                    onClick={() => {
+                      navigator.clipboard.writeText(c.code);
+                    }}
+                    aria-label="Copy invite code"
+                  >
+                    Copy
+                  </button>
                   <span className="team-admin__code-uses">{c.use_count}/{c.max_uses} used</span>
                 </div>
               ))}

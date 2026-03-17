@@ -80,7 +80,7 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
     fetchTeam();
   }, [slug]);
 
-  // Check if user has pending membership
+  // Check if user has pending/active membership for this team
   useEffect(() => {
     if (!user || !team) return;
     async function checkMembership() {
@@ -88,8 +88,8 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
         const res = await fetch("/api/teams/my");
         if (res.ok) {
           const data = await res.json();
-          if (data.team?.id === team?.id && data.membership?.status === "active") {
-            setJoinStatus("idle");
+          if (data.team?.id === team?.id && data.membership?.status === "pending") {
+            setJoinStatus("pending");
           }
         }
       } catch { /* ignore */ }

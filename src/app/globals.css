@@ -13,6 +13,7 @@
   --c-muted: #888880;
   --c-muted-light: rgba(255, 255, 255, 0.35);
   --c-border-ember: rgba(255, 107, 26, 0.2);
+  --c-error: var(--c-error);
   --fs-label: 11px;
   --fs-small: 12px;
   --fs-body: 14px;
@@ -6880,7 +6881,7 @@
 }
 
 .team-create-page__error {
-  color: #ff4444;
+  color: var(--c-error);
   font-size: var(--fs-small);
 }
 
@@ -7083,8 +7084,8 @@
 }
 
 .team-join__leave-btn:hover {
-  color: #ff4444;
-  border-color: #ff4444;
+  color: var(--c-error);
+  border-color: var(--c-error);
 }
 
 .team-join__leave-confirm {
@@ -7104,7 +7105,7 @@
 }
 
 .team-join__error {
-  color: #ff4444;
+  color: var(--c-error);
   font-size: var(--fs-small);
   margin-top: 8px;
 }
@@ -7296,8 +7297,8 @@
 
 .team-admin__reject-btn {
   background: none;
-  color: #ff4444;
-  border: 1px solid #ff4444;
+  color: var(--c-error);
+  border: 1px solid var(--c-error);
   padding: 8px 16px;
   font-family: var(--font-title), "Orbitron", sans-serif;
   font-size: var(--fs-label);
@@ -7345,6 +7346,24 @@
   letter-spacing: 3px;
 }
 
+.team-admin__copy-btn {
+  background: transparent;
+  border: 1px solid var(--c-border-ember);
+  color: var(--c-muted);
+  font-family: var(--font-body), "Space Mono", monospace;
+  font-size: var(--fs-small);
+  padding: 4px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.team-admin__copy-btn:hover {
+  color: var(--c-ember);
+  border-color: var(--c-ember);
+}
+
 .team-admin__code-uses {
   font-size: var(--fs-small);
   color: var(--c-muted);
@@ -7386,7 +7405,7 @@
 }
 
 .team-admin__submit-result--error {
-  color: #ff4444;
+  color: var(--c-error);
 }
 
 /* Team badge (profile page) */
@@ -8428,6 +8447,45 @@
   .team-admin__pending-row {
     flex-direction: column;
     gap: 12px;
+  }
+
+  .team-create-page {
+    padding: 72px 16px 48px;
+  }
+
+  .team-join__form {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .team-join__code-input {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .team-members__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .team-members__filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .team-member {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .team-member__progress {
+    width: 100%;
+  }
+
+  .team-list-page__header {
+    flex-direction: column;
+    gap: 16px;
   }
 
   /* New Home: Reality section mobile */

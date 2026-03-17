@@ -257,15 +257,28 @@ export async function POST(request: NextRequest) {
         if (cweError) console.error("Failed to insert challenge_weight_entry:", cweError);
       }
 
-      // If positive delta, attribute burn unit to first challenge and create auto-submission per challenge
+      // If positive delta, attribute burn unit to first challenge (preserve team_pooled status) and create auto-submission per challenge
       if (delta_kg > 0 && burnUnitId) {
         const firstParticipation = participations[0] as unknown as { challenge_id: string };
+
+        // Check current burn unit status — don't overwrite team_pooled
+        const { data: currentBurn } = await supabase
+          .from("burn_units")
+          .select("status")
+          .eq("id", burnUnitId)
+          .maybeSingle();
+
+        const updateFields: Record<string, unknown> = {
+          challenge_id: firstParticipation.challenge_id,
+        };
+        // Only change status if not team_pooled (team attribution takes priority)
+        if (currentBurn?.status !== "team_pooled") {
+          updateFields.status = "attributed_to_challenge";
+        }
+
         const { error: burnUpdateError } = await supabase
           .from("burn_units")
-          .update({
-            status: "attributed_to_challenge",
-            challenge_id: firstParticipation.challenge_id,
-          })
+          .update(updateFields)
           .eq("id", burnUnitId);
         if (burnUpdateError) console.error("Failed to update burn unit for challenge:", burnUpdateError);
 

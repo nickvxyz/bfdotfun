@@ -20,8 +20,28 @@ export async function GET() {
     .eq("id", session.userId)
     .maybeSingle();
 
+  // Check for any pending membership (even if group_id not set yet)
+  const { data: pendingMembership } = await supabase
+    .from("team_memberships")
+    .select("id, team_id, status, requested_at, resolved_at")
+    .eq("user_id", session.userId)
+    .eq("status", "pending")
+    .limit(1)
+    .maybeSingle();
+
+  if (pendingMembership) {
+    // Return the pending team info
+    const { data: pendingTeam } = await supabase
+      .from("pro_groups")
+      .select("id, slug, name, description, type, total_kg_burned, total_kg_submitted, member_count, owner_id")
+      .eq("id", pendingMembership.team_id)
+      .maybeSingle();
+
+    return NextResponse.json({ team: pendingTeam, membership: pendingMembership });
+  }
+
   if (!user?.group_id) {
-    return NextResponse.json({ team: null });
+    return NextResponse.json({ team: null, membership: null });
   }
 
   const { data: team } = await supabase
@@ -31,7 +51,7 @@ export async function GET() {
     .maybeSingle();
 
   if (!team) {
-    return NextResponse.json({ team: null });
+    return NextResponse.json({ team: null, membership: null });
   }
 
   const { data: membership } = await supabase
