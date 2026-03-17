@@ -48,10 +48,12 @@ export async function POST(request: NextRequest) {
     if (existing) {
       user = existing;
     } else {
+      const abbreviatedName = `${walletLower.slice(0, 6)}...${walletLower.slice(-4)}`;
       const { data: newUser, error } = await supabase
         .from("users")
         .insert({
           wallet_address: walletLower,
+          display_name: abbreviatedName,
           role: "individual",
           unit_pref: "kg",
         })

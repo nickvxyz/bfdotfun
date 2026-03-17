@@ -194,6 +194,40 @@ export async function POST(request: NextRequest) {
     else burnUnitId = burnUnit?.id ?? null;
   }
 
+  // Team attribution — if user is in a team, mark burn unit as team_pooled
+  if (delta_kg > 0 && burnUnitId) {
+    try {
+      const { data: teamUser } = await supabase
+        .from("users")
+        .select("group_id")
+        .eq("id", session.userId)
+        .maybeSingle();
+
+      if (teamUser?.group_id) {
+        await supabase
+          .from("burn_units")
+          .update({ status: "team_pooled" })
+          .eq("id", burnUnitId);
+
+        // Increment team's total_kg_burned
+        const { data: currentTeam } = await supabase
+          .from("pro_groups")
+          .select("total_kg_burned")
+          .eq("id", teamUser.group_id)
+          .maybeSingle();
+
+        if (currentTeam) {
+          await supabase
+            .from("pro_groups")
+            .update({ total_kg_burned: Number(currentTeam.total_kg_burned) + delta_kg })
+            .eq("id", teamUser.group_id);
+        }
+      }
+    } catch (err) {
+      console.error("Team attribution failed (non-fatal):", err);
+    }
+  }
+
   // Challenge attribution — best-effort, wrapped in try/catch
   try {
     const { data: participations } = await supabase

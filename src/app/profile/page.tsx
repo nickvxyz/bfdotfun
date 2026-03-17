@@ -29,30 +29,7 @@ interface Stats {
   goalWeight: number | null;
 }
 
-const PROGRESS_BLOCKS = 20;
-
-function progressColor(pct: number): string {
-  // Red (0%) → Yellow (50%) → Green (100%)
-  const r = pct < 50 ? 255 : Math.round(255 - (pct - 50) * 5.1);
-  const g = pct < 50 ? Math.round(pct * 5.1) : 255;
-  return `rgb(${r}, ${g}, 40)`;
-}
-
-function ProgressBar({ progress }: { progress: number }) {
-  const filled = Math.round((progress / 100) * PROGRESS_BLOCKS);
-  const empty = PROGRESS_BLOCKS - filled;
-  const color = progressColor(progress);
-
-  return (
-    <div className="weight-progress">
-      <div className="weight-progress__bar">
-        <span style={{ color }}>{"█".repeat(filled)}</span>
-        <span className="weight-progress__empty">{"░".repeat(empty)}</span>
-      </div>
-      <span className="weight-progress__pct" style={{ color }}>{progress}%</span>
-    </div>
-  );
-}
+import ProgressBar from "@/components/ProgressBar";
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
@@ -361,6 +338,16 @@ export default function ProfilePage() {
     return currentWeightKg - fatMassKg;
   }, [fatMassKg, currentWeightKg]);
 
+  // Team badge
+  const [teamInfo, setTeamInfo] = useState<{ name: string; slug: string } | null>(null);
+  useEffect(() => {
+    if (!user?.group_id) return;
+    fetch("/api/teams/my")
+      .then((r) => r.json())
+      .then((d) => { if (d.team) setTeamInfo({ name: d.team.name, slug: d.team.slug }); })
+      .catch(() => {});
+  }, [user?.group_id]);
+
   const [activeTab, setActiveTab] = useState<"dashboard" | "challenges" | "referral">("dashboard");
   const [bmiTooltipOpen, setBmiTooltipOpen] = useState(false);
   const [bmiHovered, setBmiHovered] = useState(false);
@@ -453,6 +440,11 @@ export default function ProfilePage() {
           {user?.display_name || "Profile"}
         </h1>
         <p className="dash-home__subtitle">Your personal fat burn tracker</p>
+        {teamInfo && (
+          <Link href={`/teams/${teamInfo.slug}`} className="team-badge">
+            {teamInfo.name}
+          </Link>
+        )}
         {isProfileSetup && !editing && (
           <button type="button" className="dash-home__edit-profile" onClick={() => setEditing(true)}>
             Edit Profile
