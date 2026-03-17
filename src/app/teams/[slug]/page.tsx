@@ -221,23 +221,26 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
             </div>
           )}
 
-          {canJoin && joinStatus === "idle" && (
+          {canJoin && (joinStatus === "idle" || joinStatus === "submitting") && (
             <div className="team-join__form">
+              <label htmlFor="invite-code" className="sr-only">Invite code (optional)</label>
               <input
+                id="invite-code"
                 type="text"
                 className="team-join__code-input"
                 placeholder="Invite code (optional)"
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value)}
+                disabled={joinStatus === "submitting"}
               />
-              <button className="cta" onClick={handleJoin}>
-                Request to Join
+              <button
+                className="cta"
+                onClick={handleJoin}
+                disabled={joinStatus === "submitting"}
+              >
+                {joinStatus === "submitting" ? "Submitting..." : "Request to Join"}
               </button>
             </div>
-          )}
-
-          {joinStatus === "submitting" && (
-            <p className="team-join__submitting">Submitting request...</p>
           )}
 
           {isMember && !isOwner && (

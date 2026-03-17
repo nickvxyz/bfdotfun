@@ -90,13 +90,20 @@ export async function POST(
 
   if (subError) return NextResponse.json({ error: subError.message }, { status: 500 });
 
-  // Update burn units
-  const { error: updateError } = await supabase
+  // Update burn units — only those still team_pooled (atomic guard against race condition)
+  const { error: updateError, count: updatedCount } = await supabase
     .from("burn_units")
     .update({ status: "submitted_via_pro", submission_id: submission.id })
-    .in("id", unitIds);
+    .in("id", unitIds)
+    .eq("status", "team_pooled")
+    .is("submission_id", null);
 
   if (updateError) console.error("Failed to update burn units:", updateError);
+  if (updatedCount === 0) {
+    // Race condition: another submission claimed the units first — rollback
+    await supabase.from("submissions").delete().eq("id", submission.id);
+    return NextResponse.json({ error: "Burns were already submitted — try again" }, { status: 409 });
+  }
 
   // Update team total_kg_submitted
   const { error: teamUpdateError } = await supabase

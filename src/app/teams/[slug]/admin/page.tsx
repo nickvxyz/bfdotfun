@@ -216,12 +216,14 @@ export default function TeamAdminPage({ params }: { params: Promise<{ slug: stri
                     <button
                       className="team-admin__approve-btn"
                       onClick={() => handleMemberAction(m.id, "approve")}
+                      aria-label={`Approve ${m.display_name}`}
                     >
                       Approve
                     </button>
                     <button
                       className="team-admin__reject-btn"
                       onClick={() => handleMemberAction(m.id, "reject")}
+                      aria-label={`Reject ${m.display_name}`}
                     >
                       Reject
                     </button>
@@ -290,7 +292,7 @@ export default function TeamAdminPage({ params }: { params: Promise<{ slug: stri
               onClick={() => setConfirmSubmit(true)}
               disabled={unsubmittedKg <= 0}
             >
-              Submit {unsubmittedKg.toFixed(1)} kg to Global Ledger
+              {unsubmittedKg <= 0 ? "No kg to submit" : `Submit ${unsubmittedKg.toFixed(1)} kg to Global Ledger`}
             </button>
           ) : (
             <div className="team-admin__submit-confirm">

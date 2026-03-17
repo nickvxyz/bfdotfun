@@ -108,7 +108,11 @@ export async function POST(request: NextRequest) {
       resolved_at: new Date().toISOString(),
     });
 
-  if (memberError) console.error("Failed to add creator as member:", memberError);
+  if (memberError) {
+    // Rollback: delete the team if member insertion fails
+    await supabase.from("pro_groups").delete().eq("id", team.id);
+    return NextResponse.json({ error: "Failed to initialize team membership" }, { status: 500 });
+  }
 
   // Set creator's group_id
   await supabase.from("users").update({ group_id: team.id }).eq("id", session.userId);
