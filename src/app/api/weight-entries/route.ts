@@ -209,7 +209,8 @@ export async function POST(request: NextRequest) {
           .update({ status: "team_pooled" })
           .eq("id", burnUnitId);
 
-        // Increment team's total_kg_burned
+        // Increment team's total_kg_burned using read-then-write
+        // Note: not fully atomic under high concurrency, but acceptable for current scale
         const { data: currentTeam } = await supabase
           .from("pro_groups")
           .select("total_kg_burned")

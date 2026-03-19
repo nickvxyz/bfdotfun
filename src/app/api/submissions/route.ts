@@ -95,6 +95,22 @@ export async function POST(request: NextRequest) {
   const { createAdminClient } = await import("@/lib/supabase/admin");
   const supabase = createAdminClient();
 
+  // Block individual submissions for team members
+  if (submission_type === "individual") {
+    const { data: submitter } = await supabase
+      .from("users")
+      .select("group_id")
+      .eq("id", session.userId)
+      .maybeSingle();
+
+    if (submitter?.group_id) {
+      return NextResponse.json(
+        { error: "Team members cannot submit individually. Your burns are submitted through your team." },
+        { status: 403 },
+      );
+    }
+  }
+
   // Idempotent: check for existing submission with same tx_hash
   const { data: existing } = await supabase
     .from("submissions")
