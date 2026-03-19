@@ -6956,6 +6956,7 @@
 }
 
 /* Team detail page */
+/* Team detail page — reused for loading/error states */
 .team-detail {
   max-width: 900px;
   margin: 0 auto;
@@ -6971,40 +6972,6 @@
   padding: 60px 20px;
 }
 
-.team-detail__header {
-  margin-bottom: 32px;
-}
-
-.team-detail__name {
-  font-family: var(--font-title), "Orbitron", sans-serif;
-  font-size: clamp(28px, 4vw, 40px);
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  color: var(--c-ember);
-  margin-bottom: 8px;
-}
-
-.team-detail__desc {
-  color: var(--c-muted-light);
-  font-size: var(--fs-body);
-  margin-bottom: 8px;
-}
-
-.team-detail__meta {
-  font-size: var(--fs-small);
-  color: var(--c-muted);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.team-detail__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin: 24px 0 32px;
-}
-
 /* Team counter */
 .team-counter {
   margin: 24px 0;
@@ -7017,105 +6984,239 @@
   margin-top: 8px;
 }
 
-/* Team join section */
-.team-join {
-  margin: 24px 0 32px;
-  padding: 24px;
-  border: 1px solid var(--c-border-ember);
-  background: var(--c-black-alt);
+/* ─── Coach Landing Page ─── */
+
+.coach-hero {
+  text-align: center;
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--c-border-ember);
 }
 
-.team-join__form {
+.coach-hero__avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
   display: flex;
-  gap: 12px;
   align-items: center;
+  justify-content: center;
+  background: var(--c-black-alt);
+  border: 2px solid var(--c-ember);
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--c-ember);
+}
+
+.coach-hero__name {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--c-white);
+  margin-bottom: 12px;
+}
+
+.coach-hero__tagline {
+  color: var(--c-muted-light);
+  font-size: clamp(16px, 2.5vw, 20px);
+  max-width: 600px;
+  margin: 0 auto 16px;
+  line-height: 1.5;
+}
+
+.coach-hero__proof {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.team-join__code-input {
-  flex: 1;
-  min-width: 200px;
-  padding: 12px 16px;
-  background: var(--c-black);
+.coach-hero__proof-item {
+  font-size: var(--fs-small);
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.coach-hero__proof-sep {
+  color: var(--c-border-ember);
+}
+
+/* Coach CTA section */
+.coach-cta {
+  padding: 32px 0;
+  text-align: center;
+  border-bottom: 1px solid var(--c-border-ember);
+}
+
+.coach-cta__join {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.coach-cta__btn {
+  font-size: clamp(14px, 2vw, 16px);
+  padding: 16px 48px;
+}
+
+.coach-cta__sub {
+  color: var(--c-muted);
+  font-size: var(--fs-small);
+}
+
+.coach-cta__invite-toggle {
+  background: none;
+  border: none;
+  color: var(--c-muted);
+  font-family: inherit;
+  font-size: var(--fs-small);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.coach-cta__invite-toggle:hover {
+  color: var(--c-ember);
+}
+
+.coach-cta__invite-form {
+  margin-top: 4px;
+}
+
+.coach-cta__invite-input {
+  padding: 10px 16px;
+  background: var(--c-black-alt);
   border: 1px solid var(--c-border-ember);
   color: var(--c-white);
   font-family: inherit;
   font-size: var(--fs-body);
+  text-align: center;
+  width: 200px;
 }
 
-.team-join__code-input::placeholder {
+.coach-cta__invite-input::placeholder {
   color: var(--c-muted);
 }
 
-.team-join__pending {
-  text-align: center;
-}
-
-.team-join__pending-badge {
-  display: inline-block;
-  padding: 10px 20px;
-  background: rgba(255, 107, 26, 0.1);
+.coach-cta__pending {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: rgba(255, 107, 26, 0.08);
   border: 1px solid var(--c-border-ember);
   color: var(--c-ember);
+  font-size: var(--fs-body);
+}
+
+.coach-cta__pending-icon {
+  font-size: 18px;
+}
+
+.coach-cta__member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.coach-cta__member-badge {
+  color: var(--c-green);
   font-family: var(--font-title), "Orbitron", sans-serif;
   font-size: var(--fs-small);
   text-transform: uppercase;
   letter-spacing: 2px;
 }
 
-.team-join__submitting {
-  color: var(--c-muted);
+.coach-cta__leave-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-muted-light);
   font-size: var(--fs-body);
 }
 
-.team-join__leave {
-  text-align: center;
-}
-
-.team-join__leave-btn {
+.coach-cta__leave-btn {
   background: none;
   border: 1px solid var(--c-muted);
   color: var(--c-muted);
-  padding: 10px 20px;
+  padding: 8px 20px;
   font-family: inherit;
-  font-size: var(--fs-body);
+  font-size: var(--fs-small);
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
 }
 
-.team-join__leave-btn:hover {
+.coach-cta__leave-btn:hover {
   color: var(--c-error);
   border-color: var(--c-error);
 }
 
-.team-join__leave-confirm {
-  color: var(--c-muted-light);
-  font-size: var(--fs-body);
-  margin-bottom: 12px;
-}
-
-.team-join__cancel {
+.coach-cta__cancel {
   background: none;
   border: none;
   color: var(--c-muted);
   font-family: inherit;
   font-size: var(--fs-body);
   cursor: pointer;
-  margin-left: 12px;
 }
 
-.team-join__error {
+.coach-cta__error {
   color: var(--c-error);
   font-size: var(--fs-small);
   margin-top: 8px;
 }
 
-/* Team members list */
-.team-members {
+/* Coach stats grid */
+.coach-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 24px 0 32px;
+  background: var(--c-border-ember);
+  border: 1px solid var(--c-border-ember);
+}
+
+.coach-stats__card {
+  background: var(--c-black-alt);
+  padding: 20px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.coach-stats__value {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 900;
+  color: var(--c-ember);
+}
+
+.coach-stats__label {
+  font-size: var(--fs-label);
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.coach-stats__unit {
+  font-size: var(--fs-label);
+  color: var(--c-muted);
+}
+
+/* Coach leaderboard */
+.coach-leaderboard {
   margin-top: 32px;
 }
 
-.team-members__header {
+.coach-leaderboard__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -7124,7 +7225,7 @@
   gap: 12px;
 }
 
-.team-members__title {
+.coach-leaderboard__title {
   font-family: var(--font-title), "Orbitron", sans-serif;
   font-size: 16px;
   font-weight: 700;
@@ -7133,12 +7234,12 @@
   color: var(--c-white);
 }
 
-.team-members__filters {
+.coach-leaderboard__filters {
   display: flex;
   gap: 8px;
 }
 
-.team-members__filter {
+.coach-leaderboard__filter {
   background: none;
   border: 1px solid var(--c-border-ember);
   color: var(--c-muted);
@@ -7151,57 +7252,74 @@
   transition: color 0.2s, border-color 0.2s;
 }
 
-.team-members__filter:hover {
+.coach-leaderboard__filter:hover {
   color: var(--c-white);
   border-color: var(--c-ember);
 }
 
-.team-members__filter--active {
+.coach-leaderboard__filter--active {
   color: var(--c-ember);
   border-color: var(--c-ember);
 }
 
-.team-member {
+.coach-member {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--c-border-ember);
   gap: 16px;
 }
 
-.team-member__info {
+.coach-member__rank {
+  font-family: var(--font-title), "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-muted);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.coach-member:nth-child(2) .coach-member__rank { color: var(--c-ember); }
+.coach-member:nth-child(3) .coach-member__rank { color: var(--c-ember-hover); }
+.coach-member:nth-child(4) .coach-member__rank { color: var(--c-muted-light); }
+
+.coach-member__info {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
-.team-member__name {
+.coach-member__name {
   font-size: var(--fs-body);
   color: var(--c-white);
   font-weight: 700;
 }
 
-.team-member__burned {
+.coach-member__burned {
   font-size: var(--fs-small);
   color: var(--c-ember);
 }
 
-.team-member__joined {
-  font-size: var(--fs-label);
-  color: var(--c-muted);
-}
-
-.team-member__progress {
+.coach-member__progress {
   flex-shrink: 0;
 }
 
-.team-members__empty {
+.coach-leaderboard__empty {
   color: var(--c-muted);
   font-size: var(--fs-body);
   text-align: center;
   padding: 40px 20px;
+  border: 1px dashed var(--c-border-ember);
+}
+
+/* Back link at bottom */
+.coach-back {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--c-border-ember);
 }
 
 /* Team admin page */
@@ -8440,10 +8558,6 @@
     grid-template-columns: 1fr;
   }
 
-  .team-detail__stats {
-    grid-template-columns: 1fr;
-  }
-
   .team-admin__pending-row {
     flex-direction: column;
     gap: 12px;
@@ -8453,34 +8567,42 @@
     padding: 72px 16px 48px;
   }
 
-  .team-join__form {
+  /* Coach landing page mobile */
+  .coach-hero__avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+  }
+
+  .coach-hero__proof {
     flex-direction: column;
-    gap: 16px;
+    gap: 4px;
   }
 
-  .team-join__code-input {
-    min-width: auto;
-    width: 100%;
+  .coach-hero__proof-sep {
+    display: none;
   }
 
-  .team-members__header {
+  .coach-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-leaderboard__header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .team-members__filters {
+  .coach-leaderboard__filters {
     width: 100%;
     flex-wrap: wrap;
   }
 
-  .team-member {
-    flex-direction: column;
-    align-items: flex-start;
+  .coach-member {
     gap: 12px;
   }
 
-  .team-member__progress {
-    width: 100%;
+  .coach-member__progress {
+    width: 80px;
   }
 
   .team-list-page__header {

@@ -52,13 +52,14 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
   const [joinStatus, setJoinStatus] = useState<"idle" | "pending" | "submitting">("idle");
   const [inviteCode, setInviteCode] = useState("");
   const [joinError, setJoinError] = useState("");
+  const [showInviteInput, setShowInviteInput] = useState(false);
 
   // Leave flow
   const [leaveConfirm, setLeaveConfirm] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
   // Sort
-  const [sortKey, setSortKey] = useState<SortKey>("joined");
+  const [sortKey, setSortKey] = useState<SortKey>("burned");
 
   useEffect(() => {
     async function fetchTeam() {
@@ -182,79 +183,91 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
     );
   }
 
-  const unsubmittedKg = Number(team.total_kg_burned) - Number(team.total_kg_submitted);
-
   return (
     <>
       <Header />
       <main className="team-detail">
-        <Link href="/teams" className="back-link">&larr; Back to Teams</Link>
-
-        <div className="team-detail__header">
-          <h1 className="team-detail__name">{team.name}</h1>
-          {team.description && <p className="team-detail__desc">{team.description}</p>}
-          <p className="team-detail__meta">{team.member_count} members &middot; by {team.owner_name}</p>
-        </div>
-
-        <TeamCounter totalKg={Number(team.total_kg_burned)} />
-
-        <div className="team-detail__stats">
-          <div className="stats-grid__card">
-            <span className="stats-grid__value">{Number(team.total_kg_burned).toFixed(1)}</span>
-            <span className="stats-grid__label">kg burned</span>
+        {/* Coach Hero */}
+        <section className="coach-hero">
+          <div className="coach-hero__avatar">
+            {team.name.charAt(0).toUpperCase()}
           </div>
-          <div className="stats-grid__card">
-            <span className="stats-grid__value">{Number(team.total_kg_submitted).toFixed(1)}</span>
-            <span className="stats-grid__label">kg on global ledger</span>
+          <h1 className="coach-hero__name">{team.name}</h1>
+          {team.description && (
+            <p className="coach-hero__tagline">{team.description}</p>
+          )}
+          <div className="coach-hero__proof">
+            <span className="coach-hero__proof-item">
+              {team.member_count} {team.member_count === 1 ? "member" : "members"}
+            </span>
+            <span className="coach-hero__proof-sep">&middot;</span>
+            <span className="coach-hero__proof-item">
+              {Number(team.total_kg_burned).toFixed(1)} kg burned together
+            </span>
+            <span className="coach-hero__proof-sep">&middot;</span>
+            <span className="coach-hero__proof-item">
+              by {team.owner_name}
+            </span>
           </div>
-          <div className="stats-grid__card">
-            <span className="stats-grid__value">{unsubmittedKg.toFixed(1)}</span>
-            <span className="stats-grid__label">kg ready to submit</span>
-          </div>
-        </div>
+        </section>
 
-        {/* Join / Leave / Admin actions */}
-        <div className="team-join">
+        {/* Join CTA — above the fold */}
+        <section className="coach-cta">
           {joinStatus === "pending" && (
-            <div className="team-join__pending">
-              <span className="team-join__pending-badge">Request Pending — Awaiting Approval</span>
+            <div className="coach-cta__pending">
+              <span className="coach-cta__pending-icon">&#9203;</span>
+              <span>Your request is pending — the coach will review it soon.</span>
             </div>
           )}
 
           {canJoin && (joinStatus === "idle" || joinStatus === "submitting") && (
-            <div className="team-join__form">
-              <label htmlFor="invite-code" className="sr-only">Invite code (optional)</label>
-              <input
-                id="invite-code"
-                type="text"
-                className="team-join__code-input"
-                placeholder="Invite code (optional)"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value)}
-                disabled={joinStatus === "submitting"}
-              />
+            <div className="coach-cta__join">
               <button
-                className="cta"
+                className="cta coach-cta__btn"
                 onClick={handleJoin}
                 disabled={joinStatus === "submitting"}
+                aria-label={`Join ${team.name}`}
               >
-                {joinStatus === "submitting" ? "Submitting..." : "Request to Join"}
+                {joinStatus === "submitting" ? "Submitting..." : `Join ${team.name}`}
               </button>
+              <p className="coach-cta__sub">Free to join. Your burns pool to the team.</p>
+              {!showInviteInput ? (
+                <button
+                  className="coach-cta__invite-toggle"
+                  onClick={() => setShowInviteInput(true)}
+                >
+                  Have an invite code?
+                </button>
+              ) : (
+                <div className="coach-cta__invite-form">
+                  <label htmlFor="invite-code" className="sr-only">Invite code</label>
+                  <input
+                    id="invite-code"
+                    type="text"
+                    className="coach-cta__invite-input"
+                    placeholder="Enter invite code"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value)}
+                    disabled={joinStatus === "submitting"}
+                  />
+                </div>
+              )}
             </div>
           )}
 
           {isMember && !isOwner && (
-            <div className="team-join__leave">
+            <div className="coach-cta__member">
+              <p className="coach-cta__member-badge">You&apos;re a member of this team</p>
               {leaveConfirm ? (
-                <>
-                  <p className="team-join__leave-confirm">Leave {team.name}? Your existing burns will remain.</p>
+                <div className="coach-cta__leave-confirm">
+                  <p>Leave {team.name}? Your existing burns stay on the ledger.</p>
                   <button className="cta cta--inverted" onClick={handleLeave} disabled={leaving}>
                     {leaving ? "Leaving..." : "Confirm Leave"}
                   </button>
-                  <button className="team-join__cancel" onClick={() => setLeaveConfirm(false)}>Cancel</button>
-                </>
+                  <button className="coach-cta__cancel" onClick={() => setLeaveConfirm(false)}>Cancel</button>
+                </div>
               ) : (
-                <button className="team-join__leave-btn" onClick={() => setLeaveConfirm(true)}>Leave Team</button>
+                <button className="coach-cta__leave-btn" onClick={() => setLeaveConfirm(true)}>Leave Team</button>
               )}
             </div>
           )}
@@ -265,49 +278,67 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
             </Link>
           )}
 
-          {joinError && <p className="team-join__error">{joinError}</p>}
+          {joinError && <p className="coach-cta__error">{joinError}</p>}
+        </section>
+
+        {/* Counter */}
+        <TeamCounter totalKg={Number(team.total_kg_burned)} />
+
+        {/* Stats */}
+        <div className="coach-stats">
+          <div className="coach-stats__card">
+            <span className="coach-stats__value">{Number(team.total_kg_burned).toFixed(1)}</span>
+            <span className="coach-stats__label">Fat Burned</span>
+            <span className="coach-stats__unit">kg</span>
+          </div>
+          <div className="coach-stats__card">
+            <span className="coach-stats__value">{Number(team.total_kg_submitted).toFixed(1)}</span>
+            <span className="coach-stats__label">On Global Ledger</span>
+            <span className="coach-stats__unit">kg</span>
+          </div>
+          <div className="coach-stats__card">
+            <span className="coach-stats__value">{team.member_count}</span>
+            <span className="coach-stats__label">Team Members</span>
+            <span className="coach-stats__unit">&nbsp;</span>
+          </div>
         </div>
 
-        {/* Member list */}
-        <div className="team-members">
-          <div className="team-members__header">
-            <h2 className="team-members__title">Members ({members.length})</h2>
-            <div className="team-members__filters">
+        {/* Leaderboard */}
+        <section className="coach-leaderboard">
+          <div className="coach-leaderboard__header">
+            <h2 className="coach-leaderboard__title">Leaderboard</h2>
+            <div className="coach-leaderboard__filters">
               <button
-                className={`team-members__filter${sortKey === "joined" ? " team-members__filter--active" : ""}`}
-                onClick={() => setSortKey("joined")}
-              >
-                Joined
-              </button>
-              <button
-                className={`team-members__filter${sortKey === "burned" ? " team-members__filter--active" : ""}`}
+                className={`coach-leaderboard__filter${sortKey === "burned" ? " coach-leaderboard__filter--active" : ""}`}
                 onClick={() => setSortKey("burned")}
               >
                 Burned
               </button>
               <button
-                className={`team-members__filter${sortKey === "progress" ? " team-members__filter--active" : ""}`}
+                className={`coach-leaderboard__filter${sortKey === "progress" ? " coach-leaderboard__filter--active" : ""}`}
                 onClick={() => setSortKey("progress")}
               >
                 Progress
               </button>
+              <button
+                className={`coach-leaderboard__filter${sortKey === "joined" ? " coach-leaderboard__filter--active" : ""}`}
+                onClick={() => setSortKey("joined")}
+              >
+                Joined
+              </button>
             </div>
           </div>
 
-          {sortedMembers.map((member) => {
+          {sortedMembers.map((member, index) => {
             const progress = calcProgress(member);
             return (
-              <div key={member.user_id} className="team-member">
-                <div className="team-member__info">
-                  <span className="team-member__name">{member.display_name}</span>
-                  <span className="team-member__burned">{member.total_burned.toFixed(1)} kg burned</span>
-                  {member.joined_at && (
-                    <span className="team-member__joined">
-                      Joined {new Date(member.joined_at).toLocaleDateString()}
-                    </span>
-                  )}
+              <div key={member.user_id} className="coach-member">
+                <span className="coach-member__rank">{index + 1}</span>
+                <div className="coach-member__info">
+                  <span className="coach-member__name">{member.display_name}</span>
+                  <span className="coach-member__burned">{member.total_burned.toFixed(1)} kg</span>
                 </div>
-                <div className="team-member__progress">
+                <div className="coach-member__progress">
                   <ProgressBar progress={progress} />
                 </div>
               </div>
@@ -315,8 +346,15 @@ export default function TeamDetailPage({ params }: { params: Promise<{ slug: str
           })}
 
           {members.length === 0 && (
-            <p className="team-members__empty">No members yet.</p>
+            <div className="coach-leaderboard__empty">
+              <p>No members yet. Be the first to join and start burning.</p>
+            </div>
           )}
+        </section>
+
+        {/* Back link at bottom */}
+        <div className="coach-back">
+          <Link href="/teams" className="back-link">&larr; All Teams</Link>
         </div>
       </main>
     </>
